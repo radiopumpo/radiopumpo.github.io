@@ -1,32 +1,17 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Manu's Music Stream</title>
+  <meta charset="UTF-8" />
+  <title>Radiopumpo</title>
 </head>
 <body>
-    <h1>Live Music Stream</h1>
+  <h1>Radiopumpo – Test Stream</h1>
 
-    <audio id="player" controls autoplay>
-        <source src="https://docs.google.com/uc?export=download&id=1sxI4GG44Rz1g9Dw0-JM6fjPYbLrNNxw1" type="audio/mp3">
-    </audio>
+  <p>If you see the player but no sound, wait a few seconds and try pressing play.</p>
 
-    <script>
-        // Playlist
-        const playlist = [
-            "https://docs.google.com/uc?export=download&id=1sxI4GG44Rz1g9Dw0-JM6fjPYbLrNNxw1",
-            "https://docs.google.com/uc?export=download&id=1OEwo751cXhJoDbV9ZkGwPqsOnZ-3LsID",
-            "https://docs.google.com/uc?export=download&id=1Qwtrc9pY-o4iNbDa32Yqy67gJPeP0rNx"
-        ];
-
-        let index = 0;
-        const player = document.getElementById("player");
-
-        // Autoplay next song
-        player.addEventListener("ended", function() {
-            index = (index + 1) % playlist.length;
-            player.src = playlist[index];
-            player.play();
-        });
-    </script>
+  <audio controls autoplay>
+    <source src="https://docs.google.com/uc?export=download&id=1sxI4GG44Rz1g9Dw0-JM6fjPYbLrNNxw1" type="audio/mp3">
+    Your browser does not support the audio element.
+  </audio>
 </body>
 </html>
