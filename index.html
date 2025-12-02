@@ -153,6 +153,37 @@
   font-size: 1.1rem;
   white-space: nowrap; /* Prevent text wrapping */
 }
+  /* New Wrapper for Controls */
+.controls-wrapper {
+  display: flex; /* Makes children (buttons and audio) align horizontally */
+  align-items: center; /* Vertically centers items */
+  gap: 10px; /* Space between controls */
+}
+
+/* Style the Skip Buttons */
+.skip-btn {
+  background: none;
+  border: 1px solid #ff0080; /* Neon border */
+  color: #ff0080; /* Neon text color */
+  font-size: 1.2rem;
+  padding: 8px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  flex-shrink: 0; /* Prevents buttons from shrinking */
+}
+
+.skip-btn:hover {
+  background: #ff0080; /* Neon background on hover */
+  color: #0d0d0d; /* Dark text on hover */
+  box-shadow: 0 0 10px rgba(255, 0, 128, 0.7);
+}
+
+/* Update the Audio Player to fit within the wrapper */
+audio {
+  flex-grow: 1; /* Allows the audio player to take up available space */
+  margin: 10px 0; /* Adjust vertical margin */
+}
 </style>
 </head>
 <body>
@@ -164,65 +195,84 @@
   </div>
   <div class="live-badge">LIVE 24/7</div>
 
-  <div class="player-card">
-    <h2>LIVE PUMPO RADIO NOW</h2>    
+<div class="player-card">
+  <h2>LIVE PUMPO RADIO</h2>
+  <marquee id="songMarquee" direction="left" scrollamount="4">
+    NOW PLAYING: Initial Song Title...
+  </marquee>
+
+  <div class="controls-wrapper">
+    <button id="prevBtn" class="skip-btn">&#9664;&#9664;</button> <audio id="player" controls autoplay></audio>
     
-    <marquee id="songMarquee" direction="left" scrollamount="4">
-        NOW PLAYING: Initial Song Title...
-    </marquee>
-    
-    <audio id="player" controls autoplay></audio>
+    <button id="nextBtn" class="skip-btn">&#9654;&#9654;</button> </div>
 </div>
 
   <div class="image-gallery" id="gallery"></div>
 
  <script>
-  /* PLAYLIST & PLAYER SETUP */
-  const playlist = [
-    "https://radiopumpo.github.io/forzapumpo.mp3", // Index 0
-    "https://radiopumpo.github.io/dnbpumpo.mp3",
-    "https://radiopumpo.github.io/housepumpo.mp3",
-    "https://radiopumpo.github.io/hiphoppumpo.mp3",
-    "https://radiopumpo.github.io/rockpowerpumpo.mp3",
-    "https://radiopumpo.github.io/seashantypumpo.mp3",
-    "https://radiopumpo.github.io/unodinoipumpo.mp3",
-    // Add more songs here
-  ];
+/* PLAYLIST & PLAYER SETUP */
+const playlist = [
+  "https://radiopumpo.github.io/forzapumpo.mp3",
+  "https://radiopumpo.github.io/dnbpumpo.mp3",
+  "https://radiopumpo.github.io/housepumpo.mp3",
+  "https://radiopumpo.github.io/hiphoppumpo.mp3",
+  "https://radiopumpo.github.io/rockpowerpumpo.mp3",
+  "https://radiopumpo.github.io/seashantypumpo.mp3",
+  "https://radiopumpo.github.io/unodinoipumpo.mp3",
+  // Add more songs here
+];
 
-  let index = 0;
-  const player = document.getElementById("player");
-  const marquee = document.getElementById("songMarquee"); // Get the marquee element
+let index = 0;
+const player = document.getElementById("player");
+const marquee = document.getElementById("songMarquee");
+const prevBtn = document.getElementById("prevBtn"); // NEW
+const nextBtn = document.getElementById("nextBtn"); // NEW
 
-  // Function to extract song title from URL
-  function getSongTitle(url) {
-    // 1. Get the filename (e.g., 'forzapumpo.mp3')
-    const filename = url.substring(url.lastIndexOf('/') + 1);
-    // 2. Remove the extension (e.g., '.mp3')
-    const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.'));
-    // 3. Optional: make it look nicer (e.g., 'forza pumpo')
-    return nameWithoutExt.replace(/pumpo/gi, ' Pumpo').replace(/dnb/i, 'DNB').replace(/rockpower/i, 'Rock Power');
-  }
 
-  // Function to start playing the current track and update the marquee
-  function loadAndPlayTrack() {
-    player.src = playlist[index];
-    const title = getSongTitle(playlist[index]);
-    
-    // Update the marquee text
-    marquee.innerHTML = `NOW PLAYING: ${title}`; 
-    
-    player.play().catch(e => console.log("Autoplay blocked:", e)); 
-  }
+// Function to extract song title from URL
+function getSongTitle(url) {
+  const filename = url.substring(url.lastIndexOf('/') + 1);
+  const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.'));
+  // Example formatting:
+  return nameWithoutExt.replace(/pumpo/gi, ' Pumpo').replace(/dnb/i, 'DNB').replace(/rockpower/i, 'Rock Power');
+}
 
-  // Initialize the first song
+// Function to start playing the current track and update the marquee
+function loadAndPlayTrack() {
+  player.src = playlist[index];
+  const title = getSongTitle(playlist[index]);
+  
+  marquee.innerHTML = `NOW PLAYING: ${title}`;
+  
+  player.play().catch(e => console.log("Autoplay blocked:", e));
+}
+
+// ----------------------------------------------------
+// NEW: Button Handlers
+// ----------------------------------------------------
+
+// Handle Next button click
+nextBtn.addEventListener("click", () => {
+  index = (index + 1) % playlist.length; // Move forward, loop back to 0
   loadAndPlayTrack();
+});
 
-  // Event listener for track ending
-  player.addEventListener("ended", () => {
-    index = (index + 1) % playlist.length; // Move to the next song, loop back
-    loadAndPlayTrack();
-  });
+// Handle Previous button click
+prevBtn.addEventListener("click", () => {
+  index = (index - 1 + playlist.length) % playlist.length; // Move backward, loop to last
+  loadAndPlayTrack();
+});
 
+// Update for End of Track (Original functionality)
+player.addEventListener("ended", () => {
+  index = (index + 1) % playlist.length;
+  loadAndPlayTrack();
+});
+
+// Initialize the first song
+loadAndPlayTrack();
+
+// ... rest of your existing modal/gallery logic ...
 
   /* IMAGE GALLERY & MODAL LOGIC (KEEPING YOUR EXISTING FUNCTIONALITY) */
   const images = [
