@@ -4,97 +4,153 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Radio Pumpo 24/7</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: "Inter", sans-serif;
-      background: #0d0d0d;
-      color: #ffffff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }
+<style>
+  body {
+    margin: 0;
+    font-family: "Inter", sans-serif;
+    background: #0d0d0d;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px;
+  }
 
-    h1 {
-      font-size: 3.2rem;
-      margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      background: linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-align: center;
-    }
+  h1 {
+    font-size: 3.2rem;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-align: center; /* Ensures the header text is centered */
+  }
 
-    .live-badge {
-      background: #ff0033;
-      padding: 6px 14px;
-      border-radius: 12px;
-      font-weight: bold;
-      margin-bottom: 25px;
-      animation: pulse 1.4s infinite;
-    }
+  .live-badge {
+    background: #ff0033;
+    padding: 6px 14px;
+    border-radius: 12px;
+    font-weight: bold;
+    margin-bottom: 25px;
+    animation: pulse 1.4s infinite;
+  }
 
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
+  @keyframes pulse {
+    0% {
+      opacity: 0.6;
     }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0.6;
+    }
+  }
 
-    .player-card {
-      background: rgba(255, 255, 255, 0.08);
-      padding: 30px;
-      border-radius: 20px;
-      backdrop-filter: blur(14px);
-      width: 90%;
-      max-width: 600px;
-      box-shadow: 0 0 25px rgba(255, 0, 120, 0.4);
-      text-align: center;
-    }
+  .player-card {
+    background: rgba(255, 255, 255, 0.08);
+    padding: 30px;
+    border-radius: 20px;
+    backdrop-filter: blur(14px);
+    width: 90%;
+    max-width: 600px;
+    box-shadow: 0 0 25px rgba(255, 0, 120, 0.4);
+    text-align: center;
+  }
 
-    audio {
-      width: 100%;
-      margin-top: 10px;
-    }
+  audio {
+    width: 100%;
+    margin-top: 10px;
+  }
 
-    /* IMAGE GALLERY */
-    .image-gallery {
-      margin-top: 50px;
-      width: 100%;
-      max-width: 1100px;
-      overflow-x: auto;
-      white-space: nowrap;
-      padding-bottom: 14px;
-      display: flex;
-      gap: 16px;
-      justify-content: center;
-    }
+  /* IMAGE GALLERY */
+  .image-gallery {
+    margin-top: 50px;
+    width: 100%;
+    max-width: 1100px;
+    overflow-x: auto;
+    white-space: nowrap;
+    padding-bottom: 14px;
+    display: flex;
+    gap: 16px;
+    justify-content: center; /* Ensures images are centered when they don't fill the width */
+  }
 
-    .image-gallery img {
-      height: 180px;
-      width: auto;
-      border-radius: 16px;
-      box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
-      transition: transform 0.25s ease;
-    }
+  .image-gallery img {
+    height: 180px;
+    width: auto;
+    border-radius: 16px;
+    box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+    transition: transform 0.25s ease;
+    cursor: pointer; /* Indicates the image is clickable */
+  }
 
-    .image-gallery img:hover {
-      transform: scale(1.05);
-    }
+  .image-gallery img:hover {
+    transform: scale(1.05);
+  }
 
-    .image-gallery::-webkit-scrollbar {
-      height: 10px;
-    }
+  .image-gallery::-webkit-scrollbar {
+    height: 10px;
+  }
 
-    .image-gallery::-webkit-scrollbar-thumb {
-      background: #ff0080;
-      border-radius: 10px;
-    }
-  </style>
+  .image-gallery::-webkit-scrollbar-thumb {
+    background: #ff0080;
+    border-radius: 10px;
+  }
+
+  /* --- MODAL STYLES --- */
+  .modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 100; /* Sit on top */
+    padding-top: 60px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.9); /* Black w/ opacity */
+    backdrop-filter: blur(5px);
+  }
+
+  .modal-content {
+    margin: auto;
+    display: block;
+    width: 80%;
+    max-width: 800px;
+    max-height: 90vh;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(255, 255, 255, 0.3);
+  }
+
+  /* The Close Button */
+  .close {
+    position: absolute;
+    top: 15px;
+    right: 35px;
+    color: #f1f1f1;
+    font-size: 40px;
+    font-weight: bold;
+    transition: 0.3s;
+    cursor: pointer;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: #ff0080;
+    text-decoration: none;
+    cursor: pointer;
+  }
+</style>
 </head>
 <body>
-  <h1>Radio Pumpo</h1>
+  <h1>Radio Pumpo</h1>
+      <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="expandedImg">
+    <div id="caption"></div>
+  </div>
   <div class="live-badge">LIVE 24/7</div>
 
   <div class="player-card">
@@ -104,46 +160,71 @@
 
   <div class="image-gallery" id="gallery"></div>
 
-  <script>
-    /* PLAYLIST — Add songs you upload to GitHub */
-    const playlist = [
-      "https://radiopumpo.github.io/forzapumpo.mp3",
-      "https://radiopumpo.github.io/dnbpumpo.mp3",
-      "https://radiopumpo.github.io/housepumpo.mp3",
-      "https://radiopumpo.github.io/hiphoppumpo.mp3",
-      "https://radiopumpo.github.io/rockpowerpumpo.mp3",
-      "https://radiopumpo.github.io/seashantypumpo.mp3",
-      "https://radiopumpo.github.io/unodinoipumpo.mp3"
-      // Add more songs here
-    ];
+ <script>
+  /* PLAYLIST — Add songs you upload to GitHub */
+  const playlist = [
+    "https://radiopumpo.github.io/forzapumpo.mp3",
+    "https://radiopumpo.github.io/dnbpumpo.mp3",
+    "https://radiopumpo.github.io/housepumpo.mp3",
+    "https://radiopumpo.github.io/hiphoppumpo.mp3",
+    "https://radiopumpo.github.io/rockpowerpumpo.mp3",
+    "https://radiopumpo.github.io/seashantypumpo.mp3",
+    "https://radiopumpo.github.io/unodinoipumpo.mp3",
+    // Add more songs here
+  ];
 
-    let index = 0;
-    const player = document.getElementById("player");
+  let index = 0;
+  const player = document.getElementById("player");
+  player.src = playlist[index];
+
+  player.addEventListener("ended", () => {
+    index = (index + 1) % playlist.length;
     player.src = playlist[index];
+    player.play();
+  });
 
-    player.addEventListener("ended", () => {
-      index = (index + 1) % playlist.length;
-      player.src = playlist[index];
-      player.play();
-    });
+  /* IMAGE GALLERY & MODAL LOGIC */
+  const images = [
+    "https://radiopumpo.github.io/djpumpo.jpg",
+    "https://radiopumpo.github.io/forzapumpo.jpg",
+    "https://radiopumpo.github.io/hiphoppumpo.jpg",
+    "https://radiopumpo.github.io/seashantypumpo.jpg",
+    "https://radiopumpo.github.io/unodinoipumpo.jpg",
+    // Add more images here
+  ];
 
-    /* IMAGE GALLERY — Add your GitHub-hosted images */
-    const images = [
-      "https://radiopumpo.github.io/djpumpo.jpg",
-      "https://radiopumpo.github.io/forzapumpo.jpg",
-      "https://radiopumpo.github.io/hiphoppumpo.jpg",
-      "https://radiopumpo.github.io/seashantypumpo.jpg",
-      "https://radiopumpo.github.io/unodinoipumpo.jpg"
-      // Add more images here
-    ];
+  const gallery = document.getElementById("gallery");
+  const modal = document.getElementById("imageModal");
+  const modalImg = document.getElementById("expandedImg");
 
-    const gallery = document.getElementById("gallery");
-    images.forEach(src => {
-      const img = document.createElement("img");
-      img.src = src;
-      gallery.appendChild(img);
-    });
-  </script>
+  // 1. Generate images and attach click handlers
+  images.forEach((src) => {
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "Radio Pumpo Gallery Image"; // Add alt text for accessibility
+
+    // Attach the click event listener
+    img.onclick = function () {
+      modal.style.display = "block"; // Show the modal
+      modalImg.src = this.src; // Set the expanded image source
+    };
+    gallery.appendChild(img);
+  });
+
+  // 2. Close when clicking the 'x' button
+  const span = document.getElementsByClassName("close")[0];
+  span.onclick = function () {
+    modal.style.display = "none";
+  };
+
+  // 3. Close when clicking anywhere *outside* the expanded photo
+  modal.onclick = function (event) {
+    // Check if the click occurred on the modal backdrop (not the image itself)
+    if (event.target === modal) {
+      modal.style.display = "none";
+    }
+  };
+</script>
 
 </body>
 </html>
