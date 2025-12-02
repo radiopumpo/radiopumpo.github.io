@@ -1,147 +1,32 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>24/7 Radio Pumpo</title>
-
-    <style>
-        /* ---------------------------
-           GLOBAL STYLING
-        ---------------------------- */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: "Inter", Arial, sans-serif;
-            background: linear-gradient(135deg, #080808, #1e1e1e, #0d0d0d);
-            color: #fff;
-            text-align: center;
-            overflow-x: hidden;
-        }
-
-        h1 {
-            margin-top: 40px;
-            font-size: 2.5rem;
-            font-weight: 700;
-            letter-spacing: -1px;
-            background: linear-gradient(90deg, #6ae3ff, #7b6bff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        p {
-            font-size: 1rem;
-            opacity: 0.8;
-        }
-
-        /* ---------------------------
-           GLASS CARD PLAYER
-        ---------------------------- */
-        .player-card {
-            margin: 40px auto;
-            padding: 25px;
-            width: 90%;
-            max-width: 500px;
-            background: rgba(255, 255, 255, 0.07);
-            backdrop-filter: blur(12px);
-            border-radius: 20px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.35);
-            border: 1px solid rgba(255, 255, 255, 0.12);
-        }
-
-        audio {
-            width: 100%;
-            filter: drop-shadow(0 4px 20px rgba(0, 0, 0, 0.4));
-        }
-
-        /* ---------------------------
-           SCROLLABLE MODERN GALLERY
-        ---------------------------- */
-        h2 {
-            margin-top: 50px;
-            font-size: 1.8rem;
-            font-weight: 600;
-            background: linear-gradient(90deg, #ff8dea, #79f7c1);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .image-gallery {
-            margin: 20px 0 60px;
-            padding: 20px 10px;
-            display: flex;
-            gap: 15px;
-            overflow-x: auto;
-            scroll-behavior: smooth;
-        }
-
-        .image-gallery::-webkit-scrollbar {
-            height: 8px;
-        }
-
-        .image-gallery::-webkit-scrollbar-thumb {
-            background: rgba(255, 255, 255, 0.25);
-            border-radius: 10px;
-        }
-
-        .image-gallery img {
-            height: 160px;
-            width: 260px;
-            border-radius: 15px;
-            object-fit: cover;
-            flex-shrink: 0;
-            transition: transform 0.25s ease, box-shadow 0.25s ease;
-        }
-
-        .image-gallery img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 20px rgba(255, 255, 255, 0.25);
-        }
-
-    </style>
-
+    <title>Manu's Music Stream</title>
 </head>
 <body>
+    <h1>Live Music Stream</h1>
 
-<h1>24/7 Radio Pumpo</h1>
-<p>Relax. Listen. Enjoy.</p>
+    <audio id="player" controls autoplay>
+        <source src="https://docs.google.com/uc?export=download&id=1sxI4GG44Rz1g9Dw0-JM6fjPYbLrNNxw1" type="audio/mp3">
+    </audio>
 
-<!-- Player Card -->
-<div class="player-card">
-    <audio id="player" controls autoplay></audio>
-</div>
+    <script>
+        // Playlist
+        const playlist = [
+            "https://docs.google.com/uc?export=download&id=1sxI4GG44Rz1g9Dw0-JM6fjPYbLrNNxw1",
+            "https://docs.google.com/uc?export=download&id=1OEwo751cXhJoDbV9ZkGwPqsOnZ-3LsID",
+            "https://docs.google.com/uc?export=download&id=1Qwtrc9pY-o4iNbDa32Yqy67gJPeP0rNx"
+        ];
 
-<script>
-    /* ----------------------------------
-       PLAYLIST
-    ----------------------------------- */
-    const playlist = [
-        "https://docs.google.com/uc?export=download&id=1sxI4GG44Rz1g9Dw0-JM6fjPYbLrNNxw1"
-    ];
+        let index = 0;
+        const player = document.getElementById("player");
 
-    let index = 0;
-    const player = document.getElementById("player");
-
-    // Load first track
-    player.src = playlist[index];
-
-    // Loop through playlist forever
-    player.addEventListener("ended", function() {
-        index = (index + 1) % playlist.length;
-        player.src = playlist[index];
-        player.play();
-    });
-</script>
-
-<!-- Modern Image Gallery -->
-<h2>Image Library</h2>
-
-<div class="image-gallery">
-    <!-- Replace with Google Drive direct image URLs -->
-    <img src="https://drive.google.com/file/d/15jsIDelNpr7jDjPDT4PIY-gplvlpjq0J/view?usp=sharing">
-    <img src="https://drive.google.com/file/d/1n05kSSaaQWqKNcfFmpJ01TRgA_7Sf2QS/view?usp=sharing">
-    
-</div>
-
+        // Autoplay next song
+        player.addEventListener("ended", function() {
+            index = (index + 1) % playlist.length;
+            player.src = playlist[index];
+            player.play();
+        });
+    </script>
 </body>
 </html>
