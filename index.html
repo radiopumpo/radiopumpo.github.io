@@ -2,16 +2,138 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Radiopumpo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Radio Pumpo 24/7</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #0d0d0d;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      font-size: 3.2rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .live-badge {
+      background: #ff0033;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      margin-bottom: 25px;
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+
+    .player-card {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(14px);
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 0 25px rgba(255, 0, 120, 0.4);
+      text-align: center;
+    }
+
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    /* IMAGE GALLERY */
+    .image-gallery {
+      margin-top: 50px;
+      width: 100%;
+      max-width: 1100px;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 14px;
+      display: flex;
+      gap: 16px;
+    }
+
+    .image-gallery img {
+      height: 180px;
+      width: auto;
+      border-radius: 16px;
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+      transition: transform 0.25s ease;
+    }
+
+    .image-gallery img:hover {
+      transform: scale(1.05);
+    }
+
+    .image-gallery::-webkit-scrollbar {
+      height: 10px;
+    }
+
+    .image-gallery::-webkit-scrollbar-thumb {
+      background: #ff0080;
+      border-radius: 10px;
+    }
+  </style>
 </head>
 <body>
-  <h1>Radiopumpo – Test Stream</h1>
+  <h1>Radio Pumpo 24/7</h1>
+  <div class="live-badge">LIVE 24/7</div>
 
-  <p>If you see the player but no sound, wait a few seconds and try pressing play.</p>
+  <div class="player-card">
+    <h2>Now Playing</h2>
+    <audio id="player" controls autoplay></audio>
+  </div>
 
-  <audio controls autoplay>
-    <source src="https://docs.google.com/uc?export=download&id=1sxI4GG44Rz1g9Dw0-JM6fjPYbLrNNxw1" type="audio/mp3">
-    Your browser does not support the audio element.
-  </audio>
+  <div class="image-gallery" id="gallery"></div>
+
+  <script>
+    /* PLAYLIST — Add songs you upload to GitHub */
+    const playlist = [
+      "https://radiopumpo.github.io/radiopumpo.github.io/forzapumpo.mp3",
+      "https://radiopumpo.github.io/radiopumpo.github.io/dnbpumpo.mp3",
+      "https://radiopumpo.github.io/radiopumpo.github.io/housepumpo.mp3"
+      // Add more songs here
+    ];
+
+    let index = 0;
+    const player = document.getElementById("player");
+    player.src = playlist[index];
+
+    player.addEventListener("ended", () => {
+      index = (index + 1) % playlist.length;
+      player.src = playlist[index];
+      player.play();
+    });
+
+    /* IMAGE GALLERY — Add your GitHub-hosted images */
+    const images = [
+      "https://radiopumpo.github.io/radiopumpo.github.io/pumpo1.jpg"
+      // Add more images here
+    ];
+
+    const gallery = document.getElementById("gallery");
+    images.forEach(src => {
+      const img = document.createElement("img");
+      img.src = src;
+      gallery.appendChild(img);
+    });
+  </script>
+
 </body>
 </html>
