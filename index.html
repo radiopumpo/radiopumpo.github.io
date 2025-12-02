@@ -142,6 +142,17 @@
     text-decoration: none;
     cursor: pointer;
   }
+  /* Add this new CSS rule */
+#songMarquee {
+  background: rgba(255, 0, 128, 0.15); /* Light pink/magenta background */
+  color: #ff0080; /* Bright pink text color */
+  padding: 5px 0;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  font-weight: bold;
+  font-size: 1.1rem;
+  white-space: nowrap; /* Prevent text wrapping */
+}
 </style>
 </head>
 <body>
@@ -154,16 +165,21 @@
   <div class="live-badge">LIVE 24/7</div>
 
   <div class="player-card">
-    <h2>Now Playing</h2>
+    <h2>Now Playing</h2>    
+    
+    <marquee id="songMarquee" direction="left" scrollamount="4">
+        NOW PLAYING: Initial Song Title...
+    </marquee>
+
     <audio id="player" controls autoplay></audio>
-  </div>
+</div>
 
   <div class="image-gallery" id="gallery"></div>
 
  <script>
-  /* PLAYLIST — Add songs you upload to GitHub */
+  /* PLAYLIST & PLAYER SETUP */
   const playlist = [
-    "https://radiopumpo.github.io/forzapumpo.mp3",
+    "https://radiopumpo.github.io/forzapumpo.mp3", // Index 0
     "https://radiopumpo.github.io/dnbpumpo.mp3",
     "https://radiopumpo.github.io/housepumpo.mp3",
     "https://radiopumpo.github.io/hiphoppumpo.mp3",
@@ -175,15 +191,40 @@
 
   let index = 0;
   const player = document.getElementById("player");
-  player.src = playlist[index];
+  const marquee = document.getElementById("songMarquee"); // Get the marquee element
 
-  player.addEventListener("ended", () => {
-    index = (index + 1) % playlist.length;
+  // Function to extract song title from URL
+  function getSongTitle(url) {
+    // 1. Get the filename (e.g., 'forzapumpo.mp3')
+    const filename = url.substring(url.lastIndexOf('/') + 1);
+    // 2. Remove the extension (e.g., '.mp3')
+    const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.'));
+    // 3. Optional: make it look nicer (e.g., 'forza pumpo')
+    return nameWithoutExt.replace(/pumpo/gi, ' Pumpo').replace(/dnb/i, 'DNB').replace(/rockpower/i, 'Rock Power');
+  }
+
+  // Function to start playing the current track and update the marquee
+  function loadAndPlayTrack() {
     player.src = playlist[index];
-    player.play();
+    const title = getSongTitle(playlist[index]);
+    
+    // Update the marquee text
+    marquee.innerHTML = `NOW PLAYING: ${title}`; 
+    
+    player.play().catch(e => console.log("Autoplay blocked:", e)); 
+  }
+
+  // Initialize the first song
+  loadAndPlayTrack();
+
+  // Event listener for track ending
+  player.addEventListener("ended", () => {
+    index = (index + 1) % playlist.length; // Move to the next song, loop back
+    loadAndPlayTrack();
   });
 
-  /* IMAGE GALLERY & MODAL LOGIC */
+
+  /* IMAGE GALLERY & MODAL LOGIC (KEEPING YOUR EXISTING FUNCTIONALITY) */
   const images = [
     "https://radiopumpo.github.io/djpumpo.jpg",
     "https://radiopumpo.github.io/forzapumpo.jpg",
@@ -201,12 +242,11 @@
   images.forEach((src) => {
     const img = document.createElement("img");
     img.src = src;
-    img.alt = "Radio Pumpo Gallery Image"; // Add alt text for accessibility
+    img.alt = "Radio Pumpo Gallery Image";
 
-    // Attach the click event listener
     img.onclick = function () {
-      modal.style.display = "block"; // Show the modal
-      modalImg.src = this.src; // Set the expanded image source
+      modal.style.display = "block";
+      modalImg.src = this.src;
     };
     gallery.appendChild(img);
   });
@@ -219,12 +259,10 @@
 
   // 3. Close when clicking anywhere *outside* the expanded photo
   modal.onclick = function (event) {
-    // Check if the click occurred on the modal backdrop (not the image itself)
     if (event.target === modal) {
       modal.style.display = "none";
     }
   };
 </script>
-
 </body>
 </html>
