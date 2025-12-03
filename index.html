@@ -184,6 +184,25 @@ audio {
   flex-grow: 1; /* Allows the audio player to take up available space */
   margin: 10px 0; /* Adjust vertical margin */
 }
+  /* Guestbook Styling */
+.guestbook-container {
+  margin-top: 60px;
+  width: 90%;
+  max-width: 800px;
+  /* REMOVE 'text-align: center;' or set it to left */
+  /* text-align: center; */ 
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(255, 0, 120, 0.2);
+}
+/* Keep the h2 center-aligned by adding this: */
+.guestbook-container h2 {
+  font-size: 2rem;
+  color: #40e0d0;
+  margin-bottom: 30px;
+  text-align: center; 
+}
 </style>
 </head>
 <body>
@@ -205,6 +224,22 @@ audio {
     <button id="prevBtn" class="skip-btn">&#9664;&#9664;</button> <audio id="player" controls autoplay></audio>
     
     <button id="nextBtn" class="skip-btn">&#9654;&#9654;</button> </div>
+  
+  <div class="guestbook-container">
+    <h2>Radio Pumpo Guestbook</h2>
+    
+    <iframe src="https://www5.cbox.ws/box/?boxid=960015&boxtag=6NqJne" 
+            width="100%" 
+            height="450" 
+            allowtransparency="yes" 
+            allow="autoplay" 
+            frameborder="0" 
+            marginheight="0" 
+            marginwidth="0" 
+            scrolling="auto">
+    </iframe>	
+    
+</div>
 </div>
 
   <div class="image-gallery" id="gallery"></div>
