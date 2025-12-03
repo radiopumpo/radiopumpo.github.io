@@ -203,6 +203,94 @@ audio {
   margin-bottom: 30px;
   text-align: center; 
 }
+  /* TRIVIA MINIGAME STYLES */
+.trivia-container {
+  margin-top: 60px;
+  margin-bottom: 40px;
+  width: 90%;
+  max-width: 600px;
+  text-align: center;
+  padding: 30px;
+  background: rgba(64, 224, 208, 0.08); /* Neon cyan background */
+  border-radius: 20px;
+  box-shadow: 0 0 15px rgba(64, 224, 208, 0.4);
+}
+
+.trivia-container h2 {
+  font-size: 2rem;
+  color: #40e0d0; /* Neon cyan color */
+  margin-bottom: 25px;
+}
+
+#question-text {
+  font-size: 1.2rem;
+  font-weight: bold;
+  margin-bottom: 20px;
+}
+
+#answer-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.answer-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  border: 1px solid #40e0d0;
+  padding: 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.answer-btn:hover:not(:disabled) {
+  background: #40e0d0;
+  color: #0d0d0d;
+}
+
+.answer-btn:disabled {
+  cursor: default;
+  opacity: 0.6;
+}
+
+/* Feedback Styling */
+.feedback-message {
+  height: 20px;
+  font-weight: bold;
+  margin: 15px 0;
+}
+
+.correct {
+  color: #40e0d0; /* Neon Cyan for Correct */
+}
+
+.incorrect {
+  color: #ff0033; /* Red for Incorrect */
+}
+
+#score-area {
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+#restart-btn {
+  background: #ff0080;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+  margin-top: 10px;
+  transition: background 0.2s;
+}
+
+#restart-btn:hover {
+  background: #ff4d94;
+}
 </style>
 </head>
 <body>
@@ -243,7 +331,20 @@ audio {
             marginwidth="0" 
             scrolling="auto">
     </iframe>	
+<div class="trivia-container">
+    <h2>Radio Pumpo Trivia Challenge! 🇮🇹</h2>
+    <div id="quiz-area">
+        <p id="question-text">Loading trivia...</p>
+        <div id="answer-buttons">
+            </div>
+        <p id="feedback" class="feedback-message"></p>
+    </div>
 
+    <div id="score-area">
+        <p>Your Score: <span id="current-score">0</span> / <span id="total-questions">0</span></p>
+        <button id="restart-btn" style="display: none;">Restart Quiz</button>
+    </div>
+</div>
  <script>
 /* PLAYLIST & PLAYER SETUP */
 const playlist = [
@@ -348,6 +449,144 @@ loadAndPlayTrack();
       modal.style.display = "none";
     }
   };
+   /* --- TRIVIA MINIGAME LOGIC --- */
+
+const triviaQuestions = [
+    // 1. Juventus Question
+    {
+        question: "Which legendary stadium was the home ground of Juventus before the Allianz Stadium?",
+        answers: ["Stadio Olimpico di Torino", "Stadio San Siro", "Stadio delle Alpi", "Stadio Luigi Ferraris"],
+        correctAnswer: "Stadio delle Alpi"
+    },
+    // 2. Milan Real Estate Question
+    {
+        question: "What is the name of the iconic residential complex in Milan known for its two towers covered in over 2,000 trees?",
+        answers: ["CityLife", "Porta Nuova", "Bosco Verticale", "Isola District"],
+        correctAnswer: "Bosco Verticale"
+    },
+    // 3. Italian Culture Question
+    {
+        question: "In Italian culture, what is the term used to describe the late afternoon/early evening stroll often taken before dinner?",
+        answers: ["La Merenda", "La Passeggiata", "Il Dolce Vita", "Il Riposo"],
+        correctAnswer: "La Passeggiata"
+    },
+    // 4. Italian Food Question
+    {
+        question: "Which classic pasta shape derives its name from the Italian word for 'butterfly'?",
+        answers: ["Penne", "Farfalle", "Fusilli", "Rigatoni"],
+        correctAnswer: "Farfalle"
+    },
+    // 5. Juventus Question
+    {
+        question: "Who holds the record for the most goals scored for Juventus across all competitions?",
+        answers: ["Alessandro Del Piero", "Michel Platini", "Roberto Baggio", "Cristiano Ronaldo"],
+        correctAnswer: "Alessandro Del Piero"
+    },
+    // 6. Milan Real Estate Question
+    {
+        question: "The area around the historic Piazza del Duomo typically falls into which pricing category for real estate in Milan?",
+        answers: ["Economico", "Medio", "Di Lusso", "Turistico"],
+        correctAnswer: "Di Lusso"
+    },
+];
+
+let currentQuestionIndex = 0;
+let score = 0;
+
+const quizArea = document.getElementById('quiz-area');
+const questionText = document.getElementById('question-text');
+const answerButtons = document.getElementById('answer-buttons');
+const feedback = document.getElementById('feedback');
+const currentScore = document.getElementById('current-score');
+const totalQuestions = document.getElementById('total-questions');
+const restartBtn = document.getElementById('restart-btn');
+
+// Set total questions display
+totalQuestions.textContent = triviaQuestions.length;
+
+function startQuiz() {
+    currentQuestionIndex = 0;
+    score = 0;
+    currentScore.textContent = score;
+    restartBtn.style.display = 'none';
+    quizArea.style.display = 'block';
+    feedback.textContent = '';
+    showQuestion();
+}
+
+function showQuestion() {
+    resetState();
+    const q = triviaQuestions[currentQuestionIndex];
+    questionText.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
+
+    q.answers.forEach(answer => {
+        const button = document.createElement('button');
+        button.textContent = answer;
+        button.classList.add('answer-btn');
+        answerButtons.appendChild(button);
+
+        button.addEventListener('click', () => selectAnswer(answer, q.correctAnswer, button));
+    });
+}
+
+function resetState() {
+    while (answerButtons.firstChild) {
+        answerButtons.removeChild(answerButtons.firstChild);
+    }
+    feedback.textContent = '';
+}
+
+function selectAnswer(selectedAnswer, correctAnswer, selectedButton) {
+    const isCorrect = selectedAnswer === correctAnswer;
+
+    // Provide immediate feedback
+    if (isCorrect) {
+        score++;
+        currentScore.textContent = score;
+        feedback.textContent = 'Correcto! 🏆';
+        feedback.classList.remove('incorrect');
+        feedback.classList.add('correct');
+        selectedButton.style.backgroundColor = '#40e0d0';
+        selectedButton.style.color = '#0d0d0d';
+    } else {
+        feedback.textContent = 'Sbagliato. The correct answer was: ' + correctAnswer;
+        feedback.classList.remove('correct');
+        feedback.classList.add('incorrect');
+        selectedButton.style.backgroundColor = '#ff0033';
+    }
+
+    // Disable all buttons after one click
+    Array.from(answerButtons.children).forEach(button => {
+        button.disabled = true;
+        if (button.textContent === correctAnswer) {
+            button.style.border = '2px solid #40e0d0'; // Highlight correct answer
+        }
+    });
+
+    // Move to the next question after a delay
+    setTimeout(() => {
+        currentQuestionIndex++;
+        if (currentQuestionIndex < triviaQuestions.length) {
+            showQuestion();
+        } else {
+            endQuiz();
+        }
+    }, 2000); // 2-second delay
+}
+
+function endQuiz() {
+    resetState();
+    questionText.textContent = `Quiz Finished! You scored ${score} out of ${triviaQuestions.length}.`;
+    quizArea.style.display = 'block';
+    feedback.textContent = 'Grazie per aver giocato!';
+    feedback.classList.remove('correct', 'incorrect');
+    restartBtn.style.display = 'block';
+}
+
+restartBtn.addEventListener('click', startQuiz);
+
+// Initialize the quiz when the page loads
+startQuiz();
 </script>
 </body>
 </html>
