@@ -4,353 +4,245 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Radio Pumpo 24/7</title>
-<style>
-  body {
-    margin: 0;
-    font-family: "Inter", sans-serif;
-    background: #0d0d0d;
-    color: #ffffff;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 40px 20px;
-  }
-
-  h1 {
-    font-size: 3.2rem;
-    margin-bottom: 20px;
-    text-transform: uppercase;
-    letter-spacing: 3px;
-    background: linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-align: center; /* Ensures the header text is centered */
-  }
-
-  .live-badge {
-    background: #ff0033;
-    padding: 6px 14px;
-    border-radius: 12px;
-    font-weight: bold;
-    margin-bottom: 25px;
-    animation: pulse 1.4s infinite;
-  }
-
-  @keyframes pulse {
-    0% {
-      opacity: 0.6;
+  <style>
+    /* --- GENERAL STYLES --- */
+    body {
+      margin: 0;
+      font-family: "Inter", sans-serif;
+      background: #0d0d0d;
+      color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
     }
-    50% {
-      opacity: 1;
+
+    h1 {
+      font-size: 3.2rem;
+      margin-bottom: 20px;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
     }
-    100% {
-      opacity: 0.6;
+
+    .live-badge {
+      background: #ff0033;
+      padding: 6px 14px;
+      border-radius: 12px;
+      font-weight: bold;
+      margin-bottom: 25px;
+      animation: pulse 1.4s infinite;
     }
-  }
 
-  .player-card {
-    background: rgba(255, 255, 255, 0.08);
-    padding: 30px;
-    border-radius: 20px;
-    backdrop-filter: blur(14px);
-    width: 90%;
-    max-width: 600px;
-    box-shadow: 0 0 25px rgba(255, 0, 120, 0.4);
-    text-align: center;
-  }
+    @keyframes pulse {
+      0% { opacity: 0.6; }
+      50% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
 
-  audio {
-    width: 100%;
-    margin-top: 10px;
-  }
+    /* --- PLAYER CARD --- */
+    .player-card {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 30px;
+      border-radius: 20px;
+      backdrop-filter: blur(14px);
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 0 25px rgba(255, 0, 120, 0.4);
+      text-align: center;
+    }
 
-  /* IMAGE GALLERY */
-  .image-gallery {
-    margin-top: 50px;
-    width: 100%;
-    max-width: 1100px;
-    overflow-x: auto;
-    white-space: nowrap;
-    padding-bottom: 14px;
-    display: flex;
-    gap: 16px;
-    justify-content: center; /* Ensures images are centered when they don't fill the width */
-  }
+    #songMarquee {
+      background: rgba(255, 0, 128, 0.15);
+      color: #ff0080;
+      padding: 8px 0;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      white-space: nowrap;
+    }
 
-  .image-gallery img {
-    height: 180px;
-    width: auto;
-    border-radius: 16px;
-    box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
-    transition: transform 0.25s ease;
-    cursor: pointer; /* Indicates the image is clickable */
-  }
+    .controls-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
 
-  .image-gallery img:hover {
-    transform: scale(1.05);
-  }
+    .skip-btn {
+      background: none;
+      border: 1px solid #ff0080;
+      color: #ff0080;
+      font-size: 1.2rem;
+      padding: 8px 10px;
+      cursor: pointer;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
 
-  .image-gallery::-webkit-scrollbar {
-    height: 10px;
-  }
+    .skip-btn:hover {
+      background: #ff0080;
+      color: #0d0d0d;
+      box-shadow: 0 0 10px rgba(255, 0, 128, 0.7);
+    }
 
-  .image-gallery::-webkit-scrollbar-thumb {
-    background: #ff0080;
-    border-radius: 10px;
-  }
+    audio {
+      flex-grow: 1;
+      margin: 10px 0;
+    }
 
-  /* --- UPDATED MODAL STYLES --- */
-.modal {
-  display: none; /* Changed to flex via JS when active */
-  position: fixed;
-  z-index: 100;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(0, 0, 0, 0.9);
-  backdrop-filter: blur(5px);
-  
-  /* These three lines handle the perfect centering */
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
+    /* --- GALLERY --- */
+    .image-gallery {
+      margin-top: 50px;
+      width: 100%;
+      max-width: 1100px;
+      overflow-x: auto;
+      white-space: nowrap;
+      padding-bottom: 14px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
 
-.modal-content {
-  margin: auto;
-  display: block;
-  /* Use 'vh' and 'vw' to ensure it never exceeds screen size */
-  max-width: 90vw; 
-  max-height: 85vh; 
-  width: auto;
-  height: auto;
-  border-radius: 10px;
-  box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
-  object-fit: contain; /* Keeps aspect ratio perfect */
-}
+    .image-gallery img {
+      height: 180px;
+      width: auto;
+      border-radius: 16px;
+      box-shadow: 0 0 18px rgba(255, 255, 255, 0.25);
+      transition: transform 0.25s ease;
+      cursor: pointer;
+    }
 
-.close {
-  position: absolute;
-  top: 20px;
-  right: 35px;
-  color: #f1f1f1;
-  font-size: 40px;
-  font-weight: bold;
-  cursor: pointer;
-  z-index: 101;
-}
-  .close:hover,
-  .close:focus {
-    color: #ff0080;
-    text-decoration: none;
-    cursor: pointer;
-  }
-  /* Add this new CSS rule */
-#songMarquee {
-  background: rgba(255, 0, 128, 0.15); /* Light pink/magenta background */
-  color: #ff0080; /* Bright pink text color */
-  padding: 5px 0;
-  margin-bottom: 15px;
-  border-radius: 4px;
-  font-weight: bold;
-  font-size: 1.1rem;
-  white-space: nowrap; /* Prevent text wrapping */
-}
-  /* New Wrapper for Controls */
-.controls-wrapper {
-  display: flex; /* Makes children (buttons and audio) align horizontally */
-  align-items: center; /* Vertically centers items */
-  gap: 10px; /* Space between controls */
-}
+    .image-gallery img:hover { transform: scale(1.05); }
 
-/* Style the Skip Buttons */
-.skip-btn {
-  background: none;
-  border: 1px solid #ff0080; /* Neon border */
-  color: #ff0080; /* Neon text color */
-  font-size: 1.2rem;
-  padding: 8px 10px;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: all 0.2s ease;
-  flex-shrink: 0; /* Prevents buttons from shrinking */
-}
+    /* --- MODAL (DESKTOP OPTIMIZED) --- */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0; top: 0; width: 100%; height: 100%;
+      background-color: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(8px);
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
 
-.skip-btn:hover {
-  background: #ff0080; /* Neon background on hover */
-  color: #0d0d0d; /* Dark text on hover */
-  box-shadow: 0 0 10px rgba(255, 0, 128, 0.7);
-}
+    .modal-content {
+      max-width: 90vw;
+      max-height: 75vh;
+      border-radius: 10px;
+      box-shadow: 0 0 30px rgba(255, 255, 255, 0.2);
+      object-fit: contain;
+    }
 
-/* Update the Audio Player to fit within the wrapper */
-audio {
-  flex-grow: 1; /* Allows the audio player to take up available space */
-  margin: 10px 0; /* Adjust vertical margin */
-}
-  /* Guestbook Styling */
-.guestbook-container {
-  margin-top: 60px;
-  width: 90%;
-  max-width: 800px;
-  /* REMOVE 'text-align: center;' or set it to left */
-  /* text-align: center; */ 
-  padding: 20px;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 20px;
-  box-shadow: 0 0 15px rgba(255, 0, 120, 0.2);
-}
-/* Keep the h2 center-aligned by adding this: */
-.guestbook-container h2 {
-  font-size: 2rem;
-  color: #40e0d0;
-  margin-bottom: 30px;
-  text-align: center; 
-}
-  /* TRIVIA MINIGAME STYLES */
-.trivia-container {
-  margin-top: 60px;
-  margin-bottom: 40px;
-  width: 90%;
-  max-width: 600px;
-  text-align: center;
-  padding: 30px;
-  background: rgba(64, 224, 208, 0.08); /* Neon cyan background */
-  border-radius: 20px;
-  box-shadow: 0 0 15px rgba(64, 224, 208, 0.4);
-}
+    .modal-actions {
+      margin-top: 20px;
+      display: flex;
+      gap: 15px;
+    }
 
-.trivia-container h2 {
-  font-size: 2rem;
-  color: #40e0d0; /* Neon cyan color */
-  margin-bottom: 25px;
-}
+    .action-btn {
+      background: #40e0d0;
+      color: #0d0d0d;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      cursor: pointer;
+      text-decoration: none;
+      transition: 0.3s;
+    }
 
-#question-text {
-  font-size: 1.2rem;
-  font-weight: bold;
-  margin-bottom: 20px;
-}
+    .action-btn.download { background: #ff8c00; }
+    .action-btn:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 255, 255, 0.3); }
 
-#answer-buttons {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 20px;
-}
+    .close {
+      position: absolute;
+      top: 20px; right: 35px;
+      color: #f1f1f1; font-size: 40px; font-weight: bold;
+      cursor: pointer;
+    }
 
-.answer-btn {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ffffff;
-  border: 1px solid #40e0d0;
-  padding: 12px;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s;
-  font-weight: 500;
-}
+    /* --- CHAT & TRIVIA --- */
+    .guestbook-container, .trivia-container {
+      margin-top: 60px;
+      width: 90%;
+      max-width: 800px;
+      padding: 20px;
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 20px;
+      box-shadow: 0 0 15px rgba(255, 0, 120, 0.2);
+    }
+    
+    .trivia-container { background: rgba(64, 224, 208, 0.08); box-shadow: 0 0 15px rgba(64, 224, 208, 0.4); max-width: 600px; text-align: center; }
 
-.answer-btn:hover:not(:disabled) {
-  background: #40e0d0;
-  color: #0d0d0d;
-}
+    .answer-btn {
+      background: rgba(255, 255, 255, 0.1);
+      color: #ffffff;
+      border: 1px solid #40e0d0;
+      padding: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 10px;
+    }
 
-.answer-btn:disabled {
-  cursor: default;
-  opacity: 0.6;
-}
-
-/* Feedback Styling */
-.feedback-message {
-  height: 20px;
-  font-weight: bold;
-  margin: 15px 0;
-}
-
-.correct {
-  color: #40e0d0; /* Neon Cyan for Correct */
-}
-
-.incorrect {
-  color: #ff0033; /* Red for Incorrect */
-}
-
-#score-area {
-  padding-top: 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-#restart-btn {
-  background: #ff0080;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-weight: bold;
-  margin-top: 10px;
-  transition: background 0.2s;
-}
-
-#restart-btn:hover {
-  background: #ff4d94;
-}
-</style>
+    .correct { color: #40e0d0; font-weight: bold; }
+    .incorrect { color: #ff0033; font-weight: bold; }
+  </style>
 </head>
 <body>
-  <h1>Radio Pumpo</h1>
-      <div id="imageModal" class="modal">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="expandedImg">
-    <div id="caption"></div>
-  </div>
+
+  <h1>Radio Pumpo</h1>
   <div class="live-badge">LIVE 24/7</div>
 
-<div class="player-card">
-  <h2>LIVE PUMPO RADIO</h2>
-  <marquee id="songMarquee" direction="left" scrollamount="4">
-    NOW PLAYING: Initial Song Title...
-  </marquee>
+  <div class="player-card">
+    <h2>LIVE PUMPO RADIO</h2>
+    <marquee id="songMarquee" direction="left" scrollamount="4">NOW PLAYING: Initializing...</marquee>
+    <div class="controls-wrapper">
+      <button id="prevBtn" class="skip-btn">&#9664;&#9664;</button>
+      <audio id="player" controls autoplay></audio>
+      <button id="nextBtn" class="skip-btn">&#9654;&#9654;</button>
+      <button id="shareSongBtn" class="skip-btn" title="Share Site with this Song">&#10150;</button>
+    </div>
+  </div>
 
-  <div class="controls-wrapper">
-    <button id="prevBtn" class="skip-btn">&#9664;&#9664;</button> <audio id="player" controls autoplay></audio>
-    
-    <button id="nextBtn" class="skip-btn">&#9654;&#9654;</button> </div>
-      
-</div>
-</div>
-     
   <div class="image-gallery" id="gallery"></div>
 
-   <div class="guestbook-container">
-    <h2>Radio Pumpo Chat</h2>
-    
-    <iframe src="https://www5.cbox.ws/box/?boxid=960015&boxtag=6NqJne" 
-            width="100%" 
-            height="450" 
-            allowtransparency="yes" 
-            allow="autoplay" 
-            frameborder="0" 
-            marginheight="0" 
-            marginwidth="0" 
-            scrolling="auto">
-    </iframe>	
-<div class="trivia-container">
-    <h2>Radio Pumpo Trivia Challenge! 🇮🇹</h2>
-    <div id="quiz-area">
-        <p id="question-text">Loading trivia...</p>
-        <div id="answer-buttons">
-            </div>
-        <p id="feedback" class="feedback-message"></p>
+  <div id="imageModal" class="modal">
+    <span class="close">&times;</span>
+    <img class="modal-content" id="expandedImg">
+    <div class="modal-actions">
+      <button id="shareImgBtn" class="action-btn">Share Site with this Image</button>
+      <a id="downloadImgBtn" href="#" download class="action-btn download">Download Image</a>
     </div>
+  </div>
 
-    <div id="score-area">
-        <p>Your Score: <span id="current-score">0</span> / <span id="total-questions">0</span></p>
-        <button id="restart-btn" style="display: none;">Restart Quiz</button>
+  <div class="guestbook-container">
+    <h2>Radio Pumpo Chat</h2>
+    <iframe src="https://www5.cbox.ws/box/?boxid=960015&boxtag=6NqJne" width="100%" height="450" frameborder="0"></iframe>	
+  </div>
+
+  <div class="trivia-container">
+    <h2>Radio Pumpo Trivia! 🇮🇹</h2>
+    <div id="quiz-area">
+        <p id="question-text"></p>
+        <div id="answer-buttons"></div>
+        <p id="feedback"></p>
     </div>
-</div>
- <script>
-/* PLAYLIST & PLAYER SETUP */
+    <div id="score-area">
+        <p>Score: <span id="current-score">0</span> / <span id="total-questions">0</span></p>
+        <button id="restart-btn" style="display: none; background: #ff0080; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">Restart</button>
+    </div>
+  </div>
+
+<script>
+/* --- CONFIGURATION --- */
 const playlist = [
   "https://radiopumpo.github.io/forzapumpo.mp3",
   "https://radiopumpo.github.io/dnbpumpo.mp3",
@@ -359,249 +251,128 @@ const playlist = [
   "https://radiopumpo.github.io/rockpowerpumpo.mp3",
   "https://radiopumpo.github.io/seashantypumpo.mp3",
   "https://radiopumpo.github.io/unodinoipumpo.mp3",
-  "https://radiopumpo.github.io/monadpumpo.m4a",
   "https://radiopumpo.github.io/gospelpumpo.mp3",
-  "https://radiopumpo.github.io/punkpumpo.mp3",
   "https://radiopumpo.github.io/ACDCpumpo.mp3",
-  "https://radiopumpo.github.io/dragonspumpo.mp3",
-  "https://radiopumpo.github.io/bobpumpo.mp3",
-  "https://radiopumpo.github.io/dosbrospumpo.mp3"
-  // Add more songs here
+  "https://radiopumpo.github.io/bobpumpo.mp3"
 ];
 
+const images = [
+  "https://radiopumpo.github.io/djpumpo.jpg",
+  "https://radiopumpo.github.io/forzapumpo.jpg",
+  "https://radiopumpo.github.io/hiphoppumpo.jpg",
+  "https://radiopumpo.github.io/seashantypumpo.jpg",
+  "https://radiopumpo.github.io/rockpumpo.jpg",
+  "https://radiopumpo.github.io/bobpumpo.jpg",
+  "https://radiopumpo.github.io/gospelpumpo.jpg",
+  "https://radiopumpo.github.io/dosbrospumpo.jpg"
+];
+
+/* --- CORE LOGIC --- */
 let index = 0;
+let currentImageIndex = 0;
 const player = document.getElementById("player");
 const marquee = document.getElementById("songMarquee");
-const prevBtn = document.getElementById("prevBtn"); // NEW
-const nextBtn = document.getElementById("nextBtn"); // NEW
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("expandedImg");
+const downloadBtn = document.getElementById("downloadImgBtn");
 
-
-// Function to extract song title from URL
 function getSongTitle(url) {
   const filename = url.substring(url.lastIndexOf('/') + 1);
-  const nameWithoutExt = filename.substring(0, filename.lastIndexOf('.'));
-  // Example formatting:
-  return nameWithoutExt.replace(/pumpo/gi, ' Pumpo').replace(/dnb/i, 'DNB').replace(/rockpower/i, 'Rock Power');
+  return filename.substring(0, filename.lastIndexOf('.')).replace(/pumpo/gi, ' Pumpo');
 }
 
-// Function to start playing the current track and update the marquee
 function loadAndPlayTrack() {
   player.src = playlist[index];
-  const title = getSongTitle(playlist[index]);
-  
-  marquee.innerHTML = `NOW PLAYING: ${title}`;
-  
-  player.play().catch(e => console.log("Autoplay blocked:", e));
+  marquee.innerHTML = `NOW PLAYING: ${getSongTitle(playlist[index])}`;
+  player.play().catch(() => console.log("User interaction needed for audio"));
 }
 
-// ----------------------------------------------------
-// NEW: Button Handlers
-// ----------------------------------------------------
+function openImage(imgIndex) {
+    currentImageIndex = imgIndex;
+    const src = images[imgIndex];
+    modal.style.display = "flex";
+    modalImg.src = src;
+    downloadBtn.href = src; // Set the download link to the image source
+}
 
-// Handle Next button click
-nextBtn.addEventListener("click", () => {
-  index = (index + 1) % playlist.length; // Move forward, loop back to 0
-  loadAndPlayTrack();
-});
-
-// Handle Previous button click
-prevBtn.addEventListener("click", () => {
-  index = (index - 1 + playlist.length) % playlist.length; // Move backward, loop to last
-  loadAndPlayTrack();
-});
-
-// Update for End of Track (Original functionality)
-player.addEventListener("ended", () => {
-  index = (index + 1) % playlist.length;
-  loadAndPlayTrack();
-});
-
-// Initialize the first song
-loadAndPlayTrack();
-
-// ... rest of your existing modal/gallery logic ...
-
-  /* IMAGE GALLERY & MODAL LOGIC (KEEPING YOUR EXISTING FUNCTIONALITY) */
-  const images = [
-    "https://radiopumpo.github.io/djpumpo.jpg",
-    "https://radiopumpo.github.io/forzapumpo.jpg",
-    "https://radiopumpo.github.io/hiphoppumpo.jpg",
-    "https://radiopumpo.github.io/seashantypumpo.jpg",
-    "https://radiopumpo.github.io/unodinoipumpo.jpg",
-    "https://radiopumpo.github.io/rockpumpo.jpg",
-    "https://radiopumpo.github.io/bobpumpo.jpg",
-    "https://radiopumpo.github.io/gospelpumpo.jpg",
-    "https://radiopumpo.github.io/dosbrospumpo.jpg"
-    // Add more images here
-  ];
-
-  const gallery = document.getElementById("gallery");
-  const modal = document.getElementById("imageModal");
-  const modalImg = document.getElementById("expandedImg");
-
-  // 1. Generate images and attach click handlers
-  images.forEach((src) => {
-    const img = document.createElement("img");
-    img.src = src;
-    img.alt = "Radio Pumpo Gallery Image";
-
-    img.onclick = function () {
-      modal.style.display = "flex";
-      modalImg.src = this.src;
-    };
-    gallery.appendChild(img);
-  });
-
-  // 2. Close when clicking the 'x' button
-  const span = document.getElementsByClassName("close")[0];
-  span.onclick = function () {
-    modal.style.display = "none";
-  };
-
-  // 3. Close when clicking anywhere *outside* the expanded photo
-  modal.onclick = function (event) {
-    if (event.target === modal) {
-      modal.style.display = "none";
+/* --- DEEP LINKING (The new part) --- */
+function checkUrlParameters() {
+    const params = new URLSearchParams(window.location.search);
+    if (params.has('song')) {
+        index = parseInt(params.get('song')) % playlist.length;
     }
-  };
-   /* --- TRIVIA MINIGAME LOGIC --- */
-
-const triviaQuestions = [
-    // 1. Juventus Question
-    {
-        question: "Which legendary stadium was the home ground of Juventus before the Allianz Stadium?",
-        answers: ["Stadio Olimpico di Torino", "Stadio San Siro", "Stadio delle Alpi", "Stadio Luigi Ferraris"],
-        correctAnswer: "Stadio delle Alpi"
-    },
-    // 2. Milan Real Estate Question
-    {
-        question: "What is the name of the iconic residential complex in Milan known for its two towers covered in over 2,000 trees?",
-        answers: ["CityLife", "Porta Nuova", "Bosco Verticale", "Isola District"],
-        correctAnswer: "Bosco Verticale"
-    },
-    // 3. Italian Culture Question
-    {
-        question: "In Italian culture, what is the term used to describe the late afternoon/early evening stroll often taken before dinner?",
-        answers: ["La Merenda", "La Passeggiata", "Il Dolce Vita", "Il Riposo"],
-        correctAnswer: "La Passeggiata"
-    },
-    // 4. Italian Food Question
-    {
-        question: "Which classic pasta shape derives its name from the Italian word for 'butterfly'?",
-        answers: ["Penne", "Farfalle", "Fusilli", "Rigatoni"],
-        correctAnswer: "Farfalle"
-    },
-    // 5. Juventus Question
-    {
-        question: "Who holds the record for the most goals scored for Juventus across all competitions?",
-        answers: ["Alessandro Del Piero", "Michel Platini", "Roberto Baggio", "Cristiano Ronaldo"],
-        correctAnswer: "Alessandro Del Piero"
-    },
-    // 6. Milan Real Estate Question
-    {
-        question: "The area around the historic Piazza del Duomo typically falls into which pricing category for real estate in Milan?",
-        answers: ["Economico", "Medio", "Di Lusso", "Turistico"],
-        correctAnswer: "Di Lusso"
-    },
-];
-
-let currentQuestionIndex = 0;
-let score = 0;
-
-const quizArea = document.getElementById('quiz-area');
-const questionText = document.getElementById('question-text');
-const answerButtons = document.getElementById('answer-buttons');
-const feedback = document.getElementById('feedback');
-const currentScore = document.getElementById('current-score');
-const totalQuestions = document.getElementById('total-questions');
-const restartBtn = document.getElementById('restart-btn');
-
-// Set total questions display
-totalQuestions.textContent = triviaQuestions.length;
-
-function startQuiz() {
-    currentQuestionIndex = 0;
-    score = 0;
-    currentScore.textContent = score;
-    restartBtn.style.display = 'none';
-    quizArea.style.display = 'block';
-    feedback.textContent = '';
-    showQuestion();
-}
-
-function showQuestion() {
-    resetState();
-    const q = triviaQuestions[currentQuestionIndex];
-    questionText.textContent = `${currentQuestionIndex + 1}. ${q.question}`;
-
-    q.answers.forEach(answer => {
-        const button = document.createElement('button');
-        button.textContent = answer;
-        button.classList.add('answer-btn');
-        answerButtons.appendChild(button);
-
-        button.addEventListener('click', () => selectAnswer(answer, q.correctAnswer, button));
-    });
-}
-
-function resetState() {
-    while (answerButtons.firstChild) {
-        answerButtons.removeChild(answerButtons.firstChild);
+    if (params.has('img')) {
+        const imgIdx = parseInt(params.get('img')) % images.length;
+        openImage(imgIdx);
     }
-    feedback.textContent = '';
+    loadAndPlayTrack();
 }
 
-function selectAnswer(selectedAnswer, correctAnswer, selectedButton) {
-    const isCorrect = selectedAnswer === correctAnswer;
-
-    // Provide immediate feedback
-    if (isCorrect) {
-        score++;
-        currentScore.textContent = score;
-        feedback.textContent = 'Correcto! 🏆';
-        feedback.classList.remove('incorrect');
-        feedback.classList.add('correct');
-        selectedButton.style.backgroundColor = '#40e0d0';
-        selectedButton.style.color = '#0d0d0d';
+async function shareToSite(paramType, val) {
+    const shareUrl = `${window.location.origin}${window.location.pathname}?${paramType}=${val}`;
+    if (navigator.share) {
+        await navigator.share({ title: "Radio Pumpo", text: "Check this out on Radio Pumpo!", url: shareUrl });
     } else {
-        feedback.textContent = 'Sbagliato. The correct answer was: ' + correctAnswer;
-        feedback.classList.remove('correct');
-        feedback.classList.add('incorrect');
-        selectedButton.style.backgroundColor = '#ff0033';
+        navigator.clipboard.writeText(shareUrl);
+        alert("Site link with this media copied to clipboard!");
     }
-
-    // Disable all buttons after one click
-    Array.from(answerButtons.children).forEach(button => {
-        button.disabled = true;
-        if (button.textContent === correctAnswer) {
-            button.style.border = '2px solid #40e0d0'; // Highlight correct answer
-        }
-    });
-
-    // Move to the next question after a delay
-    setTimeout(() => {
-        currentQuestionIndex++;
-        if (currentQuestionIndex < triviaQuestions.length) {
-            showQuestion();
-        } else {
-            endQuiz();
-        }
-    }, 2000); // 2-second delay
 }
 
-function endQuiz() {
-    resetState();
-    questionText.textContent = `Quiz Finished! You scored ${score} out of ${triviaQuestions.length}.`;
-    quizArea.style.display = 'block';
-    feedback.textContent = 'Grazie per aver giocato!';
-    feedback.classList.remove('correct', 'incorrect');
-    restartBtn.style.display = 'block';
+/* --- EVENT HANDLERS --- */
+document.getElementById("nextBtn").onclick = () => { index = (index + 1) % playlist.length; loadAndPlayTrack(); };
+document.getElementById("prevBtn").onclick = () => { index = (index - 1 + playlist.length) % playlist.length; loadAndPlayTrack(); };
+document.getElementById("shareSongBtn").onclick = () => shareToSite('song', index);
+document.getElementById("shareImgBtn").onclick = () => shareToSite('img', currentImageIndex);
+player.onended = () => { index = (index + 1) % playlist.length; loadAndPlayTrack(); };
+
+/* --- INIT --- */
+images.forEach((src, i) => {
+  const img = document.createElement("img");
+  img.src = src;
+  img.onclick = () => openImage(i);
+  document.getElementById("gallery").appendChild(img);
+});
+
+document.querySelector(".close").onclick = () => modal.style.display = "none";
+window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
+
+/* --- TRIVIA LOGIC --- */
+const triviaQuestions = [
+    { question: "Juventus home ground before Allianz?", answers: ["Olimpico", "San Siro", "Delle Alpi", "Ferraris"], correctAnswer: "Delle Alpi" },
+    { question: "Milan towers with 2,000 trees?", answers: ["CityLife", "Porta Nuova", "Bosco Verticale", "Isola"], correctAnswer: "Bosco Verticale" },
+    { question: "Italian late afternoon stroll?", answers: ["Merenda", "Passeggiata", "Dolce Vita", "Riposo"], correctAnswer: "Passeggiata" },
+    { question: "Pasta name meaning 'butterfly'?", answers: ["Penne", "Farfalle", "Fusilli", "Rigatoni"], correctAnswer: "Farfalle" }
+];
+let qIdx = 0; let score = 0;
+function showQuestion() {
+  const q = triviaQuestions[qIdx];
+  document.getElementById('question-text').textContent = q.question;
+  const btns = document.getElementById('answer-buttons');
+  btns.innerHTML = '';
+  q.answers.forEach(a => {
+    const b = document.createElement('button'); b.textContent = a; b.className = 'answer-btn';
+    b.onclick = () => {
+        const isCorrect = a === q.correctAnswer;
+        document.getElementById('feedback').textContent = isCorrect ? "Correct! 🏆" : "Wrong! It was " + q.correctAnswer;
+        if(isCorrect) score++;
+        document.getElementById('current-score').textContent = score;
+        setTimeout(() => { qIdx++; if(qIdx < triviaQuestions.length) showQuestion(); else finishTrivia(); }, 1500);
+    };
+    btns.appendChild(b);
+  });
 }
+function finishTrivia() { 
+    document.getElementById('quiz-area').innerHTML = `<h3>Finished! Score: ${score}</h3>`;
+    document.getElementById('restart-btn').style.display = 'block';
+}
+document.getElementById('restart-btn').onclick = () => location.reload();
 
-restartBtn.addEventListener('click', startQuiz);
-
-// Initialize the quiz when the page loads
-startQuiz();
+// START EVERYTHING
+window.onload = () => {
+    checkUrlParameters();
+    showQuestion();
+    document.getElementById('total-questions').textContent = triviaQuestions.length;
+};
 </script>
 </body>
 </html>
