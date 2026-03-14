@@ -17,15 +17,34 @@
       padding: 40px 20px;
     }
 
-    h1 {
-      font-size: 3.2rem;
+    /* --- LOGO & ANIMATIONS --- */
+    .header-logo-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
       margin-bottom: 20px;
-      text-transform: uppercase;
-      letter-spacing: 3px;
-      background: linear-gradient(90deg, #ff0080, #ff8c00, #40e0d0);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      text-align: center;
+    }
+
+    #headerLogo {
+      display: block;
+      max-width: 500px;
+      width: 100%;
+      height: auto;
+      filter: drop-shadow(0 0 15px rgba(255, 0, 128, 0.3));
+      /* Fade-in Animation */
+      animation: logoFadeIn 2s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes logoFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .live-badge {
@@ -34,7 +53,13 @@
       border-radius: 12px;
       font-weight: bold;
       margin-bottom: 25px;
-      animation: pulse 1.4s infinite;
+      opacity: 0;
+      /* Waits for logo to start fading in before appearing */
+      animation: pulse 1.4s infinite, fadeIn 1.5s ease-out 1s forwards;
+    }
+
+    @keyframes fadeIn {
+      to { opacity: 1; }
     }
 
     @keyframes pulse {
@@ -119,7 +144,7 @@
 
     .image-gallery img:hover { transform: scale(1.05); }
 
-    /* --- MODAL (DESKTOP OPTIMIZED) --- */
+    /* --- MODAL --- */
     .modal {
       display: none;
       position: fixed;
@@ -198,7 +223,10 @@
 </head>
 <body>
 
-  <h1>Radio Pumpo</h1>
+  <div class="header-logo-container">
+    <img src="radiopumpologo.png" alt="Radio Pumpo Logo" id="headerLogo">
+  </div>
+
   <div class="live-badge">LIVE 24/7</div>
 
   <div class="player-card">
@@ -292,10 +320,10 @@ function openImage(imgIndex) {
     const src = images[imgIndex];
     modal.style.display = "flex";
     modalImg.src = src;
-    downloadBtn.href = src; // Set the download link to the image source
+    downloadBtn.href = src; 
 }
 
-/* --- DEEP LINKING (The new part) --- */
+/* --- DEEP LINKING --- */
 function checkUrlParameters() {
     const params = new URLSearchParams(window.location.search);
     if (params.has('song')) {
