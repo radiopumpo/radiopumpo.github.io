@@ -37,20 +37,13 @@
       width: 100%;
       height: auto;
       filter: drop-shadow(0 0 15px rgba(255, 0, 128, 0.3));
-      /* Fade-in Animation */
       animation: logoFadeIn 2s ease-out forwards;
       opacity: 0;
     }
 
     @keyframes logoFadeIn {
-      0% {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      0% { opacity: 0; transform: translateY(15px); }
+      100% { opacity: 1; transform: translateY(0); }
     }
 
     .live-badge {
@@ -60,19 +53,11 @@
       font-weight: bold;
       margin-bottom: 25px;
       opacity: 0;
-      /* Waits for logo to start fading in before appearing */
       animation: pulse 1.4s infinite, fadeIn 1.5s ease-out 1s forwards;
     }
 
-    @keyframes fadeIn {
-      to { opacity: 1; }
-    }
-
-    @keyframes pulse {
-      0% { opacity: 0.6; }
-      50% { opacity: 1; }
-      100% { opacity: 0.6; }
-    }
+    @keyframes fadeIn { to { opacity: 1; } }
+    @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
 
     /* --- PLAYER CARD --- */
     .player-card {
@@ -121,10 +106,7 @@
       box-shadow: 0 0 10px rgba(255, 0, 128, 0.7);
     }
 
-    audio {
-      flex-grow: 1;
-      margin: 10px 0;
-    }
+    audio { flex-grow: 1; margin: 10px 0; }
 
     /* --- GALLERY --- */
     .image-gallery {
@@ -150,6 +132,80 @@
 
     .image-gallery img:hover { transform: scale(1.05); }
 
+    /* --- ARCADE SECTION --- */
+    .arcade-container {
+      margin-top: 60px;
+      width: 90%;
+      max-width: 600px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 2px solid #40e0d0;
+      border-radius: 20px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 0 20px rgba(64, 224, 208, 0.2);
+    }
+
+    .arcade-menu {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .game-btn {
+      background: transparent;
+      border: 1px solid #ff0080;
+      color: #ff0080;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    .game-btn:hover {
+      background: #ff0080;
+      color: white;
+      box-shadow: 0 0 10px #ff0080;
+    }
+
+    #game-stage {
+      background: #000;
+      width: 100%;
+      aspect-ratio: 1/1;
+      max-width: 400px;
+      margin: 0 auto;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #333;
+      position: relative;
+      overflow: hidden;
+    }
+
+    canvas { max-width: 100%; height: auto; }
+
+    .ttt-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; width: 80%; }
+    .ttt-cell {
+      aspect-ratio: 1/1;
+      background: #1a1a1a;
+      border: 1px solid #40e0d0;
+      font-size: 2.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #reaction-box {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 1.5rem; font-weight: bold;
+    }
+
     /* --- MODAL --- */
     .modal {
       display: none;
@@ -171,11 +227,7 @@
       object-fit: contain;
     }
 
-    .modal-actions {
-      margin-top: 20px;
-      display: flex;
-      gap: 15px;
-    }
+    .modal-actions { margin-top: 20px; display: flex; gap: 15px; }
 
     .action-btn {
       background: #40e0d0;
@@ -222,9 +274,6 @@
       width: 100%;
       margin-bottom: 10px;
     }
-
-    .correct { color: #40e0d0; font-weight: bold; }
-    .incorrect { color: #ff0033; font-weight: bold; }
   </style>
 </head>
 <body>
@@ -247,6 +296,20 @@
   </div>
 
   <div class="image-gallery" id="gallery"></div>
+
+  <div class="arcade-container">
+    <h2 style="color:#40e0d0">🕹️ PUMPO ARCADE</h2>
+    <div class="arcade-menu">
+      <button class="game-btn" onclick="startSnake()">Snake</button>
+      <button class="game-btn" onclick="startPong()">Pong</button>
+      <button class="game-btn" onclick="startTTT()">Tic-Tac-Toe</button>
+      <button class="game-btn" onclick="startReaction()">Reaction</button>
+    </div>
+    <div id="game-stage">
+      <p id="arcade-placeholder">Choose a game to play!</p>
+    </div>
+    <p id="game-info" style="font-size: 0.8rem; color: #888; margin-top:10px;"></p>
+  </div>
 
   <div id="imageModal" class="modal">
     <span class="close">&times;</span>
@@ -318,7 +381,7 @@ function getSongTitle(url) {
 function loadAndPlayTrack() {
   player.src = playlist[index];
   marquee.innerHTML = `NOW PLAYING: ${getSongTitle(playlist[index])}`;
-  player.play().catch(() => console.log("User interaction needed for audio"));
+  player.play().catch(() => console.log("User interaction needed"));
 }
 
 function openImage(imgIndex) {
@@ -329,37 +392,25 @@ function openImage(imgIndex) {
     downloadBtn.href = src; 
 }
 
-/* --- DEEP LINKING --- */
 function checkUrlParameters() {
     const params = new URLSearchParams(window.location.search);
-    if (params.has('song')) {
-        index = parseInt(params.get('song')) % playlist.length;
-    }
-    if (params.has('img')) {
-        const imgIdx = parseInt(params.get('img')) % images.length;
-        openImage(imgIdx);
-    }
+    if (params.has('song')) index = parseInt(params.get('song')) % playlist.length;
+    if (params.has('img')) openImage(parseInt(params.get('img')) % images.length);
     loadAndPlayTrack();
 }
 
 async function shareToSite(paramType, val) {
     const shareUrl = `${window.location.origin}${window.location.pathname}?${paramType}=${val}`;
-    if (navigator.share) {
-        await navigator.share({ title: "Radio Pumpo", text: "Check this out on Radio Pumpo!", url: shareUrl });
-    } else {
-        navigator.clipboard.writeText(shareUrl);
-        alert("Site link with this media copied to clipboard!");
-    }
+    if (navigator.share) await navigator.share({ title: "Radio Pumpo", url: shareUrl });
+    else { navigator.clipboard.writeText(shareUrl); alert("Link copied!"); }
 }
 
-/* --- EVENT HANDLERS --- */
 document.getElementById("nextBtn").onclick = () => { index = (index + 1) % playlist.length; loadAndPlayTrack(); };
 document.getElementById("prevBtn").onclick = () => { index = (index - 1 + playlist.length) % playlist.length; loadAndPlayTrack(); };
 document.getElementById("shareSongBtn").onclick = () => shareToSite('song', index);
 document.getElementById("shareImgBtn").onclick = () => shareToSite('img', currentImageIndex);
 player.onended = () => { index = (index + 1) % playlist.length; loadAndPlayTrack(); };
 
-/* --- INIT --- */
 images.forEach((src, i) => {
   const img = document.createElement("img");
   img.src = src;
@@ -370,6 +421,111 @@ images.forEach((src, i) => {
 document.querySelector(".close").onclick = () => modal.style.display = "none";
 window.onclick = (e) => { if (e.target === modal) modal.style.display = "none"; };
 
+/* --- ARCADE LOGIC --- */
+let gameInterval;
+const stage = document.getElementById('game-stage');
+const gInfo = document.getElementById('game-info');
+
+function clearStage() {
+  clearInterval(gameInterval);
+  stage.innerHTML = '';
+  gInfo.innerText = '';
+  window.onkeydown = null;
+}
+
+function startSnake() {
+  clearStage();
+  gInfo.innerText = "Use Arrow Keys to move!";
+  const canvas = document.createElement('canvas');
+  canvas.width = 400; canvas.height = 400;
+  stage.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let snake = [{x: 10, y: 10}], food = {x: 15, y: 15}, dx = 1, dy = 0, size = 20;
+
+  window.onkeydown = (e) => {
+    if (e.key === "ArrowUp" && dy === 0) { dx = 0; dy = -1; }
+    else if (e.key === "ArrowDown" && dy === 0) { dx = 0; dy = 1; }
+    else if (e.key === "ArrowLeft" && dx === 0) { dx = -1; dy = 0; }
+    else if (e.key === "ArrowRight" && dx === 0) { dx = 1; dy = 0; }
+  };
+
+  gameInterval = setInterval(() => {
+    let head = { x: snake[0].x + dx, y: snake[0].y + dy };
+    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(s => s.x === head.x && s.y === head.y)) {
+      alert("Game Over! Score: " + (snake.length - 1));
+      startSnake(); return;
+    }
+    snake.unshift(head);
+    if (head.x === food.x && head.y === food.y) food = { x: Math.floor(Math.random() * 20), y: Math.floor(Math.random() * 20) };
+    else snake.pop();
+
+    ctx.fillStyle = "black"; ctx.fillRect(0,0,400,400);
+    ctx.fillStyle = "#ff0080"; snake.forEach(s => ctx.fillRect(s.x*size, s.y*size, size-2, size-2));
+    ctx.fillStyle = "#40e0d0"; ctx.fillRect(food.x*size, food.y*size, size-2, size-2);
+  }, 100);
+}
+
+function startPong() {
+  clearStage();
+  gInfo.innerText = "Mouse/Touch move to control paddle!";
+  const canvas = document.createElement('canvas');
+  canvas.width = 400; canvas.height = 400;
+  stage.appendChild(canvas);
+  const ctx = canvas.getContext('2d');
+  let p1 = 150, bX = 200, bY = 200, bDX = 4, bDY = 4;
+
+  canvas.onmousemove = (e) => { const rect = canvas.getBoundingClientRect(); p1 = (e.clientY - rect.top) * (400/rect.height) - 40; };
+  
+  gameInterval = setInterval(() => {
+    bX += bDX; bY += bDY;
+    if (bY < 0 || bY > 390) bDY *= -1;
+    if (bX < 20 && bY > p1 && bY < p1 + 80) bDX *= -1.1;
+    if (bX > 380) bDX *= -1;
+    if (bX < 0) { alert("Missed!"); startPong(); }
+    ctx.fillStyle = "black"; ctx.fillRect(0,0,400,400);
+    ctx.fillStyle = "#40e0d0"; ctx.fillRect(10, p1, 10, 80);
+    ctx.fillStyle = "#ff0080"; ctx.fillRect(bX, bY, 10, 10);
+  }, 30);
+}
+
+function startTTT() {
+  clearStage();
+  let board = ["","","","","","","","",""], p = "X";
+  const grid = document.createElement('div'); grid.className = 'ttt-grid';
+  board.forEach((_, i) => {
+    const cell = document.createElement('div'); cell.className = 'ttt-cell';
+    cell.onclick = () => {
+      if (board[i] || checkWinTTT(board)) return;
+      board[i] = p; cell.innerText = p; cell.style.color = p === "X" ? "#ff0080" : "#40e0d0";
+      if (checkWinTTT(board)) { alert(p + " Wins!"); startTTT(); return; }
+      p = p === "X" ? "O" : "X";
+    };
+    grid.appendChild(cell);
+  });
+  stage.appendChild(grid);
+}
+function checkWinTTT(b) {
+  const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+  return wins.some(w => b[w[0]] && b[w[0]] === b[w[1]] && b[w[0]] === b[w[2]]);
+}
+
+function startReaction() {
+  clearStage();
+  const box = document.createElement('div'); box.id = "reaction-box";
+  box.style.background = "#ff0033"; box.innerText = "WAIT FOR GREEN";
+  stage.appendChild(box);
+  let startTime;
+  let timeout = setTimeout(() => {
+    box.style.background = "#40e0d0"; box.innerText = "CLICK NOW!";
+    startTime = Date.now();
+  }, 2000 + Math.random() * 3000);
+
+  box.onclick = () => {
+    if (!startTime) { clearTimeout(timeout); alert("Too soon!"); startReaction(); }
+    else { alert(`Reaction: ${Date.now() - startTime}ms`); startReaction(); }
+  };
+}
+
 /* --- TRIVIA LOGIC --- */
 const triviaQuestions = [
     { question: "Juventus home ground before Allianz?", answers: ["Olimpico", "San Siro", "Delle Alpi", "Ferraris"], correctAnswer: "Delle Alpi" },
@@ -377,12 +533,11 @@ const triviaQuestions = [
     { question: "Italian late afternoon stroll?", answers: ["Merenda", "Passeggiata", "Dolce Vita", "Riposo"], correctAnswer: "Passeggiata" },
     { question: "Pasta name meaning 'butterfly'?", answers: ["Penne", "Farfalle", "Fusilli", "Rigatoni"], correctAnswer: "Farfalle" }
 ];
-let qIdx = 0; let score = 0;
+let qIdx = 0, score = 0;
 function showQuestion() {
   const q = triviaQuestions[qIdx];
   document.getElementById('question-text').textContent = q.question;
-  const btns = document.getElementById('answer-buttons');
-  btns.innerHTML = '';
+  const btns = document.getElementById('answer-buttons'); btns.innerHTML = '';
   q.answers.forEach(a => {
     const b = document.createElement('button'); b.textContent = a; b.className = 'answer-btn';
     b.onclick = () => {
@@ -401,12 +556,7 @@ function finishTrivia() {
 }
 document.getElementById('restart-btn').onclick = () => location.reload();
 
-// START EVERYTHING
-window.onload = () => {
-    checkUrlParameters();
-    showQuestion();
-    document.getElementById('total-questions').textContent = triviaQuestions.length;
-};
+window.onload = () => { checkUrlParameters(); showQuestion(); document.getElementById('total-questions').textContent = triviaQuestions.length; };
 </script>
 </body>
 </html>
