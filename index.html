@@ -82,6 +82,55 @@
     .skip-btn:hover, .skip-btn:active { background: var(--pink); color: #0d0d0d; box-shadow: 0 0 12px var(--pink-glow); }
     audio { flex-grow: 1; min-width: 0; height: 36px; }
 
+    /* --- PLAYLIST DRAWER --- */
+    .playlist-drawer {
+      position: fixed;
+      bottom: -100%;
+      left: 0; right: 0;
+      z-index: 390;
+      background: rgba(13,13,13,0.97);
+      backdrop-filter: blur(20px);
+      border-top: 1px solid rgba(255,0,128,0.35);
+      box-shadow: 0 -6px 40px rgba(255,0,128,0.15);
+      border-radius: 20px 20px 0 0;
+      padding: 16px 16px 0;
+      max-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      transition: bottom 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+    }
+    .playlist-drawer.open { bottom: 72px; } /* sits just above the sticky player */
+    .drawer-header {
+      display: flex; justify-content: space-between; align-items: center;
+      margin-bottom: 10px; flex-shrink: 0;
+    }
+    .drawer-title { font-family: 'Black Ops One', cursive; color: var(--pink); font-size: 1rem; letter-spacing: 2px; }
+    .drawer-actions { display: flex; gap: 8px; }
+    .drawer-btn { background: none; border: 1px solid var(--pink); color: var(--pink); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.8rem; transition: 0.2s; }
+    .drawer-btn:hover, .drawer-btn:active { background: var(--pink); color: #000; }
+    .drawer-btn.cyan { border-color: var(--cyan); color: var(--cyan); }
+    .drawer-btn.cyan:hover { background: var(--cyan); color: #000; }
+    .playlist-scroll { overflow-y: auto; flex-grow: 1; padding-bottom: 16px; scrollbar-width: thin; scrollbar-color: var(--pink) transparent; }
+    .track-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 8px; border-radius: 10px;
+      cursor: pointer; transition: background 0.15s;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .track-row:hover { background: rgba(255,0,128,0.08); }
+    .track-row.playing { background: rgba(255,0,128,0.12); }
+    .track-check {
+      width: 20px; height: 20px; border-radius: 6px;
+      border: 2px solid #444; background: transparent;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0; transition: 0.2s;
+    }
+    .track-check.checked { background: var(--pink); border-color: var(--pink); }
+    .track-check.checked::after { content: '✓'; color: #fff; font-size: 0.75rem; font-weight: 900; }
+    .track-name { font-size: 0.95rem; font-weight: 600; color: #ddd; flex-grow: 1; }
+    .track-row.playing .track-name { color: var(--pink); }
+    .track-now { font-size: 0.7rem; color: var(--pink); flex-shrink: 0; animation: pulse 1.4s infinite; }
+
     /* --- GALLERY --- */
     .image-gallery { margin-top: 50px; width: 100%; max-width: 1100px; overflow-x: auto; padding-bottom: 14px; display: flex; gap: 14px; justify-content: center; scrollbar-width: thin; scrollbar-color: var(--pink) transparent; }
     .image-gallery img { height: 170px; width: auto; border-radius: 14px; box-shadow: 0 0 16px rgba(255,255,255,0.15); transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; flex-shrink: 0; }
@@ -162,7 +211,21 @@
       <audio id="player" controls autoplay></audio>
       <button id="nextBtn" class="skip-btn" title="Next">&#9654;&#9654;</button>
       <button id="shareSongBtn" class="skip-btn" title="Share Song">&#10150;</button>
+      <button id="playlistBtn" class="skip-btn" title="Pick Songs">&#127926;</button>
     </div>
+  </div>
+
+  <!-- Playlist drawer -->
+  <div class="playlist-drawer" id="playlistDrawer">
+    <div class="drawer-header">
+      <span class="drawer-title">🎵 PICK TRACKS</span>
+      <div class="drawer-actions">
+        <button class="drawer-btn cyan" id="selectAllBtn">All</button>
+        <button class="drawer-btn" id="clearAllBtn">None</button>
+        <button class="drawer-btn" id="playSelectedBtn">▶ Shuffle Play</button>
+      </div>
+    </div>
+    <div class="playlist-scroll" id="trackList"></div>
   </div>
 
   <div class="divider"></div>
@@ -254,11 +317,19 @@ const images = [
 ];
 
 let index = 0;
+let activeQueue = null; // null = full playlist, array = custom shuffled queue
+let activeQueuePos = 0;
+
 const player = document.getElementById("player");
 const marquee = document.getElementById("songMarquee");
 const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("expandedImg");
 const toast = document.getElementById("toast");
+const drawer = document.getElementById("playlistDrawer");
+const trackList = document.getElementById("trackList");
+
+// Checked state per track index
+const checked = new Array(playlist.length).fill(true);
 
 function showToast(msg) {
   toast.textContent = msg;
@@ -266,27 +337,120 @@ function showToast(msg) {
   setTimeout(() => toast.classList.remove("show"), 2800);
 }
 
-function loadAndPlayTrack() {
-  player.src = playlist[index].url;
-  marquee.textContent = `NOW PLAYING: ${playlist[index].name}`;
+function updateMarquee(name) {
+  marquee.textContent = `NOW PLAYING: ${name}`;
   marquee.style.animation = "none";
   requestAnimationFrame(() => { marquee.style.animation = ""; });
-  player.play().catch(() => {});
 }
 
-document.getElementById("nextBtn").onclick = () => { index = (index + 1) % playlist.length; loadAndPlayTrack(); };
-document.getElementById("prevBtn").onclick = () => { index = (index - 1 + playlist.length) % playlist.length; loadAndPlayTrack(); };
-player.onended = () => { index = (index + 1) % playlist.length; loadAndPlayTrack(); };
+function loadAndPlayTrack() {
+  const track = activeQueue ? activeQueue[activeQueuePos] : playlist[index];
+  player.src = track.url;
+  updateMarquee(track.name);
+  player.play().catch(() => {});
+  refreshDrawerHighlight();
+}
+
+function nextTrack() {
+  if (activeQueue) {
+    activeQueuePos = (activeQueuePos + 1) % activeQueue.length;
+  } else {
+    index = (index + 1) % playlist.length;
+  }
+  loadAndPlayTrack();
+}
+
+function prevTrack() {
+  if (activeQueue) {
+    activeQueuePos = (activeQueuePos - 1 + activeQueue.length) % activeQueue.length;
+  } else {
+    index = (index - 1 + playlist.length) % playlist.length;
+  }
+  loadAndPlayTrack();
+}
+
+document.getElementById("nextBtn").onclick = nextTrack;
+document.getElementById("prevBtn").onclick = prevTrack;
+player.onended = nextTrack;
 
 document.getElementById("shareSongBtn").onclick = () => {
-  const songName = playlist[index].name;
-  const shareText = `🎵 Listening to "${songName}" on Radio Pumpo 24/7! Tune in at ${window.location.href}`;
+  const track = activeQueue ? activeQueue[activeQueuePos] : playlist[index];
+  const shareText = `🎵 Listening to "${track.name}" on Radio Pumpo 24/7! Tune in at ${window.location.href}`;
   if (navigator.share) {
     navigator.share({ title: "Radio Pumpo", text: shareText, url: window.location.href }).catch(() => {});
   } else {
     navigator.clipboard.writeText(shareText).then(() => showToast("Song link copied! 🎵")).catch(() => showToast("Copy: " + shareText));
   }
 };
+
+/* --- PLAYLIST DRAWER --- */
+function buildTrackList() {
+  trackList.innerHTML = "";
+  playlist.forEach((track, i) => {
+    const row = document.createElement("div");
+    row.className = "track-row";
+    row.id = `track-row-${i}`;
+    row.innerHTML = `
+      <div class="track-check ${checked[i] ? "checked" : ""}" id="chk-${i}"></div>
+      <span class="track-name">${track.name}</span>
+      <span class="track-now" id="now-${i}" style="display:none">▶ NOW</span>`;
+    row.onclick = () => toggleCheck(i);
+    trackList.appendChild(row);
+  });
+  refreshDrawerHighlight();
+}
+
+function toggleCheck(i) {
+  checked[i] = !checked[i];
+  document.getElementById(`chk-${i}`).className = `track-check ${checked[i] ? "checked" : ""}`;
+}
+
+function refreshDrawerHighlight() {
+  const currentUrl = activeQueue ? activeQueue[activeQueuePos].url : playlist[index].url;
+  playlist.forEach((track, i) => {
+    const row = document.getElementById(`track-row-${i}`);
+    const nowEl = document.getElementById(`now-${i}`);
+    if (!row) return;
+    const isPlaying = track.url === currentUrl;
+    row.classList.toggle("playing", isPlaying);
+    if (nowEl) nowEl.style.display = isPlaying ? "inline" : "none";
+  });
+}
+
+document.getElementById("playlistBtn").onclick = () => {
+  const isOpen = drawer.classList.toggle("open");
+  if (isOpen) buildTrackList();
+};
+
+document.getElementById("selectAllBtn").onclick = () => {
+  checked.fill(true);
+  buildTrackList();
+};
+
+document.getElementById("clearAllBtn").onclick = () => {
+  checked.fill(false);
+  buildTrackList();
+};
+
+document.getElementById("playSelectedBtn").onclick = () => {
+  const selected = playlist.filter((_, i) => checked[i]);
+  if (selected.length === 0) { showToast("Pick at least one track! 🎵"); return; }
+  // Shuffle selected
+  activeQueue = [...selected].sort(() => Math.random() - 0.5);
+  activeQueuePos = 0;
+  drawer.classList.remove("open");
+  loadAndPlayTrack();
+  showToast(`▶ Shuffling ${selected.length} track${selected.length > 1 ? "s" : ""}!`);
+};
+
+// Close drawer on outside tap
+document.addEventListener("click", e => {
+  if (drawer.classList.contains("open") &&
+      !drawer.contains(e.target) &&
+      e.target.id !== "playlistBtn") {
+    drawer.classList.remove("open");
+  }
+});
 
 images.forEach(src => {
   const img = document.createElement("img");
