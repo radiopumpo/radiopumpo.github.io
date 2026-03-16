@@ -9,96 +9,132 @@
   <link rel="icon" type="image/png" href="radiopumpologo.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
+
   <style>
-    /* --- GENERAL STYLES --- */
+    :root {
+      --pink: #ff0080;
+      --cyan: #40e0d0;
+      --bg: #0d0d0d;
+      --card: rgba(255,255,255,0.06);
+      --pink-glow: rgba(255,0,128,0.4);
+      --cyan-glow: rgba(64,224,208,0.3);
+    }
+
+    * { box-sizing: border-box; }
+
     body {
       margin: 0;
-      font-family: "Inter", sans-serif;
-      background: #0d0d0d;
-      color: #ffffff;
+      font-family: "Rajdhani", sans-serif;
+      background: var(--bg);
+      color: #fff;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 60px 20px 40px 20px; /* Top padding increased for nav */
+      padding: 70px 20px 60px;
+      overflow-x: hidden;
     }
 
-    /* --- TOP NAVIGATION --- */
-    .top-nav {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 100;
+    /* Animated scanline overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none;
+      z-index: 9999;
     }
 
-    .nav-link {
-      color: #40e0d0;
-      text-decoration: none;
-      font-weight: bold;
-      font-size: 0.85rem;
-      border: 1px solid #40e0d0;
-      padding: 8px 16px;
-      border-radius: 20px;
-      transition: 0.3s;
-      letter-spacing: 0.5px;
-    }
+    /* --- NAV --- */
+    .top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(13,13,13,0.85); backdrop-filter: blur(10px); z-index: 500; border-bottom: 1px solid rgba(255,0,128,0.2); }
+    .nav-brand { font-family: 'Black Ops One', cursive; font-size: 1rem; color: var(--pink); letter-spacing: 2px; }
+    .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: 0.8rem; border: 1px solid var(--cyan); padding: 7px 14px; border-radius: 20px; transition: 0.3s; letter-spacing: 1px; }
+    .nav-link:hover { background: var(--cyan); color: #0d0d0d; box-shadow: 0 0 15px var(--cyan-glow); }
 
-    .nav-link:hover {
-      background: #40e0d0;
-      color: #0d0d0d;
-      box-shadow: 0 0 15px rgba(64, 224, 208, 0.6);
-    }
+    /* --- LOGO --- */
+    .header-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 16px; }
+    #headerLogo { display: block; max-width: 480px; width: 100%; height: auto; filter: drop-shadow(0 0 20px var(--pink-glow)); animation: logoFadeIn 1.8s ease-out forwards; opacity: 0; }
+    @keyframes logoFadeIn { 0% { opacity: 0; transform: translateY(20px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
 
-    /* --- LOGO & ANIMATIONS --- */
-    .header-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 20px; }
-    #headerLogo { display: block; max-width: 500px; width: 100%; height: auto; filter: drop-shadow(0 0 15px rgba(255, 0, 128, 0.3)); animation: logoFadeIn 2s ease-out forwards; opacity: 0; }
-    @keyframes logoFadeIn { 0% { opacity: 0; transform: translateY(15px); } 100% { opacity: 1; transform: translateY(0); } }
-
-    .live-badge { background: #ff0033; padding: 6px 14px; border-radius: 12px; font-weight: bold; margin-bottom: 25px; opacity: 0; animation: pulse 1.4s infinite, fadeIn 1.5s ease-out 1s forwards; }
+    .live-badge { background: #ff0033; padding: 5px 14px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 22px; opacity: 0; animation: pulse 1.4s infinite, fadeIn 1.5s ease-out 0.8s forwards; }
     @keyframes fadeIn { to { opacity: 1; } }
-    @keyframes pulse { 0%, 100% { opacity: 0.6; } 50% { opacity: 1; } }
+    @keyframes pulse { 0%,100%{opacity:.6;} 50%{opacity:1;} }
 
     /* --- PLAYER CARD --- */
-    .player-card { background: rgba(255, 255, 255, 0.08); padding: 30px; border-radius: 20px; backdrop-filter: blur(14px); width: 90%; max-width: 600px; box-shadow: 0 0 25px rgba(255, 0, 120, 0.4); text-align: center; }
-    #songMarquee { background: rgba(255, 0, 128, 0.15); color: #ff0080; padding: 8px 0; margin-bottom: 15px; border-radius: 4px; font-weight: bold; font-size: 1.1rem; white-space: nowrap; }
-    .controls-wrapper { display: flex; align-items: center; gap: 10px; }
-    .skip-btn { background: none; border: 1px solid #ff0080; color: #ff0080; font-size: 1.2rem; padding: 8px 10px; cursor: pointer; border-radius: 8px; transition: all 0.2s ease; flex-shrink: 0; }
-    .skip-btn:hover { background: #ff0080; color: #0d0d0d; box-shadow: 0 0 10px rgba(255, 0, 128, 0.7); }
-    audio { flex-grow: 1; margin: 10px 0; }
+    .player-card { background: var(--card); padding: 28px; border-radius: 22px; backdrop-filter: blur(14px); width: 90%; max-width: 600px; box-shadow: 0 0 30px var(--pink-glow); text-align: center; border: 1px solid rgba(255,0,128,0.2); }
+    .player-card h2 { font-family: 'Black Ops One', cursive; letter-spacing: 3px; color: var(--pink); margin: 0 0 12px; font-size: 1.3rem; }
+
+    #songMarquee { background: rgba(255,0,128,0.12); color: var(--pink); padding: 8px 0; margin-bottom: 14px; border-radius: 6px; font-weight: 700; font-size: 1rem; white-space: nowrap; border: 1px solid rgba(255,0,128,0.2); }
+
+    .controls-wrapper { display: flex; align-items: center; gap: 8px; }
+    .skip-btn { background: none; border: 1px solid var(--pink); color: var(--pink); font-size: 1.1rem; padding: 8px 10px; cursor: pointer; border-radius: 8px; transition: all 0.2s ease; flex-shrink: 0; }
+    .skip-btn:hover, .skip-btn:active { background: var(--pink); color: #0d0d0d; box-shadow: 0 0 12px var(--pink-glow); }
+
+    audio { flex-grow: 1; margin: 8px 0; min-width: 0; }
 
     /* --- GALLERY --- */
-    .image-gallery { margin-top: 50px; width: 100%; max-width: 1100px; overflow-x: auto; white-space: nowrap; padding-bottom: 14px; display: flex; gap: 16px; justify-content: center; }
-    .image-gallery img { height: 180px; width: auto; border-radius: 16px; box-shadow: 0 0 18px rgba(255, 255, 255, 0.25); transition: transform 0.25s ease; cursor: pointer; }
-    .image-gallery img:hover { transform: scale(1.05); }
+    .image-gallery { margin-top: 50px; width: 100%; max-width: 1100px; overflow-x: auto; padding-bottom: 14px; display: flex; gap: 14px; justify-content: center; scrollbar-width: thin; scrollbar-color: var(--pink) transparent; }
+    .image-gallery img { height: 170px; width: auto; border-radius: 14px; box-shadow: 0 0 16px rgba(255,255,255,0.15); transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; flex-shrink: 0; }
+    .image-gallery img:hover { transform: scale(1.06); box-shadow: 0 0 25px var(--pink-glow); }
 
     /* --- ARCADE --- */
-    .arcade-container { margin-top: 60px; width: 90%; max-width: 600px; background: rgba(0, 0, 0, 0.6); border: 2px solid #40e0d0; border-radius: 20px; padding: 25px; text-align: center; box-shadow: 0 0 20px rgba(64, 224, 208, 0.2); }
-    .arcade-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 20px; }
-    .game-btn { background: transparent; border: 1px solid #ff0080; color: #ff0080; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 0.9rem; transition: 0.3s; }
-    .game-btn:hover { background: #ff0080; color: white; }
-    #game-stage { background: #000; width: 100%; aspect-ratio: 1/1; max-width: 400px; margin: 0 auto; border-radius: 12px; display: flex; align-items: center; justify-content: center; border: 1px solid #333; position: relative; overflow: hidden; }
-    
-    .ttt-grid, .mem-grid { display: grid; gap: 8px; width: 85%; }
-    .ttt-grid { grid-template-columns: repeat(3, 1fr); }
-    .mem-grid { grid-template-columns: repeat(4, 1fr); }
-    .cell { aspect-ratio: 1/1; background: #1a1a1a; border: 1px solid #40e0d0; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: bold; border-radius: 4px; }
-    .ttt-cell { font-size: 2.5rem; }
-    .mem-cell { font-size: 1.5rem; background: #ff0080; }
-    .mem-cell.flipped { background: #1a1a1a; }
-    #reaction-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; font-weight: bold; text-align: center; padding: 20px; box-sizing: border-box; }
+    .arcade-container { margin-top: 60px; width: 90%; max-width: 640px; background: rgba(0,0,0,0.55); border: 2px solid var(--cyan); border-radius: 22px; padding: 24px; text-align: center; box-shadow: 0 0 25px var(--cyan-glow); }
+    .arcade-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); margin-top: 0; letter-spacing: 2px; font-size: 1.3rem; }
+    .arcade-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
+    .game-btn { background: transparent; border: 1px solid var(--pink); color: var(--pink); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; font-family: 'Rajdhani', sans-serif; transition: 0.2s; letter-spacing: 1px; }
+    .game-btn:hover { background: var(--pink); color: #fff; box-shadow: 0 0 10px var(--pink-glow); }
+    #game-stage { background: #000; width: 100%; aspect-ratio: 1/1; max-width: 420px; margin: 0 auto; border-radius: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; position: relative; overflow: hidden; touch-action: none; }
 
-    /* --- MODAL, CHAT, TRIVIA --- */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.94); backdrop-filter: blur(8px); align-items: center; justify-content: center; flex-direction: column; }
-    .modal-content { max-width: 90vw; max-height: 75vh; border-radius: 10px; object-fit: contain; }
-    .close { position: absolute; top: 20px; right: 35px; color: #f1f1f1; font-size: 40px; cursor: pointer; }
-    .guestbook-container, .trivia-container { margin-top: 60px; width: 90%; max-width: 800px; padding: 20px; background: rgba(255,255,255,0.05); border-radius: 20px; }
-    .trivia-container { background: rgba(64,224,208,0.08); max-width: 600px; text-align: center; }
-    .answer-btn { background: rgba(255,255,255,0.1); color: #ffffff; border: 1px solid #40e0d0; padding: 12px; border-radius: 8px; cursor: pointer; width: 100%; margin-bottom: 10px; }
+    /* Touch controls */
+    .touch-controls { display: none; margin-top: 12px; }
+    .touch-row { display: flex; justify-content: center; gap: 10px; margin: 4px 0; }
+    .t-btn { width: 56px; height: 56px; background: rgba(255,255,255,0.08); border: 1px solid var(--cyan); border-radius: 10px; color: var(--cyan); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none; transition: 0.15s; }
+    .t-btn:active { background: var(--cyan); color: #000; }
+    @media (pointer: coarse) { .touch-controls { display: block; } }
+
+    .ttt-grid, .mem-grid { display: grid; gap: 8px; width: 85%; }
+    .ttt-grid { grid-template-columns: repeat(3,1fr); }
+    .mem-grid { grid-template-columns: repeat(4,1fr); }
+    .cell { aspect-ratio: 1/1; background: #111; border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; border-radius: 6px; transition: background 0.2s; }
+    .ttt-cell { font-size: 2.5rem; }
+    .mem-cell { font-size: 1.5rem; background: var(--pink); }
+    .mem-cell.flipped { background: #111; }
+    #reaction-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; text-align: center; padding: 20px; }
+
+    /* --- MODAL --- */
+    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); align-items: center; justify-content: center; flex-direction: column; }
+    .modal-content { max-width: 90vw; max-height: 78vh; border-radius: 12px; object-fit: contain; box-shadow: 0 0 40px var(--pink-glow); }
+    .close { position: absolute; top: 18px; right: 28px; color: #f1f1f1; font-size: 38px; cursor: pointer; transition: color 0.2s; }
+    .close:hover { color: var(--pink); }
+
+    /* --- CHAT --- */
+    .guestbook-container { margin-top: 60px; width: 90%; max-width: 800px; padding: 24px; background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
+    .guestbook-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); letter-spacing: 2px; margin-top: 0; font-size: 1.2rem; }
+
+    /* --- TRIVIA --- */
+    .trivia-container { margin-top: 60px; width: 90%; max-width: 620px; text-align: center; padding: 28px; background: rgba(64,224,208,0.07); border-radius: 22px; border: 1px solid rgba(64,224,208,0.25); box-shadow: 0 0 20px var(--cyan-glow); }
+    .trivia-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); letter-spacing: 2px; margin-top: 0; font-size: 1.2rem; }
+    #question-text { font-size: 1.2rem; font-weight: 600; min-height: 2em; }
+    .answer-btn { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid var(--cyan); padding: 12px 16px; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 10px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; transition: 0.2s; text-align: left; }
+    .answer-btn:hover { background: rgba(64,224,208,0.15); box-shadow: 0 0 10px var(--cyan-glow); }
+    .answer-btn.correct { background: rgba(0,200,80,0.3); border-color: #00c850; }
+    .answer-btn.wrong { background: rgba(255,0,51,0.3); border-color: #ff0033; }
+    #feedback { font-size: 1.1rem; font-weight: 700; min-height: 1.5em; }
+    #score-area { margin-top: 8px; font-size: 1rem; color: #aaa; }
+    #restart-btn { background: var(--pink); color: white; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; margin-top: 10px; }
+
+    /* Share toast */
+    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cyan); color: #000; font-weight: 700; padding: 10px 22px; border-radius: 20px; font-size: 0.9rem; z-index: 9000; transition: transform 0.4s ease; pointer-events: none; }
+    .toast.show { transform: translateX(-50%) translateY(0); }
+
+    /* Section divider */
+    .divider { width: 80%; max-width: 500px; height: 1px; background: linear-gradient(to right, transparent, var(--pink), transparent); margin: 50px 0 0; opacity: 0.4; }
   </style>
 </head>
 <body>
 
   <nav class="top-nav">
+    <span class="nav-brand">📻 PUMPO</span>
     <a href="https://radiopumpo.github.io/pumpo-tools/" class="nav-link">⚡ PUMPO TOOLS</a>
   </nav>
 
@@ -106,23 +142,25 @@
     <img src="radiopumpologo.png" alt="Radio Pumpo Logo" id="headerLogo">
   </div>
 
-  <div class="live-badge">LIVE 24/7</div>
+  <div class="live-badge">● LIVE 24/7</div>
 
   <div class="player-card">
     <h2>LIVE PUMPO RADIO</h2>
     <marquee id="songMarquee" direction="left" scrollamount="4">NOW PLAYING: Initializing...</marquee>
     <div class="controls-wrapper">
-      <button id="prevBtn" class="skip-btn">&#9664;&#9664;</button>
+      <button id="prevBtn" class="skip-btn" title="Previous">&#9664;&#9664;</button>
       <audio id="player" controls autoplay></audio>
-      <button id="nextBtn" class="skip-btn">&#9654;&#9654;</button>
+      <button id="nextBtn" class="skip-btn" title="Next">&#9654;&#9654;</button>
       <button id="shareSongBtn" class="skip-btn" title="Share Song">&#10150;</button>
     </div>
   </div>
 
+  <div class="divider"></div>
   <div class="image-gallery" id="gallery"></div>
 
+  <div class="divider"></div>
   <div class="arcade-container">
-    <h2 style="color:#40e0d0; margin-top: 0;">🕹️ PUMPO ARCADE</h2>
+    <h2>🕹️ PUMPO ARCADE</h2>
     <div class="arcade-menu">
       <button class="game-btn" onclick="startSnake()">Snake</button>
       <button class="game-btn" onclick="startPong()">Pong</button>
@@ -131,8 +169,17 @@
       <button class="game-btn" onclick="startMemory()">Memory</button>
       <button class="game-btn" onclick="startTetris()">Tetris</button>
     </div>
-    <div id="game-stage"><p>Select a Game!</p></div>
-    <p id="game-info" style="font-size: 0.8rem; color: #888; margin-top:10px; height: 1.2em;"></p>
+    <div id="game-stage"><p style="color:#555; font-size:1.1rem;">Select a Game!</p></div>
+    <!-- Touch D-pad (shown on touch devices) -->
+    <div class="touch-controls" id="touchControls">
+      <div class="touch-row"><button class="t-btn" id="tUp">▲</button></div>
+      <div class="touch-row">
+        <button class="t-btn" id="tLeft">◀</button>
+        <button class="t-btn" id="tDown">▼</button>
+        <button class="t-btn" id="tRight">▶</button>
+      </div>
+    </div>
+    <p id="game-info" style="font-size:0.8rem; color:#666; margin-top:10px; min-height:1.2em;"></p>
   </div>
 
   <div id="imageModal" class="modal">
@@ -140,35 +187,78 @@
     <img class="modal-content" id="expandedImg">
   </div>
 
+  <div class="divider"></div>
   <div class="guestbook-container">
-    <h2>Radio Pumpo Chat</h2>
-    <iframe src="https://www5.cbox.ws/box/?boxid=960015&boxtag=6NqJne" width="100%" height="450" frameborder="0"></iframe>	
+    <h2>💬 Radio Pumpo Chat</h2>
+    <iframe src="https://www5.cbox.ws/box/?boxid=960015&boxtag=6NqJne" width="100%" height="450" frameborder="0" allow="autoplay"></iframe>
   </div>
 
+  <div class="divider"></div>
   <div class="trivia-container">
-    <h2>Radio Pumpo Trivia! 🇮🇹</h2>
+    <h2>🇮🇹 Radio Pumpo Trivia</h2>
     <div id="quiz-area">
-        <p id="question-text"></p>
-        <div id="answer-buttons"></div>
-        <p id="feedback"></p>
+      <p id="question-text"></p>
+      <div id="answer-buttons"></div>
+      <p id="feedback"></p>
     </div>
     <div id="score-area">
-        <p>Score: <span id="current-score">0</span> / <span id="total-questions">0</span></p>
-        <button id="restart-btn" style="display: none; background: #ff0080; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">Restart</button>
+      <p>Score: <span id="current-score">0</span> / <span id="total-questions">0</span></p>
+      <button id="restart-btn" style="display:none;">🔄 Play Again</button>
     </div>
   </div>
 
+  <div class="toast" id="toast">Copied to clipboard! 🎵</div>
+
 <script>
-/* --- RADIO LOGIC --- */
-const playlist = ["https://radiopumpo.github.io/forzapumpo.mp3","https://radiopumpo.github.io/dnbpumpo.mp3","https://radiopumpo.github.io/housepumpo.mp3","https://radiopumpo.github.io/hiphoppumpo.mp3","https://radiopumpo.github.io/rockpowerpumpo.mp3","https://radiopumpo.github.io/seashantypumpo.mp3","https://radiopumpo.github.io/unodinoipumpo.mp3","https://radiopumpo.github.io/gospelpumpo.mp3","https://radiopumpo.github.io/ACDCpumpo.mp3","https://radiopumpo.github.io/bobpumpo.mp3"];
-const images = ["https://radiopumpo.github.io/djpumpo.jpg","https://radiopumpo.github.io/forzapumpo.jpg","https://radiopumpo.github.io/hiphoppumpo.jpg","https://radiopumpo.github.io/seashantypumpo.jpg","https://radiopumpo.github.io/rockpumpo.jpg","https://radiopumpo.github.io/bobpumpo.jpg","https://radiopumpo.github.io/gospelpumpo.jpg","https://radiopumpo.github.io/dosbrospumpo.jpg"];
+/* ===================== RADIO ===================== */
+const playlist = [
+  { url: "https://radiopumpo.github.io/forzapumpo.mp3",       name: "Forza Pumpo"           },
+  { url: "https://radiopumpo.github.io/dnbpumpo.mp3",         name: "DNB Pumpo"             },
+  { url: "https://radiopumpo.github.io/housepumpo.mp3",       name: "House Pumpo"           },
+  { url: "https://radiopumpo.github.io/hiphoppumpo.mp3",      name: "Hip Hop Pumpo"         },
+  { url: "https://radiopumpo.github.io/rockpowerpumpo.mp3",   name: "Rock Power Pumpo"      },
+  { url: "https://radiopumpo.github.io/seashantypumpo.mp3",   name: "Sea Shanty Pumpo"      },
+  { url: "https://radiopumpo.github.io/unodinoipumpo.mp3",    name: "Uno Di Noi Pumpo"      },
+  { url: "https://radiopumpo.github.io/gospelpumpo.mp3",      name: "Gospel Pumpo"          },
+  { url: "https://radiopumpo.github.io/ACDCpumpo.mp3",        name: "AC/DC Pumpo"           },
+  { url: "https://radiopumpo.github.io/bobpumpo.mp3",         name: "Bob Pumpo"             },
+  { url: "https://radiopumpo.github.io/пумпо.mp3",            name: "пумпо"                 },
+  { url: "https://radiopumpo.github.io/pumpolofinippon.mp3",  name: "LoFi Nippon Pumpo"     },
+  { url: "https://radiopumpo.github.io/pumpitup.mp3",         name: "Pumpo Pump it up"      },
+  { url: "https://radiopumpo.github.io/pumpoquersentir.mp3",  name: "Pumpo Quer Sentir"     },
+  { url: "https://radiopumpo.github.io/pumpothicthang.mp3",   name: "Pumpo Thic Thang"      },
+  { url: "https://radiopumpo.github.io/pumpotheninja.mp3",    name: "Pumpo The Ninja"       },
+  { url: "https://radiopumpo.github.io/pumpophonkbr.mp3",     name: "A ora do Pumpo"        },
+  { url: "https://radiopumpo.github.io/pumpophonkbr2.mp3",    name: "A ora do Pumpo Dois"   },
+];
+
+const images = [
+  "https://radiopumpo.github.io/djpumpo.jpg",
+  "https://radiopumpo.github.io/forzapumpo.jpg",
+  "https://radiopumpo.github.io/hiphoppumpo.jpg",
+  "https://radiopumpo.github.io/seashantypumpo.jpg",
+  "https://radiopumpo.github.io/rockpumpo.jpg",
+  "https://radiopumpo.github.io/bobpumpo.jpg",
+  "https://radiopumpo.github.io/gospelpumpo.jpg",
+  "https://radiopumpo.github.io/dosbrospumpo.jpg"
+];
 
 let index = 0;
-const player = document.getElementById("player"), marquee = document.getElementById("songMarquee"), modal = document.getElementById("imageModal"), modalImg = document.getElementById("expandedImg");
+const player = document.getElementById("player");
+const marquee = document.getElementById("songMarquee");
+const modal = document.getElementById("imageModal");
+const modalImg = document.getElementById("expandedImg");
+const toast = document.getElementById("toast");
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add("show");
+  setTimeout(() => toast.classList.remove("show"), 2800);
+}
 
 function loadAndPlayTrack() {
-  player.src = playlist[index];
-  marquee.innerHTML = `NOW PLAYING: ${playlist[index].split('/').pop().split('.')[0].replace(/pumpo/gi, ' Pumpo')}`;
+  player.src = playlist[index].url;
+  marquee.innerHTML = `NOW PLAYING: ${playlist[index].name}`;
   player.play().catch(() => {});
 }
 
@@ -176,118 +266,299 @@ document.getElementById("nextBtn").onclick = () => { index = (index + 1) % playl
 document.getElementById("prevBtn").onclick = () => { index = (index - 1 + playlist.length) % playlist.length; loadAndPlayTrack(); };
 player.onended = () => { index = (index + 1) % playlist.length; loadAndPlayTrack(); };
 
-images.forEach((src) => {
-  const img = document.createElement("img"); img.src = src; img.onclick = () => { modal.style.display="flex"; modalImg.src=src; };
+document.getElementById("shareSongBtn").onclick = () => {
+  const songName = playlist[index].name;
+  const shareText = `🎵 Listening to "${songName}" on Radio Pumpo 24/7! Tune in at ${window.location.href}`;
+  if (navigator.share) {
+    navigator.share({ title: "Radio Pumpo", text: shareText, url: window.location.href }).catch(() => {});
+  } else {
+    navigator.clipboard.writeText(shareText).then(() => showToast("Song link copied! 🎵")).catch(() => showToast("Copy: " + shareText));
+  }
+};
+
+images.forEach(src => {
+  const img = document.createElement("img");
+  img.src = src;
+  img.loading = "lazy";
+  img.onclick = () => { modal.style.display = "flex"; modalImg.src = src; };
   document.getElementById("gallery").appendChild(img);
 });
+
 document.querySelector(".close").onclick = () => modal.style.display = "none";
+modal.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
 
-/* --- ARCADE SYSTEM (SNAKE, PONG, TTT, REACTION, MEMORY, TETRIS) --- */
-let gameInterval;
-const stage = document.getElementById('game-stage'), gInfo = document.getElementById('game-info');
-function clearStage() { clearInterval(gameInterval); stage.innerHTML = ''; gInfo.innerText = ''; window.onkeydown = null; }
+/* ===================== ARCADE ===================== */
+let gameInterval, currentGame = null;
+const stage = document.getElementById("game-stage");
+const gInfo = document.getElementById("game-info");
+const tUp = document.getElementById("tUp");
+const tDown = document.getElementById("tDown");
+const tLeft = document.getElementById("tLeft");
+const tRight = document.getElementById("tRight");
 
-function startSnake() {
-  clearStage(); gInfo.innerText = "Arrows to move.";
-  const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 400; stage.appendChild(canvas);
-  const ctx = canvas.getContext('2d');
-  let snake = [{x: 10, y: 10}], food = {x: 15, y: 15}, dx = 1, dy = 0;
-  window.onkeydown = e => { if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault(); if (e.key === "ArrowUp" && dy === 0) { dx = 0; dy = -1; } else if (e.key === "ArrowDown" && dy === 0) { dx = 0; dy = 1; } else if (e.key === "ArrowLeft" && dx === 0) { dx = -1; dy = 0; } else if (e.key === "ArrowRight" && dx === 0) { dx = 1; dy = 0; } };
-  gameInterval = setInterval(() => {
-    let head = { x: snake[0].x + dx, y: snake[0].y + dy };
-    if (head.x < 0 || head.x >= 20 || head.y < 0 || head.y >= 20 || snake.some(s => s.x === head.x && s.y === head.y)) { alert("Game Over!"); startSnake(); return; }
-    snake.unshift(head);
-    if (head.x === food.x && head.y === food.y) food = { x: Math.floor(Math.random()*20), y: Math.floor(Math.random()*20) }; else snake.pop();
-    ctx.fillStyle = "black"; ctx.fillRect(0,0,400,400);
-    ctx.fillStyle = "#ff0080"; snake.forEach(s => ctx.fillRect(s.x*20, s.y*20, 18, 18));
-    ctx.fillStyle = "#40e0d0"; ctx.fillRect(food.x*20, food.y*20, 18, 18);
-  }, 100);
+// Touch D-pad events
+let touchDirCallback = null;
+function setTouchDir(cb) { touchDirCallback = cb; }
+
+function fireDirKey(key) { if (touchDirCallback) touchDirCallback(key); }
+tUp.addEventListener("touchstart",    e => { e.preventDefault(); fireDirKey("ArrowUp"); });
+tDown.addEventListener("touchstart",  e => { e.preventDefault(); fireDirKey("ArrowDown"); });
+tLeft.addEventListener("touchstart",  e => { e.preventDefault(); fireDirKey("ArrowLeft"); });
+tRight.addEventListener("touchstart", e => { e.preventDefault(); fireDirKey("ArrowRight"); });
+tUp.addEventListener("click",    () => fireDirKey("ArrowUp"));
+tDown.addEventListener("click",  () => fireDirKey("ArrowDown"));
+tLeft.addEventListener("click",  () => fireDirKey("ArrowLeft"));
+tRight.addEventListener("click", () => fireDirKey("ArrowRight"));
+
+function clearStage() {
+  clearInterval(gameInterval);
+  stage.innerHTML = "";
+  gInfo.innerText = "";
+  window.onkeydown = null;
+  touchDirCallback = null;
+  currentGame = null;
 }
 
-function startPong() {
-  clearStage(); let score = 0; const canvas = document.createElement('canvas'); canvas.width = 400; canvas.height = 400; stage.appendChild(canvas);
-  const ctx = canvas.getContext('2d'); let p1 = 150, bX = 200, bY = 200, bDX = 4, bDY = 4;
-  canvas.onmousemove = e => { const rect = canvas.getBoundingClientRect(); p1 = (e.clientY - rect.top) * (400/rect.height) - 40; };
+/* --- SNAKE --- */
+function startSnake() {
+  clearStage(); currentGame = "snake";
+  gInfo.innerText = "Arrows/D-pad to move";
+  const canvas = document.createElement("canvas"); canvas.width = 420; canvas.height = 420; stage.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  const SZ = 21, CELL = 20;
+  let snake = [{x:10,y:10}], food = {x:15,y:15}, dx=1, dy=0, score=0;
+
+  function handleDir(key) {
+    if (key==="ArrowUp"    && dy===0) { dx=0; dy=-1; }
+    else if (key==="ArrowDown"  && dy===0) { dx=0; dy=1; }
+    else if (key==="ArrowLeft"  && dx===0) { dx=-1; dy=0; }
+    else if (key==="ArrowRight" && dx===0) { dx=1;  dy=0; }
+  }
+  window.onkeydown = e => { if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) { e.preventDefault(); handleDir(e.key); } };
+  setTouchDir(handleDir);
+
+  function randomFood() { food = {x:Math.floor(Math.random()*SZ), y:Math.floor(Math.random()*SZ)}; }
   gameInterval = setInterval(() => {
-    bX += bDX; bY += bDY; if (bY < 0 || bY > 390) bDY *= -1;
-    if (bX < 20 && bY > p1 && bY < p1 + 80) { bDX *= -1.05; score++; gInfo.innerText = "Score: " + score; }
-    if (bX > 385) bDX *= -1; if (bX < 0) { alert("Game Over!"); startPong(); }
-    ctx.fillStyle = "black"; ctx.fillRect(0,0,400,400);
-    ctx.fillStyle = "#40e0d0"; ctx.fillRect(10, p1, 10, 80);
-    ctx.fillStyle = "#ff0080"; ctx.fillRect(bX, bY, 10, 10);
+    let head = {x: snake[0].x + dx, y: snake[0].y + dy};
+    if (head.x<0||head.x>=SZ||head.y<0||head.y>=SZ||snake.some(s=>s.x===head.x&&s.y===head.y)) { showToast("Game Over! Score: "+score); startSnake(); return; }
+    snake.unshift(head);
+    if (head.x===food.x && head.y===food.y) { score++; gInfo.innerText="Score: "+score; randomFood(); } else snake.pop();
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,420,420);
+    ctx.fillStyle="#ff0080"; snake.forEach(s=>ctx.fillRect(s.x*CELL,s.y*CELL,18,18));
+    ctx.fillStyle="#40e0d0"; ctx.fillRect(food.x*CELL,food.y*CELL,18,18);
+  }, 110);
+}
+
+/* --- PONG --- */
+function startPong() {
+  clearStage(); currentGame = "pong";
+  gInfo.innerText = "Mouse/touch to move paddle";
+  const canvas = document.createElement("canvas"); canvas.width=400; canvas.height=400; stage.appendChild(canvas);
+  const ctx = canvas.getContext("2d");
+  let score=0, p1=150, bX=200, bY=200, bDX=4, bDY=3.5;
+
+  canvas.onmousemove = e => { const r=canvas.getBoundingClientRect(); p1=(e.clientY-r.top)*(400/r.height)-40; };
+  canvas.addEventListener("touchmove", e => { e.preventDefault(); const r=canvas.getBoundingClientRect(); p1=(e.touches[0].clientY-r.top)*(400/r.height)-40; }, {passive:false});
+  // D-pad for pong moves paddle
+  setTouchDir(key => { if(key==="ArrowUp") p1=Math.max(0,p1-30); if(key==="ArrowDown") p1=Math.min(320,p1+30); });
+
+  gameInterval = setInterval(() => {
+    bX+=bDX; bY+=bDY;
+    if(bY<0||bY>390) bDY*=-1;
+    if(bX<20 && bY>p1 && bY<p1+80) { bDX=Math.abs(bDX)*1.04; score++; gInfo.innerText="Score: "+score; }
+    if(bX>385) bDX=-Math.abs(bDX);
+    if(bX<0) { showToast("Game Over! Score: "+score); startPong(); return; }
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,400,400);
+    ctx.fillStyle="#40e0d0"; ctx.fillRect(10,p1,12,80);
+    ctx.fillStyle="#ff0080"; ctx.beginPath(); ctx.arc(bX,bY,8,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle="#333"; ctx.setLineDash([10,10]); ctx.beginPath(); ctx.moveTo(200,0); ctx.lineTo(200,400); ctx.stroke(); ctx.setLineDash([]);
   }, 30);
 }
 
+/* --- TIC TAC TOE --- */
 function startTTT() {
-  clearStage(); let board = ["","","","","","","","",""]; const grid = document.createElement('div'); grid.className = 'ttt-grid';
-  board.forEach((_, i) => {
-    const cell = document.createElement('div'); cell.className = 'cell ttt-cell';
-    cell.onclick = () => { if (board[i] || checkWinTTT(board)) return; board[i] = "X"; cell.innerText = "X"; cell.style.color = "#ff0080"; if (!checkWinTTT(board) && board.includes("")) setTimeout(botMove, 300); else if (checkWinTTT(board)) { alert("You Win!"); startTTT(); } else { alert("Draw!"); startTTT(); } };
+  clearStage(); currentGame="ttt";
+  let board=Array(9).fill("");
+  const grid=document.createElement("div"); grid.className="ttt-grid";
+  const cells=[];
+  for(let i=0;i<9;i++){
+    const cell=document.createElement("div"); cell.className="cell ttt-cell"; cells.push(cell);
+    cell.onclick=()=>{
+      if(board[i]||checkWinTTT(board)) return;
+      board[i]="X"; cell.textContent="X"; cell.style.color="#ff0080";
+      if(checkWinTTT(board)){showToast("🎉 You Win!");startTTT();return;}
+      if(!board.includes("")){showToast("It's a Draw!");startTTT();return;}
+      setTimeout(()=>botMove(),300);
+    };
     grid.appendChild(cell);
-  });
+  }
   stage.appendChild(grid);
-  function botMove() { let empty = board.map((v,i) => v===""?i:null).filter(v=>v!==null); let move = empty[Math.floor(Math.random()*empty.length)]; board[move] = "O"; const cells = stage.querySelectorAll('.ttt-cell'); cells[move].innerText = "O"; cells[move].style.color = "#40e0d0"; if (checkWinTTT(board)) { alert("Bot Wins!"); startTTT(); } }
+  function botMove(){
+    // Smarter bot: try to win, block, then random
+    let move=findWin("O")||findWin("X")||[4,0,2,6,8,1,3,5,7].find(i=>!board[i]);
+    if(move===undefined) return;
+    board[move]="O"; cells[move].textContent="O"; cells[move].style.color="#40e0d0";
+    if(checkWinTTT(board)){showToast("🤖 Bot Wins!");startTTT();}
+  }
+  function findWin(player){
+    const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+    for(const [a,b,c] of wins){
+      if(board[a]===player&&board[b]===player&&board[c]==="") return c;
+      if(board[a]===player&&board[c]===player&&board[b]==="") return b;
+      if(board[b]===player&&board[c]===player&&board[a]==="") return a;
+    }
+  }
 }
-function checkWinTTT(b) { const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]; return wins.some(w => b[w[0]] && b[w[0]] === b[w[1]] && b[w[0]] === b[w[2]]); }
+function checkWinTTT(b){const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return w.some(([a,b2,c])=>b[a]&&b[a]===b[b2]&&b[a]===b[c]);}
 
-function startReaction() {
-  clearStage(); let levels = ["#ff0033", "#9d00ff", "#ff8c00"]; let cur = 0, times = [];
-  function runLevel() {
-    stage.innerHTML = ''; const box = document.createElement('div'); box.id = "reaction-box"; box.style.background = levels[cur]; box.innerText = `LEVEL ${cur+1}: Wait for GREEN`; stage.appendChild(box);
-    let start; let timeout = setTimeout(() => { box.style.background = "#40e0d0"; box.innerText = "CLICK!"; start = Date.now(); }, 1500 + Math.random()*2500);
-    box.onclick = () => { if (!start) { clearTimeout(timeout); alert("Too fast!"); runLevel(); } else { times.push(Date.now()-start); cur++; if (cur < 3) runLevel(); else { let avg = Math.round(times.reduce((a,b)=>a+b)/3); alert(`Average: ${avg}ms`); startReaction(); } } };
+/* --- REACTION --- */
+function startReaction(){
+  clearStage(); currentGame="reaction";
+  let cur=0,times=[];
+  const levels=3;
+  function runLevel(){
+    stage.innerHTML="";
+    const box=document.createElement("div"); box.id="reaction-box";
+    box.style.background="#1a1a1a"; box.style.color="#555";
+    box.innerHTML=`<div style="text-align:center"><div style="font-size:2rem">⏳</div><div>LEVEL ${cur+1} — Wait for GREEN then tap!</div></div>`;
+    stage.appendChild(box);
+    let start, timeout, ready=false;
+    timeout=setTimeout(()=>{
+      box.style.background="#40e0d0"; box.style.color="#000";
+      box.innerHTML=`<div style="font-size:2rem; font-weight:900">TAP!</div>`;
+      start=Date.now(); ready=true;
+    }, 1500+Math.random()*3000);
+    function onTap(){
+      if(!ready){clearTimeout(timeout);showToast("Too early! 🙅");runLevel();return;}
+      times.push(Date.now()-start); cur++;
+      if(cur<levels) runLevel();
+      else { let avg=Math.round(times.reduce((a,b)=>a+b)/times.length); showToast(`Avg: ${avg}ms — ${avg<250?"Lightning! ⚡":avg<400?"Great! 🎯":"Keep practicing! 💪"}`); startReaction(); }
+    }
+    box.onclick=onTap;
+    box.addEventListener("touchstart",e=>{e.preventDefault();onTap();},{passive:false});
   }
   runLevel();
 }
 
-function startMemory() {
-  clearStage(); let icons = ["🎸","🎹","📻","🎧","🎵","🎷","🎤","🎶"]; let cards = [...icons, ...icons].sort(() => Math.random() - 0.5); let flipped = [], matched = 0;
-  const grid = document.createElement('div'); grid.className = 'mem-grid';
-  cards.forEach((icon, i) => {
-    const cell = document.createElement('div'); cell.className = 'cell mem-cell';
-    cell.onclick = () => { if (flipped.length < 2 && !cell.classList.contains('flipped')) { cell.innerText = icon; cell.classList.add('flipped'); flipped.push({cell, icon}); if (flipped.length === 2) { if (flipped[0].icon === flipped[1].icon) { matched++; flipped = []; if(matched === 8) alert("Match Complete!"); } else { setTimeout(() => { flipped.forEach(f => { f.cell.innerText = ''; f.cell.classList.remove('flipped'); }); flipped = []; }, 700); } } } };
+/* --- MEMORY --- */
+function startMemory(){
+  clearStage(); currentGame="memory";
+  let icons=["🎸","🎹","📻","🎧","🎵","🎷","🎤","🎶"];
+  let cards=[...icons,...icons].sort(()=>Math.random()-0.5);
+  let flipped=[],matched=0,locked=false;
+  const grid=document.createElement("div"); grid.className="mem-grid";
+  const cellEls=[];
+  cards.forEach((icon,i)=>{
+    const cell=document.createElement("div"); cell.className="cell mem-cell"; cellEls.push(cell);
+    cell.onclick=()=>{
+      if(locked||flipped.length>=2||cell.classList.contains("flipped")) return;
+      cell.textContent=icon; cell.classList.add("flipped");
+      flipped.push({cell,icon,i});
+      if(flipped.length===2){
+        locked=true;
+        if(flipped[0].icon===flipped[1].icon){
+          matched++; flipped=[]; locked=false;
+          if(matched===8) showToast("🏆 All matched!");
+        } else { setTimeout(()=>{ flipped.forEach(f=>{f.cell.textContent="";f.cell.classList.remove("flipped");}); flipped=[]; locked=false; },750); }
+      }
+    };
     grid.appendChild(cell);
   });
   stage.appendChild(grid);
 }
 
-function startTetris() {
-  clearStage(); gInfo.innerText = "Arrows move/rotate."; const canvas = document.createElement('canvas'); canvas.width = 240; canvas.height = 400; stage.appendChild(canvas);
-  const ctx = canvas.getContext('2d'); ctx.scale(20, 20); const arena = Array.from({length: 20}, () => Array(12).fill(0));
-  const colors = [null, '#ff0080', '#40e0d0', '#ff8c00', '#9d00ff', '#00ff00', '#ffff00', '#ff0033'];
-  let player = { pos: {x: 5, y: 0}, matrix: [[0,1,0],[1,1,1],[0,0,0]], score: 0 };
-  function draw() { ctx.fillStyle = '#000'; ctx.fillRect(0,0,canvas.width, canvas.height); arena.forEach((row, y) => row.forEach((val, x) => { if(val) { ctx.fillStyle = colors[val]; ctx.fillRect(x,y,1,1); } })); player.matrix.forEach((row, y) => row.forEach((val, x) => { if(val) { ctx.fillStyle = colors[val]; ctx.fillRect(player.pos.x+x, player.pos.y+y, 1,1); } })); }
-  function playerDrop() { player.pos.y++; if (collide(arena, player)) { player.pos.y--; merge(arena, player); playerReset(); arenaSweep(); } draw(); }
-  function collide(a, p) { const [m, o] = [p.matrix, p.pos]; for(let y=0; y<m.length; ++y) for(let x=0; x<m[y].length; ++x) if(m[y][x] !== 0 && (a[y+o.y] && a[y+o.y][x+o.x]) !== 0) return true; return false; }
-  function merge(a, p) { p.matrix.forEach((row, y) => row.forEach((v,x) => { if(v) a[y+p.pos.y][x+p.pos.x] = v; })); }
-  function playerReset() { const ms = [[[0,1,0],[1,1,1],[0,0,0]], [[2,2],[2,2]], [[0,3,3],[3,3,0],[0,0,0]], [[4,4,0],[0,4,4],[0,0,0]]]; player.matrix = ms[Math.floor(Math.random()*ms.length)]; player.pos.y = 0; player.pos.x = 5; if(collide(arena, player)) { arena.forEach(r => r.fill(0)); player.score = 0; } }
-  function arenaSweep() { outer: for(let y=arena.length-1; y>0; --y) { for(let x=0; x<arena[y].length; ++x) if(arena[y][x]===0) continue outer; const row = arena.splice(y,1)[0].fill(0); arena.unshift(row); ++y; player.score += 10; gInfo.innerText = "Score: " + player.score; } }
-  window.onkeydown = e => { if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) e.preventDefault(); if(e.key==="ArrowLeft") { player.pos.x--; if(collide(arena,player)) player.pos.x++; } if(e.key==="ArrowRight") { player.pos.x++; if(collide(arena,player)) player.pos.x--; } if(e.key==="ArrowDown") playerDrop(); if(e.key==="ArrowUp") { const oldM = player.matrix; player.matrix = player.matrix[0].map((_,i)=>player.matrix.map(r=>r[i]).reverse()); if(collide(arena,player)) player.matrix = oldM; } draw(); };
-  gameInterval = setInterval(playerDrop, 1000);
+/* --- TETRIS --- */
+function startTetris(){
+  clearStage(); currentGame="tetris";
+  gInfo.innerText="Arrows/D-pad move · Up=rotate";
+  const canvas=document.createElement("canvas"); canvas.width=240; canvas.height=400; stage.appendChild(canvas);
+  const ctx=canvas.getContext("2d"); ctx.scale(20,20);
+  const COLS=12, ROWS=20;
+  const arena=Array.from({length:ROWS},()=>Array(COLS).fill(0));
+  const colors=[null,"#ff0080","#40e0d0","#ff8c00","#9d00ff","#00ff80","#ffff00","#ff0033"];
+  const pieces=[[[0,1,0],[1,1,1],[0,0,0]],[[2,2],[2,2]],[[0,3,3],[3,3,0]],[[4,4,0],[0,4,4]],[[5,0,0],[5,5,5]],[[0,0,6],[6,6,6]],[[0,7,0,0],[0,7,0,0],[0,7,0,0],[0,7,0,0]]];
+  let pl={pos:{x:5,y:0},matrix:pieces[0],score:0};
+  let dropCounter=0, lastTime=0, animId;
+
+  function draw(){
+    ctx.fillStyle="#000"; ctx.fillRect(0,0,COLS,ROWS);
+    arena.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(x,y,1,1);}}));
+    pl.matrix.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(pl.pos.x+x,pl.pos.y+y,1,1);}}));
+  }
+  function collide(a,p){const[m,o]=[p.matrix,p.pos];for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++)if(m[y][x]!==0&&(a[y+o.y]&&a[y+o.y][x+o.x])!==0)return true;return false;}
+  function merge(a,p){p.matrix.forEach((row,y)=>row.forEach((v,x)=>{if(v)a[y+p.pos.y][x+p.pos.x]=v;}));}
+  function rotate(m){return m[0].map((_,i)=>m.map(r=>r[i]).reverse());}
+  function playerDrop(){pl.pos.y++;if(collide(arena,pl)){pl.pos.y--;merge(arena,pl);playerReset();sweep();}draw();}
+  function sweep(){for(let y=ROWS-1;y>0;y--){if(arena[y].every(v=>v!==0)){arena.splice(y,1);arena.unshift(Array(COLS).fill(0));pl.score+=10;gInfo.innerText="Score: "+pl.score;y++;}}}
+  function playerReset(){pl.matrix=pieces[Math.floor(Math.random()*pieces.length)];pl.pos.y=0;pl.pos.x=Math.floor(COLS/2)-Math.floor(pl.matrix[0].length/2);if(collide(arena,pl)){arena.forEach(r=>r.fill(0));pl.score=0;gInfo.innerText="Game Over — Score: 0";}}
+
+  function handleDir(key){
+    if(key==="ArrowLeft"){pl.pos.x--;if(collide(arena,pl))pl.pos.x++;}
+    if(key==="ArrowRight"){pl.pos.x++;if(collide(arena,pl))pl.pos.x--;}
+    if(key==="ArrowDown") playerDrop();
+    if(key==="ArrowUp"){const old=pl.matrix;pl.matrix=rotate(pl.matrix);if(collide(arena,pl))pl.matrix=old;}
+    draw();
+  }
+  window.onkeydown=e=>{if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();handleDir(e.key);}};
+  setTouchDir(handleDir);
+
+  function update(time=0){dropCounter+=time-lastTime;lastTime=time;if(dropCounter>700){playerDrop();dropCounter=0;}draw();animId=requestAnimationFrame(update);}
+  update();
+  // Clean up animation on new game
+  const origClear=clearStage;
 }
 
-/* --- TRIVIA LOGIC --- */
-const triviaQuestions = [{question:"Juventus home before Allianz?", answers:["Olimpico","San Siro","Delle Alpi","Ferraris"], correctAnswer:"Delle Alpi"}, {question:"Milan towers with 2,000 trees?", answers:["CityLife","Porta Nuova","Bosco Verticale","Isola"], correctAnswer:"Bosco Verticale"}, {question:"Italian stroll?", answers:["Merenda","Passeggiata","Dolce Vita","Riposo"], correctAnswer:"Passeggiata"}, {question:"Pasta meaning butterfly?", answers:["Penne","Farfalle","Fusilli","Rigatoni"], correctAnswer:"Farfalle"}];
-let qIdx=0, score=0;
-function showQuestion() {
-  const q = triviaQuestions[qIdx]; document.getElementById('question-text').textContent = q.question;
-  const btns = document.getElementById('answer-buttons'); btns.innerHTML = '';
-  q.answers.forEach(a => {
-    const b = document.createElement('button'); b.textContent = a; b.className = 'answer-btn';
-    b.onclick = () => {
-      document.getElementById('feedback').textContent = (a===q.correctAnswer) ? "Correct! 🏆" : "Wrong! It was " + q.correctAnswer;
-      if(a===q.correctAnswer) score++; document.getElementById('current-score').textContent = score;
-      setTimeout(() => { qIdx++; if(qIdx < triviaQuestions.length) showQuestion(); else finishTrivia(); }, 1500);
-    }; btns.appendChild(b);
+/* ===================== TRIVIA ===================== */
+const triviaQuestions = [
+  {question:"What was Juventus's home stadium before the Allianz Stadium?", answers:["Olimpico di Torino","San Siro","Stadio Delle Alpi","Stadio Ferraris"], correctAnswer:"Stadio Delle Alpi"},
+  {question:"Which Milan skyscraper complex is famous for its 2,000 trees?", answers:["CityLife Tower","Porta Nuova","Bosco Verticale","Isola District"], correctAnswer:"Bosco Verticale"},
+  {question:"What is the Italian tradition of an evening stroll called?", answers:["Merenda","Passeggiata","Dolce Vita","Il Riposo"], correctAnswer:"Passeggiata"},
+  {question:"Which pasta shape means 'butterfly' in Italian?", answers:["Penne","Farfalle","Fusilli","Rigatoni"], correctAnswer:"Farfalle"},
+  {question:"What is Italy's national dish, according to most Italians?", answers:["Lasagne","Spaghetti Carbonara","Pizza Margherita","Risotto"], correctAnswer:"Spaghetti Carbonara"},
+  {question:"Which Italian city is famous for its carnival with elaborate masks?", answers:["Rome","Florence","Naples","Venice"], correctAnswer:"Venice"},
+  {question:"What does 'Al dente' literally mean in Italian?", answers:["Very soft","To the tooth","Well done","Perfectly cooked"], correctAnswer:"To the tooth"},
+  {question:"Which Italian island is known as the 'Pearl of the Mediterranean'?", answers:["Sardinia","Capri","Ischia","Sicily"], correctAnswer:"Sicily"},
+  {question:"What year did Italy win its most recent FIFA World Cup?", answers:["1998","2002","2006","2010"], correctAnswer:"2006"},
+  {question:"Which Italian composer wrote 'The Four Seasons'?", answers:["Puccini","Verdi","Vivaldi","Rossini"], correctAnswer:"Vivaldi"},
+  {question:"What is the name of the famous leaning tower in Pisa?", answers:["Torre dell'Orologio","Torre di Pisa","Campanile di Pisa","Torre Pendente"], correctAnswer:"Torre Pendente"},
+  {question:"Which Roman structure was used for gladiatorial combat?", answers:["Pantheon","Forum","Colosseum","Circus Maximus"], correctAnswer:"Colosseum"},
+];
+
+let qIdx=0, score=0, answered=false;
+
+function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
+
+function showQuestion(){
+  answered=false;
+  document.getElementById("feedback").textContent="";
+  const q=triviaQuestions[qIdx];
+  document.getElementById("question-text").textContent=q.question;
+  const btns=document.getElementById("answer-buttons"); btns.innerHTML="";
+  shuffle([...q.answers]).forEach(a=>{
+    const b=document.createElement("button"); b.textContent=a; b.className="answer-btn";
+    b.onclick=()=>{
+      if(answered) return; answered=true;
+      const allBtns=btns.querySelectorAll("button");
+      allBtns.forEach(btn=>{ btn.disabled=true; if(btn.textContent===q.correctAnswer) btn.classList.add("correct"); });
+      if(a===q.correctAnswer){ score++; document.getElementById("feedback").textContent="Correct! 🏆"; b.classList.add("correct"); }
+      else { document.getElementById("feedback").textContent="Wrong! It was: "+q.correctAnswer; b.classList.add("wrong"); }
+      document.getElementById("current-score").textContent=score;
+      setTimeout(()=>{ qIdx++; if(qIdx<triviaQuestions.length) showQuestion(); else finishTrivia(); },1600);
+    };
+    btns.appendChild(b);
   });
 }
-function finishTrivia() { document.getElementById('quiz-area').innerHTML=`<h3>Score: ${score}</h3>`; document.getElementById('restart-btn').style.display='block'; }
-document.getElementById('restart-btn').onclick = () => location.reload();
 
-window.onload = () => { 
-  loadAndPlayTrack(); showQuestion(); 
-  document.getElementById('total-questions').textContent = triviaQuestions.length;
-};
+function finishTrivia(){
+  const pct=Math.round((score/triviaQuestions.length)*100);
+  const emoji=pct>=80?"🏆":pct>=50?"😊":"💪";
+  document.getElementById("quiz-area").innerHTML=`<h3 style="color:var(--cyan)">Final Score: ${score}/${triviaQuestions.length} ${emoji}</h3><p style="color:#aaa">${pct>=80?"Italian expert!":pct>=50?"Not bad!":"Keep studying!"}</p>`;
+  document.getElementById("restart-btn").style.display="block";
+}
+
+document.getElementById("restart-btn").onclick=()=>{ qIdx=0; score=0; document.getElementById("restart-btn").style.display="none"; showQuestion(); document.getElementById("current-score").textContent=0; };
+
+window.onload=()=>{ loadAndPlayTrack(); showQuestion(); document.getElementById("total-questions").textContent=triviaQuestions.length; };
 </script>
 </body>
 </html>
