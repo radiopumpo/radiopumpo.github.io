@@ -31,11 +31,10 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 70px 20px 110px;
+      padding: 70px 20px 140px;
       overflow-x: hidden;
     }
 
-    /* Animated scanline overlay */
     body::before {
       content: '';
       position: fixed;
@@ -45,13 +44,13 @@
       z-index: 9999;
     }
 
-    /* --- NAV --- */
+    /* NAV */
     .top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(13,13,13,0.85); backdrop-filter: blur(10px); z-index: 500; border-bottom: 1px solid rgba(255,0,128,0.2); }
     .nav-brand { font-family: 'Black Ops One', cursive; font-size: 1rem; color: var(--pink); letter-spacing: 2px; }
     .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: 0.8rem; border: 1px solid var(--cyan); padding: 7px 14px; border-radius: 20px; transition: 0.3s; letter-spacing: 1px; }
     .nav-link:hover { background: var(--cyan); color: #0d0d0d; box-shadow: 0 0 15px var(--cyan-glow); }
 
-    /* --- LOGO --- */
+    /* LOGO */
     .header-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 16px; }
     #headerLogo { display: block; max-width: 480px; width: 100%; height: auto; filter: drop-shadow(0 0 20px var(--pink-glow)); animation: logoFadeIn 1.8s ease-out forwards; opacity: 0; }
     @keyframes logoFadeIn { 0% { opacity: 0; transform: translateY(20px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
@@ -60,83 +59,12 @@
     @keyframes fadeIn { to { opacity: 1; } }
     @keyframes pulse { 0%,100%{opacity:.6;} 50%{opacity:1;} }
 
-    /* --- STICKY BOTTOM PLAYER --- */
-    .sticky-player {
-      position: fixed;
-      bottom: 0; left: 0; right: 0;
-      z-index: 400;
-      background: rgba(13,13,13,0.92);
-      backdrop-filter: blur(16px);
-      border-top: 1px solid rgba(255,0,128,0.3);
-      box-shadow: 0 -4px 30px rgba(255,0,128,0.2);
-      padding: 10px 16px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-    .marquee-wrap { background: rgba(255,0,128,0.15); border: 1px solid rgba(255,0,128,0.25); border-radius: 20px; overflow: hidden; width: 60%; max-width: 320px; margin: 0 auto; }
-    #songMarquee { display: inline-block; color: var(--pink); font-weight: 700; font-size: 0.85rem; white-space: nowrap; letter-spacing: 0.5px; padding: 6px 0; animation: marqueeScroll 18s linear infinite; }
-    @keyframes marqueeScroll { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-    .controls-wrapper { display: flex; align-items: center; gap: 8px; }
-    .skip-btn { background: none; border: 1px solid var(--pink); color: var(--pink); font-size: 1rem; padding: 7px 10px; cursor: pointer; border-radius: 8px; transition: all 0.2s ease; flex-shrink: 0; }
-    .skip-btn:hover, .skip-btn:active { background: var(--pink); color: #0d0d0d; box-shadow: 0 0 12px var(--pink-glow); }
-    audio { flex-grow: 1; min-width: 0; height: 36px; }
-
-    /* --- PLAYLIST DRAWER --- */
-    .playlist-drawer {
-      position: fixed;
-      bottom: -100%;
-      left: 0; right: 0;
-      z-index: 390;
-      background: rgba(13,13,13,0.97);
-      backdrop-filter: blur(20px);
-      border-top: 1px solid rgba(255,0,128,0.35);
-      box-shadow: 0 -6px 40px rgba(255,0,128,0.15);
-      border-radius: 20px 20px 0 0;
-      padding: 16px 16px 0;
-      max-height: 60vh;
-      display: flex;
-      flex-direction: column;
-      transition: bottom 0.35s cubic-bezier(0.32, 0.72, 0, 1);
-    }
-    .playlist-drawer.open { bottom: 72px; } /* sits just above the sticky player */
-    .drawer-header {
-      display: flex; justify-content: space-between; align-items: center;
-      margin-bottom: 10px; flex-shrink: 0;
-    }
-    .drawer-title { font-family: 'Black Ops One', cursive; color: var(--pink); font-size: 1rem; letter-spacing: 2px; }
-    .drawer-actions { display: flex; gap: 8px; }
-    .drawer-btn { background: none; border: 1px solid var(--pink); color: var(--pink); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.8rem; transition: 0.2s; }
-    .drawer-btn:hover, .drawer-btn:active { background: var(--pink); color: #000; }
-    .drawer-btn.cyan { border-color: var(--cyan); color: var(--cyan); }
-    .drawer-btn.cyan:hover { background: var(--cyan); color: #000; }
-    .playlist-scroll { overflow-y: auto; flex-grow: 1; padding-bottom: 16px; scrollbar-width: thin; scrollbar-color: var(--pink) transparent; }
-    .track-row {
-      display: flex; align-items: center; gap: 12px;
-      padding: 10px 8px; border-radius: 10px;
-      cursor: pointer; transition: background 0.15s;
-      border-bottom: 1px solid rgba(255,255,255,0.04);
-    }
-    .track-row:hover { background: rgba(255,0,128,0.08); }
-    .track-row.playing { background: rgba(255,0,128,0.12); }
-    .track-check {
-      width: 20px; height: 20px; border-radius: 6px;
-      border: 2px solid #444; background: transparent;
-      display: flex; align-items: center; justify-content: center;
-      flex-shrink: 0; transition: 0.2s;
-    }
-    .track-check.checked { background: var(--pink); border-color: var(--pink); }
-    .track-check.checked::after { content: '✓'; color: #fff; font-size: 0.75rem; font-weight: 900; }
-    .track-name { font-size: 0.95rem; font-weight: 600; color: #ddd; flex-grow: 1; }
-    .track-row.playing .track-name { color: var(--pink); }
-    .track-now { font-size: 0.7rem; color: var(--pink); flex-shrink: 0; animation: pulse 1.4s infinite; }
-
-    /* --- GALLERY --- */
+    /* GALLERY */
     .image-gallery { margin-top: 50px; width: 100%; max-width: 1100px; overflow-x: auto; padding-bottom: 14px; display: flex; gap: 14px; justify-content: center; scrollbar-width: thin; scrollbar-color: var(--pink) transparent; }
     .image-gallery img { height: 170px; width: auto; border-radius: 14px; box-shadow: 0 0 16px rgba(255,255,255,0.15); transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; flex-shrink: 0; }
     .image-gallery img:hover { transform: scale(1.06); box-shadow: 0 0 25px var(--pink-glow); }
 
-    /* --- ARCADE --- */
+    /* ARCADE */
     .arcade-container { margin-top: 60px; width: 90%; max-width: 640px; background: rgba(0,0,0,0.55); border: 2px solid var(--cyan); border-radius: 22px; padding: 24px; text-align: center; box-shadow: 0 0 25px var(--cyan-glow); }
     .arcade-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); margin-top: 0; letter-spacing: 2px; font-size: 1.3rem; }
     .arcade-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
@@ -144,7 +72,6 @@
     .game-btn:hover { background: var(--pink); color: #fff; box-shadow: 0 0 10px var(--pink-glow); }
     #game-stage { background: #000; width: 100%; aspect-ratio: 1/1; max-width: 420px; margin: 0 auto; border-radius: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; position: relative; overflow: hidden; touch-action: none; }
 
-    /* Touch controls */
     .touch-controls { display: none; margin-top: 12px; }
     .touch-row { display: flex; justify-content: center; gap: 10px; margin: 4px 0; }
     .t-btn { width: 56px; height: 56px; background: rgba(255,255,255,0.08); border: 1px solid var(--cyan); border-radius: 10px; color: var(--cyan); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none; transition: 0.15s; }
@@ -160,17 +87,17 @@
     .mem-cell.flipped { background: #111; }
     #reaction-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; text-align: center; padding: 20px; }
 
-    /* --- MODAL --- */
-    .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); align-items: center; justify-content: center; flex-direction: column; }
+    /* MODAL */
+    .modal { display: none; position: fixed; z-index: 6000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); align-items: center; justify-content: center; flex-direction: column; }
     .modal-content { max-width: 90vw; max-height: 78vh; border-radius: 12px; object-fit: contain; box-shadow: 0 0 40px var(--pink-glow); }
     .close { position: absolute; top: 18px; right: 28px; color: #f1f1f1; font-size: 38px; cursor: pointer; transition: color 0.2s; }
     .close:hover { color: var(--pink); }
 
-    /* --- CHAT --- */
+    /* CHAT */
     .guestbook-container { margin-top: 60px; width: 90%; max-width: 800px; padding: 24px; background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
     .guestbook-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); letter-spacing: 2px; margin-top: 0; font-size: 1.2rem; }
 
-    /* --- TRIVIA --- */
+    /* TRIVIA */
     .trivia-container { margin-top: 60px; width: 90%; max-width: 620px; text-align: center; padding: 28px; background: rgba(64,224,208,0.07); border-radius: 22px; border: 1px solid rgba(64,224,208,0.25); box-shadow: 0 0 20px var(--cyan-glow); }
     .trivia-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); letter-spacing: 2px; margin-top: 0; font-size: 1.2rem; }
     #question-text { font-size: 1.2rem; font-weight: 600; min-height: 2em; }
@@ -182,11 +109,6 @@
     #score-area { margin-top: 8px; font-size: 1rem; color: #aaa; }
     #restart-btn { background: var(--pink); color: white; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; margin-top: 10px; }
 
-    /* Share toast */
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--cyan); color: #000; font-weight: 700; padding: 10px 22px; border-radius: 20px; font-size: 0.9rem; z-index: 9000; transition: transform 0.4s ease; pointer-events: none; }
-    .toast.show { transform: translateX(-50%) translateY(0); }
-
-    /* Section divider */
     .divider { width: 80%; max-width: 500px; height: 1px; background: linear-gradient(to right, transparent, var(--pink), transparent); margin: 50px 0 0; opacity: 0.4; }
   </style>
 </head>
@@ -203,31 +125,6 @@
 
   <div class="live-badge">● LIVE 24/7</div>
 
-  <!-- Sticky bottom player -->
-  <div class="sticky-player">
-    <div class="marquee-wrap"><span id="songMarquee">NOW PLAYING: Initializing...</span></div>
-    <div class="controls-wrapper">
-      <button id="prevBtn" class="skip-btn" title="Previous">&#9664;&#9664;</button>
-      <audio id="player" controls autoplay></audio>
-      <button id="nextBtn" class="skip-btn" title="Next">&#9654;&#9654;</button>
-      <button id="shareSongBtn" class="skip-btn" title="Share Song">&#10150;</button>
-      <button id="playlistBtn" class="skip-btn" title="Pick Songs">&#127926;</button>
-    </div>
-  </div>
-
-  <!-- Playlist drawer -->
-  <div class="playlist-drawer" id="playlistDrawer">
-    <div class="drawer-header">
-      <span class="drawer-title">🎵 PICK TRACKS</span>
-      <div class="drawer-actions">
-        <button class="drawer-btn cyan" id="selectAllBtn">All</button>
-        <button class="drawer-btn" id="clearAllBtn">None</button>
-        <button class="drawer-btn" id="playSelectedBtn">▶ Shuffle Play</button>
-      </div>
-    </div>
-    <div class="playlist-scroll" id="trackList"></div>
-  </div>
-
   <div class="divider"></div>
   <div class="image-gallery" id="gallery"></div>
 
@@ -243,7 +140,6 @@
       <button class="game-btn" onclick="startTetris()">Tetris</button>
     </div>
     <div id="game-stage"><p style="color:#555; font-size:1.1rem;">Select a Game!</p></div>
-    <!-- Touch D-pad (shown on touch devices) -->
     <div class="touch-controls" id="touchControls">
       <div class="touch-row"><button class="t-btn" id="tUp">▲</button></div>
       <div class="touch-row">
@@ -280,31 +176,8 @@
     </div>
   </div>
 
-  <div class="toast" id="toast">Copied to clipboard! 🎵</div>
-
 <script>
-/* ===================== RADIO ===================== */
-const playlist = [
-  { url: "https://radiopumpo.github.io/forzapumpo.mp3",       name: "Forza Pumpo"           },
-  { url: "https://radiopumpo.github.io/dnbpumpo.mp3",         name: "DNB Pumpo"             },
-  { url: "https://radiopumpo.github.io/housepumpo.mp3",       name: "House Pumpo"           },
-  { url: "https://radiopumpo.github.io/hiphoppumpo.mp3",      name: "Hip Hop Pumpo"         },
-  { url: "https://radiopumpo.github.io/rockpowerpumpo.mp3",   name: "Rock Power Pumpo"      },
-  { url: "https://radiopumpo.github.io/seashantypumpo.mp3",   name: "Sea Shanty Pumpo"      },
-  { url: "https://radiopumpo.github.io/unodinoipumpo.mp3",    name: "Uno Di Noi Pumpo"      },
-  { url: "https://radiopumpo.github.io/gospelpumpo.mp3",      name: "Gospel Pumpo"          },
-  { url: "https://radiopumpo.github.io/ACDCpumpo.mp3",        name: "AC/DC Pumpo"           },
-  { url: "https://radiopumpo.github.io/bobpumpo.mp3",         name: "Bob Pumpo"             },
-  { url: "https://radiopumpo.github.io/пумпо.mp3",            name: "пумпо"                 },
-  { url: "https://radiopumpo.github.io/pumpolofinippon.mp3",  name: "LoFi Nippon Pumpo"     },
-  { url: "https://radiopumpo.github.io/pumpitup.mp3",         name: "Pumpo Pump it up"      },
-  { url: "https://radiopumpo.github.io/pumpoquersentir.mp3",  name: "Pumpo Quer Sentir"     },
-  { url: "https://radiopumpo.github.io/pumpothicthang.mp3",   name: "Pumpo Thic Thang"      },
-  { url: "https://radiopumpo.github.io/pumpotheninja.mp3",    name: "Pumpo The Ninja"       },
-  { url: "https://radiopumpo.github.io/pumpophonkbr.mp3",     name: "A ora do Pumpo"        },
-  { url: "https://radiopumpo.github.io/pumpophonkbr2.mp3",    name: "A ora do Pumpo Dois"   },
-];
-
+/* ===================== GALLERY ===================== */
 const images = [
   "https://radiopumpo.github.io/djpumpo.jpg",
   "https://radiopumpo.github.io/forzapumpo.jpg",
@@ -316,146 +189,12 @@ const images = [
   "https://radiopumpo.github.io/dosbrospumpo.jpg"
 ];
 
-let index = 0;
-let activeQueue = null; // null = full playlist, array = custom shuffled queue
-let activeQueuePos = 0;
-
-const player = document.getElementById("player");
-const marquee = document.getElementById("songMarquee");
 const modal = document.getElementById("imageModal");
 const modalImg = document.getElementById("expandedImg");
-const toast = document.getElementById("toast");
-const drawer = document.getElementById("playlistDrawer");
-const trackList = document.getElementById("trackList");
-
-// Checked state per track index
-const checked = new Array(playlist.length).fill(true);
-
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add("show");
-  setTimeout(() => toast.classList.remove("show"), 2800);
-}
-
-function updateMarquee(name) {
-  marquee.textContent = `NOW PLAYING: ${name}`;
-  marquee.style.animation = "none";
-  requestAnimationFrame(() => { marquee.style.animation = ""; });
-}
-
-function loadAndPlayTrack() {
-  const track = activeQueue ? activeQueue[activeQueuePos] : playlist[index];
-  player.src = track.url;
-  updateMarquee(track.name);
-  player.play().catch(() => {});
-  refreshDrawerHighlight();
-}
-
-function nextTrack() {
-  if (activeQueue) {
-    activeQueuePos = (activeQueuePos + 1) % activeQueue.length;
-  } else {
-    index = (index + 1) % playlist.length;
-  }
-  loadAndPlayTrack();
-}
-
-function prevTrack() {
-  if (activeQueue) {
-    activeQueuePos = (activeQueuePos - 1 + activeQueue.length) % activeQueue.length;
-  } else {
-    index = (index - 1 + playlist.length) % playlist.length;
-  }
-  loadAndPlayTrack();
-}
-
-document.getElementById("nextBtn").onclick = nextTrack;
-document.getElementById("prevBtn").onclick = prevTrack;
-player.onended = nextTrack;
-
-document.getElementById("shareSongBtn").onclick = () => {
-  const track = activeQueue ? activeQueue[activeQueuePos] : playlist[index];
-  const shareText = `🎵 Listening to "${track.name}" on Radio Pumpo 24/7! Tune in at ${window.location.href}`;
-  if (navigator.share) {
-    navigator.share({ title: "Radio Pumpo", text: shareText, url: window.location.href }).catch(() => {});
-  } else {
-    navigator.clipboard.writeText(shareText).then(() => showToast("Song link copied! 🎵")).catch(() => showToast("Copy: " + shareText));
-  }
-};
-
-/* --- PLAYLIST DRAWER --- */
-function buildTrackList() {
-  trackList.innerHTML = "";
-  playlist.forEach((track, i) => {
-    const row = document.createElement("div");
-    row.className = "track-row";
-    row.id = `track-row-${i}`;
-    row.innerHTML = `
-      <div class="track-check ${checked[i] ? "checked" : ""}" id="chk-${i}"></div>
-      <span class="track-name">${track.name}</span>
-      <span class="track-now" id="now-${i}" style="display:none">▶ NOW</span>`;
-    row.onclick = () => toggleCheck(i);
-    trackList.appendChild(row);
-  });
-  refreshDrawerHighlight();
-}
-
-function toggleCheck(i) {
-  checked[i] = !checked[i];
-  document.getElementById(`chk-${i}`).className = `track-check ${checked[i] ? "checked" : ""}`;
-}
-
-function refreshDrawerHighlight() {
-  const currentUrl = activeQueue ? activeQueue[activeQueuePos].url : playlist[index].url;
-  playlist.forEach((track, i) => {
-    const row = document.getElementById(`track-row-${i}`);
-    const nowEl = document.getElementById(`now-${i}`);
-    if (!row) return;
-    const isPlaying = track.url === currentUrl;
-    row.classList.toggle("playing", isPlaying);
-    if (nowEl) nowEl.style.display = isPlaying ? "inline" : "none";
-  });
-}
-
-document.getElementById("playlistBtn").onclick = () => {
-  const isOpen = drawer.classList.toggle("open");
-  if (isOpen) buildTrackList();
-};
-
-document.getElementById("selectAllBtn").onclick = () => {
-  checked.fill(true);
-  buildTrackList();
-};
-
-document.getElementById("clearAllBtn").onclick = () => {
-  checked.fill(false);
-  buildTrackList();
-};
-
-document.getElementById("playSelectedBtn").onclick = () => {
-  const selected = playlist.filter((_, i) => checked[i]);
-  if (selected.length === 0) { showToast("Pick at least one track! 🎵"); return; }
-  // Shuffle selected
-  activeQueue = [...selected].sort(() => Math.random() - 0.5);
-  activeQueuePos = 0;
-  drawer.classList.remove("open");
-  loadAndPlayTrack();
-  showToast(`▶ Shuffling ${selected.length} track${selected.length > 1 ? "s" : ""}!`);
-};
-
-// Close drawer on outside tap
-document.addEventListener("click", e => {
-  if (drawer.classList.contains("open") &&
-      !drawer.contains(e.target) &&
-      e.target.id !== "playlistBtn") {
-    drawer.classList.remove("open");
-  }
-});
 
 images.forEach(src => {
   const img = document.createElement("img");
-  img.src = src;
-  img.loading = "lazy";
+  img.src = src; img.loading = "lazy";
   img.onclick = () => { modal.style.display = "flex"; modalImg.src = src; };
   document.getElementById("gallery").appendChild(img);
 });
@@ -472,10 +211,8 @@ const tDown = document.getElementById("tDown");
 const tLeft = document.getElementById("tLeft");
 const tRight = document.getElementById("tRight");
 
-// Touch D-pad events
 let touchDirCallback = null;
 function setTouchDir(cb) { touchDirCallback = cb; }
-
 function fireDirKey(key) { if (touchDirCallback) touchDirCallback(key); }
 tUp.addEventListener("touchstart",    e => { e.preventDefault(); fireDirKey("ArrowUp"); });
 tDown.addEventListener("touchstart",  e => { e.preventDefault(); fireDirKey("ArrowDown"); });
@@ -486,16 +223,14 @@ tDown.addEventListener("click",  () => fireDirKey("ArrowDown"));
 tLeft.addEventListener("click",  () => fireDirKey("ArrowLeft"));
 tRight.addEventListener("click", () => fireDirKey("ArrowRight"));
 
+function arcadeToast(msg) { pumpoShowToast(msg); }
+
 function clearStage() {
   clearInterval(gameInterval);
-  stage.innerHTML = "";
-  gInfo.innerText = "";
-  window.onkeydown = null;
-  touchDirCallback = null;
-  currentGame = null;
+  stage.innerHTML = ""; gInfo.innerText = "";
+  window.onkeydown = null; touchDirCallback = null; currentGame = null;
 }
 
-/* --- SNAKE --- */
 function startSnake() {
   clearStage(); currentGame = "snake";
   gInfo.innerText = "Arrows/D-pad to move";
@@ -503,112 +238,102 @@ function startSnake() {
   const ctx = canvas.getContext("2d");
   const SZ = 21, CELL = 20;
   let snake = [{x:10,y:10}], food = {x:15,y:15}, dx=1, dy=0, score=0;
-
   function handleDir(key) {
-    if (key==="ArrowUp"    && dy===0) { dx=0; dy=-1; }
-    else if (key==="ArrowDown"  && dy===0) { dx=0; dy=1; }
-    else if (key==="ArrowLeft"  && dx===0) { dx=-1; dy=0; }
-    else if (key==="ArrowRight" && dx===0) { dx=1;  dy=0; }
+    if (key==="ArrowUp"&&dy===0){dx=0;dy=-1;}
+    else if(key==="ArrowDown"&&dy===0){dx=0;dy=1;}
+    else if(key==="ArrowLeft"&&dx===0){dx=-1;dy=0;}
+    else if(key==="ArrowRight"&&dx===0){dx=1;dy=0;}
   }
-  window.onkeydown = e => { if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)) { e.preventDefault(); handleDir(e.key); } };
+  window.onkeydown = e => { if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();handleDir(e.key);} };
   setTouchDir(handleDir);
-
-  function randomFood() { food = {x:Math.floor(Math.random()*SZ), y:Math.floor(Math.random()*SZ)}; }
-  gameInterval = setInterval(() => {
-    let head = {x: snake[0].x + dx, y: snake[0].y + dy};
-    if (head.x<0||head.x>=SZ||head.y<0||head.y>=SZ||snake.some(s=>s.x===head.x&&s.y===head.y)) { showToast("Game Over! Score: "+score); startSnake(); return; }
+  function randomFood(){food={x:Math.floor(Math.random()*SZ),y:Math.floor(Math.random()*SZ)};}
+  gameInterval = setInterval(()=>{
+    let head={x:snake[0].x+dx,y:snake[0].y+dy};
+    if(head.x<0||head.x>=SZ||head.y<0||head.y>=SZ||snake.some(s=>s.x===head.x&&s.y===head.y)){arcadeToast("Game Over! Score: "+score);startSnake();return;}
     snake.unshift(head);
-    if (head.x===food.x && head.y===food.y) { score++; gInfo.innerText="Score: "+score; randomFood(); } else snake.pop();
-    ctx.fillStyle="#000"; ctx.fillRect(0,0,420,420);
-    ctx.fillStyle="#ff0080"; snake.forEach(s=>ctx.fillRect(s.x*CELL,s.y*CELL,18,18));
-    ctx.fillStyle="#40e0d0"; ctx.fillRect(food.x*CELL,food.y*CELL,18,18);
-  }, 110);
+    if(head.x===food.x&&head.y===food.y){score++;gInfo.innerText="Score: "+score;randomFood();}else snake.pop();
+    ctx.fillStyle="#000";ctx.fillRect(0,0,420,420);
+    ctx.fillStyle="#ff0080";snake.forEach(s=>ctx.fillRect(s.x*CELL,s.y*CELL,18,18));
+    ctx.fillStyle="#40e0d0";ctx.fillRect(food.x*CELL,food.y*CELL,18,18);
+  },110);
 }
 
-/* --- PONG --- */
 function startPong() {
-  clearStage(); currentGame = "pong";
-  gInfo.innerText = "Mouse/touch to move paddle";
-  const canvas = document.createElement("canvas"); canvas.width=400; canvas.height=400; stage.appendChild(canvas);
-  const ctx = canvas.getContext("2d");
-  let score=0, p1=150, bX=200, bY=200, bDX=4, bDY=3.5;
-
-  canvas.onmousemove = e => { const r=canvas.getBoundingClientRect(); p1=(e.clientY-r.top)*(400/r.height)-40; };
-  canvas.addEventListener("touchmove", e => { e.preventDefault(); const r=canvas.getBoundingClientRect(); p1=(e.touches[0].clientY-r.top)*(400/r.height)-40; }, {passive:false});
-  // D-pad for pong moves paddle
-  setTouchDir(key => { if(key==="ArrowUp") p1=Math.max(0,p1-30); if(key==="ArrowDown") p1=Math.min(320,p1+30); });
-
-  gameInterval = setInterval(() => {
-    bX+=bDX; bY+=bDY;
-    if(bY<0||bY>390) bDY*=-1;
-    if(bX<20 && bY>p1 && bY<p1+80) { bDX=Math.abs(bDX)*1.04; score++; gInfo.innerText="Score: "+score; }
-    if(bX>385) bDX=-Math.abs(bDX);
-    if(bX<0) { showToast("Game Over! Score: "+score); startPong(); return; }
-    ctx.fillStyle="#000"; ctx.fillRect(0,0,400,400);
-    ctx.fillStyle="#40e0d0"; ctx.fillRect(10,p1,12,80);
-    ctx.fillStyle="#ff0080"; ctx.beginPath(); ctx.arc(bX,bY,8,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle="#333"; ctx.setLineDash([10,10]); ctx.beginPath(); ctx.moveTo(200,0); ctx.lineTo(200,400); ctx.stroke(); ctx.setLineDash([]);
-  }, 30);
+  clearStage(); currentGame="pong";
+  gInfo.innerText="Mouse/touch to move paddle";
+  const canvas=document.createElement("canvas");canvas.width=400;canvas.height=400;stage.appendChild(canvas);
+  const ctx=canvas.getContext("2d");
+  let score=0,p1=150,bX=200,bY=200,bDX=4,bDY=3.5;
+  canvas.onmousemove=e=>{const r=canvas.getBoundingClientRect();p1=(e.clientY-r.top)*(400/r.height)-40;};
+  canvas.addEventListener("touchmove",e=>{e.preventDefault();const r=canvas.getBoundingClientRect();p1=(e.touches[0].clientY-r.top)*(400/r.height)-40;},{passive:false});
+  setTouchDir(key=>{if(key==="ArrowUp")p1=Math.max(0,p1-30);if(key==="ArrowDown")p1=Math.min(320,p1+30);});
+  gameInterval=setInterval(()=>{
+    bX+=bDX;bY+=bDY;
+    if(bY<0||bY>390)bDY*=-1;
+    if(bX<20&&bY>p1&&bY<p1+80){bDX=Math.abs(bDX)*1.04;score++;gInfo.innerText="Score: "+score;}
+    if(bX>385)bDX=-Math.abs(bDX);
+    if(bX<0){arcadeToast("Game Over! Score: "+score);startPong();return;}
+    ctx.fillStyle="#000";ctx.fillRect(0,0,400,400);
+    ctx.fillStyle="#40e0d0";ctx.fillRect(10,p1,12,80);
+    ctx.fillStyle="#ff0080";ctx.beginPath();ctx.arc(bX,bY,8,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle="#333";ctx.setLineDash([10,10]);ctx.beginPath();ctx.moveTo(200,0);ctx.lineTo(200,400);ctx.stroke();ctx.setLineDash([]);
+  },30);
 }
 
-/* --- TIC TAC TOE --- */
 function startTTT() {
   clearStage(); currentGame="ttt";
   let board=Array(9).fill("");
-  const grid=document.createElement("div"); grid.className="ttt-grid";
+  const grid=document.createElement("div");grid.className="ttt-grid";
   const cells=[];
   for(let i=0;i<9;i++){
-    const cell=document.createElement("div"); cell.className="cell ttt-cell"; cells.push(cell);
+    const cell=document.createElement("div");cell.className="cell ttt-cell";cells.push(cell);
     cell.onclick=()=>{
-      if(board[i]||checkWinTTT(board)) return;
-      board[i]="X"; cell.textContent="X"; cell.style.color="#ff0080";
-      if(checkWinTTT(board)){showToast("🎉 You Win!");startTTT();return;}
-      if(!board.includes("")){showToast("It's a Draw!");startTTT();return;}
+      if(board[i]||checkWinTTT(board))return;
+      board[i]="X";cell.textContent="X";cell.style.color="#ff0080";
+      if(checkWinTTT(board)){arcadeToast("🎉 You Win!");startTTT();return;}
+      if(!board.includes("")){arcadeToast("It's a Draw!");startTTT();return;}
       setTimeout(()=>botMove(),300);
     };
     grid.appendChild(cell);
   }
   stage.appendChild(grid);
   function botMove(){
-    // Smarter bot: try to win, block, then random
     let move=findWin("O")||findWin("X")||[4,0,2,6,8,1,3,5,7].find(i=>!board[i]);
-    if(move===undefined) return;
-    board[move]="O"; cells[move].textContent="O"; cells[move].style.color="#40e0d0";
-    if(checkWinTTT(board)){showToast("🤖 Bot Wins!");startTTT();}
+    if(move===undefined)return;
+    board[move]="O";cells[move].textContent="O";cells[move].style.color="#40e0d0";
+    if(checkWinTTT(board)){arcadeToast("🤖 Bot Wins!");startTTT();}
   }
-  function findWin(player){
+  function findWin(p){
     const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(const [a,b,c] of wins){
-      if(board[a]===player&&board[b]===player&&board[c]==="") return c;
-      if(board[a]===player&&board[c]===player&&board[b]==="") return b;
-      if(board[b]===player&&board[c]===player&&board[a]==="") return a;
+    for(const[a,b,c]of wins){
+      if(board[a]===p&&board[b]===p&&board[c]==="")return c;
+      if(board[a]===p&&board[c]===p&&board[b]==="")return b;
+      if(board[b]===p&&board[c]===p&&board[a]==="")return a;
     }
   }
 }
 function checkWinTTT(b){const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return w.some(([a,b2,c])=>b[a]&&b[a]===b[b2]&&b[a]===b[c]);}
 
-/* --- REACTION --- */
 function startReaction(){
-  clearStage(); currentGame="reaction";
+  clearStage();currentGame="reaction";
   let cur=0,times=[];
-  const levels=3;
   function runLevel(){
     stage.innerHTML="";
-    const box=document.createElement("div"); box.id="reaction-box";
-    box.style.background="#1a1a1a"; box.style.color="#555";
+    const box=document.createElement("div");box.id="reaction-box";
+    box.style.background="#1a1a1a";box.style.color="#555";
     box.innerHTML=`<div style="text-align:center"><div style="font-size:2rem">⏳</div><div>LEVEL ${cur+1} — Wait for GREEN then tap!</div></div>`;
     stage.appendChild(box);
-    let start, timeout, ready=false;
+    let start,timeout,ready=false;
     timeout=setTimeout(()=>{
-      box.style.background="#40e0d0"; box.style.color="#000";
-      box.innerHTML=`<div style="font-size:2rem; font-weight:900">TAP!</div>`;
-      start=Date.now(); ready=true;
-    }, 1500+Math.random()*3000);
+      box.style.background="#40e0d0";box.style.color="#000";
+      box.innerHTML=`<div style="font-size:2rem;font-weight:900">TAP!</div>`;
+      start=Date.now();ready=true;
+    },1500+Math.random()*3000);
     function onTap(){
-      if(!ready){clearTimeout(timeout);showToast("Too early! 🙅");runLevel();return;}
-      times.push(Date.now()-start); cur++;
-      if(cur<levels) runLevel();
-      else { let avg=Math.round(times.reduce((a,b)=>a+b)/times.length); showToast(`Avg: ${avg}ms — ${avg<250?"Lightning! ⚡":avg<400?"Great! 🎯":"Keep practicing! 💪"}`); startReaction(); }
+      if(!ready){clearTimeout(timeout);arcadeToast("Too early! 🙅");runLevel();return;}
+      times.push(Date.now()-start);cur++;
+      if(cur<3)runLevel();
+      else{let avg=Math.round(times.reduce((a,b)=>a+b)/times.length);arcadeToast(`Avg: ${avg}ms — ${avg<250?"Lightning! ⚡":avg<400?"Great! 🎯":"Keep practicing! 💪"}`);startReaction();}
     }
     box.onclick=onTap;
     box.addEventListener("touchstart",e=>{e.preventDefault();onTap();},{passive:false});
@@ -616,26 +341,22 @@ function startReaction(){
   runLevel();
 }
 
-/* --- MEMORY --- */
 function startMemory(){
-  clearStage(); currentGame="memory";
+  clearStage();currentGame="memory";
   let icons=["🎸","🎹","📻","🎧","🎵","🎷","🎤","🎶"];
   let cards=[...icons,...icons].sort(()=>Math.random()-0.5);
   let flipped=[],matched=0,locked=false;
-  const grid=document.createElement("div"); grid.className="mem-grid";
-  const cellEls=[];
+  const grid=document.createElement("div");grid.className="mem-grid";
   cards.forEach((icon,i)=>{
-    const cell=document.createElement("div"); cell.className="cell mem-cell"; cellEls.push(cell);
+    const cell=document.createElement("div");cell.className="cell mem-cell";
     cell.onclick=()=>{
-      if(locked||flipped.length>=2||cell.classList.contains("flipped")) return;
-      cell.textContent=icon; cell.classList.add("flipped");
+      if(locked||flipped.length>=2||cell.classList.contains("flipped"))return;
+      cell.textContent=icon;cell.classList.add("flipped");
       flipped.push({cell,icon,i});
       if(flipped.length===2){
         locked=true;
-        if(flipped[0].icon===flipped[1].icon){
-          matched++; flipped=[]; locked=false;
-          if(matched===8) showToast("🏆 All matched!");
-        } else { setTimeout(()=>{ flipped.forEach(f=>{f.cell.textContent="";f.cell.classList.remove("flipped");}); flipped=[]; locked=false; },750); }
+        if(flipped[0].icon===flipped[1].icon){matched++;flipped=[];locked=false;if(matched===8)arcadeToast("🏆 All matched!");}
+        else{setTimeout(()=>{flipped.forEach(f=>{f.cell.textContent="";f.cell.classList.remove("flipped");});flipped=[];locked=false;},750);}
       }
     };
     grid.appendChild(cell);
@@ -643,98 +364,446 @@ function startMemory(){
   stage.appendChild(grid);
 }
 
-/* --- TETRIS --- */
 function startTetris(){
-  clearStage(); currentGame="tetris";
+  clearStage();currentGame="tetris";
   gInfo.innerText="Arrows/D-pad move · Up=rotate";
-  const canvas=document.createElement("canvas"); canvas.width=240; canvas.height=400; stage.appendChild(canvas);
-  const ctx=canvas.getContext("2d"); ctx.scale(20,20);
-  const COLS=12, ROWS=20;
+  const canvas=document.createElement("canvas");canvas.width=240;canvas.height=400;stage.appendChild(canvas);
+  const ctx=canvas.getContext("2d");ctx.scale(20,20);
+  const COLS=12,ROWS=20;
   const arena=Array.from({length:ROWS},()=>Array(COLS).fill(0));
   const colors=[null,"#ff0080","#40e0d0","#ff8c00","#9d00ff","#00ff80","#ffff00","#ff0033"];
   const pieces=[[[0,1,0],[1,1,1],[0,0,0]],[[2,2],[2,2]],[[0,3,3],[3,3,0]],[[4,4,0],[0,4,4]],[[5,0,0],[5,5,5]],[[0,0,6],[6,6,6]],[[0,7,0,0],[0,7,0,0],[0,7,0,0],[0,7,0,0]]];
   let pl={pos:{x:5,y:0},matrix:pieces[0],score:0};
-  let dropCounter=0, lastTime=0, animId;
-
-  function draw(){
-    ctx.fillStyle="#000"; ctx.fillRect(0,0,COLS,ROWS);
-    arena.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(x,y,1,1);}}));
-    pl.matrix.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(pl.pos.x+x,pl.pos.y+y,1,1);}}));
-  }
+  let dropCounter=0,lastTime=0;
+  function draw(){ctx.fillStyle="#000";ctx.fillRect(0,0,COLS,ROWS);arena.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(x,y,1,1);}}));pl.matrix.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(pl.pos.x+x,pl.pos.y+y,1,1);}}));}
   function collide(a,p){const[m,o]=[p.matrix,p.pos];for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++)if(m[y][x]!==0&&(a[y+o.y]&&a[y+o.y][x+o.x])!==0)return true;return false;}
   function merge(a,p){p.matrix.forEach((row,y)=>row.forEach((v,x)=>{if(v)a[y+p.pos.y][x+p.pos.x]=v;}));}
   function rotate(m){return m[0].map((_,i)=>m.map(r=>r[i]).reverse());}
   function playerDrop(){pl.pos.y++;if(collide(arena,pl)){pl.pos.y--;merge(arena,pl);playerReset();sweep();}draw();}
   function sweep(){for(let y=ROWS-1;y>0;y--){if(arena[y].every(v=>v!==0)){arena.splice(y,1);arena.unshift(Array(COLS).fill(0));pl.score+=10;gInfo.innerText="Score: "+pl.score;y++;}}}
   function playerReset(){pl.matrix=pieces[Math.floor(Math.random()*pieces.length)];pl.pos.y=0;pl.pos.x=Math.floor(COLS/2)-Math.floor(pl.matrix[0].length/2);if(collide(arena,pl)){arena.forEach(r=>r.fill(0));pl.score=0;gInfo.innerText="Game Over — Score: 0";}}
-
   function handleDir(key){
     if(key==="ArrowLeft"){pl.pos.x--;if(collide(arena,pl))pl.pos.x++;}
     if(key==="ArrowRight"){pl.pos.x++;if(collide(arena,pl))pl.pos.x--;}
-    if(key==="ArrowDown") playerDrop();
+    if(key==="ArrowDown")playerDrop();
     if(key==="ArrowUp"){const old=pl.matrix;pl.matrix=rotate(pl.matrix);if(collide(arena,pl))pl.matrix=old;}
     draw();
   }
   window.onkeydown=e=>{if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();handleDir(e.key);}};
   setTouchDir(handleDir);
-
-  function update(time=0){dropCounter+=time-lastTime;lastTime=time;if(dropCounter>700){playerDrop();dropCounter=0;}draw();animId=requestAnimationFrame(update);}
+  function update(time=0){dropCounter+=time-lastTime;lastTime=time;if(dropCounter>700){playerDrop();dropCounter=0;}draw();requestAnimationFrame(update);}
   update();
-  // Clean up animation on new game
-  const origClear=clearStage;
 }
 
 /* ===================== TRIVIA ===================== */
 const triviaQuestions = [
-  {question:"What was Juventus's home stadium before the Allianz Stadium?", answers:["Olimpico di Torino","San Siro","Stadio Delle Alpi","Stadio Ferraris"], correctAnswer:"Stadio Delle Alpi"},
-  {question:"Which Milan skyscraper complex is famous for its 2,000 trees?", answers:["CityLife Tower","Porta Nuova","Bosco Verticale","Isola District"], correctAnswer:"Bosco Verticale"},
-  {question:"What is the Italian tradition of an evening stroll called?", answers:["Merenda","Passeggiata","Dolce Vita","Il Riposo"], correctAnswer:"Passeggiata"},
-  {question:"Which pasta shape means 'butterfly' in Italian?", answers:["Penne","Farfalle","Fusilli","Rigatoni"], correctAnswer:"Farfalle"},
-  {question:"What is Italy's national dish, according to most Italians?", answers:["Lasagne","Spaghetti Carbonara","Pizza Margherita","Risotto"], correctAnswer:"Spaghetti Carbonara"},
-  {question:"Which Italian city is famous for its carnival with elaborate masks?", answers:["Rome","Florence","Naples","Venice"], correctAnswer:"Venice"},
-  {question:"What does 'Al dente' literally mean in Italian?", answers:["Very soft","To the tooth","Well done","Perfectly cooked"], correctAnswer:"To the tooth"},
-  {question:"Which Italian island is known as the 'Pearl of the Mediterranean'?", answers:["Sardinia","Capri","Ischia","Sicily"], correctAnswer:"Sicily"},
-  {question:"What year did Italy win its most recent FIFA World Cup?", answers:["1998","2002","2006","2010"], correctAnswer:"2006"},
-  {question:"Which Italian composer wrote 'The Four Seasons'?", answers:["Puccini","Verdi","Vivaldi","Rossini"], correctAnswer:"Vivaldi"},
-  {question:"What is the name of the famous leaning tower in Pisa?", answers:["Torre dell'Orologio","Torre di Pisa","Campanile di Pisa","Torre Pendente"], correctAnswer:"Torre Pendente"},
-  {question:"Which Roman structure was used for gladiatorial combat?", answers:["Pantheon","Forum","Colosseum","Circus Maximus"], correctAnswer:"Colosseum"},
+  {question:"What was Juventus's home stadium before the Allianz Stadium?",answers:["Olimpico di Torino","San Siro","Stadio Delle Alpi","Stadio Ferraris"],correctAnswer:"Stadio Delle Alpi"},
+  {question:"Which Milan skyscraper complex is famous for its 2,000 trees?",answers:["CityLife Tower","Porta Nuova","Bosco Verticale","Isola District"],correctAnswer:"Bosco Verticale"},
+  {question:"What is the Italian tradition of an evening stroll called?",answers:["Merenda","Passeggiata","Dolce Vita","Il Riposo"],correctAnswer:"Passeggiata"},
+  {question:"Which pasta shape means 'butterfly' in Italian?",answers:["Penne","Farfalle","Fusilli","Rigatoni"],correctAnswer:"Farfalle"},
+  {question:"What is Italy's national dish, according to most Italians?",answers:["Lasagne","Spaghetti Carbonara","Pizza Margherita","Risotto"],correctAnswer:"Spaghetti Carbonara"},
+  {question:"Which Italian city is famous for its carnival with elaborate masks?",answers:["Rome","Florence","Naples","Venice"],correctAnswer:"Venice"},
+  {question:"What does 'Al dente' literally mean in Italian?",answers:["Very soft","To the tooth","Well done","Perfectly cooked"],correctAnswer:"To the tooth"},
+  {question:"Which Italian island is known as the 'Pearl of the Mediterranean'?",answers:["Sardinia","Capri","Ischia","Sicily"],correctAnswer:"Sicily"},
+  {question:"What year did Italy win its most recent FIFA World Cup?",answers:["1998","2002","2006","2010"],correctAnswer:"2006"},
+  {question:"Which Italian composer wrote 'The Four Seasons'?",answers:["Puccini","Verdi","Vivaldi","Rossini"],correctAnswer:"Vivaldi"},
+  {question:"What is the name of the famous leaning tower in Pisa?",answers:["Torre dell'Orologio","Torre di Pisa","Campanile di Pisa","Torre Pendente"],correctAnswer:"Torre Pendente"},
+  {question:"Which Roman structure was used for gladiatorial combat?",answers:["Pantheon","Forum","Colosseum","Circus Maximus"],correctAnswer:"Colosseum"},
 ];
 
-let qIdx=0, score=0, answered=false;
-
-function shuffle(arr){ return arr.sort(()=>Math.random()-0.5); }
-
+let qIdx=0, triviaScore=0, answered=false;
+function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
 function showQuestion(){
   answered=false;
   document.getElementById("feedback").textContent="";
   const q=triviaQuestions[qIdx];
   document.getElementById("question-text").textContent=q.question;
-  const btns=document.getElementById("answer-buttons"); btns.innerHTML="";
+  const btns=document.getElementById("answer-buttons");btns.innerHTML="";
   shuffle([...q.answers]).forEach(a=>{
-    const b=document.createElement("button"); b.textContent=a; b.className="answer-btn";
+    const b=document.createElement("button");b.textContent=a;b.className="answer-btn";
     b.onclick=()=>{
-      if(answered) return; answered=true;
+      if(answered)return;answered=true;
       const allBtns=btns.querySelectorAll("button");
-      allBtns.forEach(btn=>{ btn.disabled=true; if(btn.textContent===q.correctAnswer) btn.classList.add("correct"); });
-      if(a===q.correctAnswer){ score++; document.getElementById("feedback").textContent="Correct! 🏆"; b.classList.add("correct"); }
-      else { document.getElementById("feedback").textContent="Wrong! It was: "+q.correctAnswer; b.classList.add("wrong"); }
-      document.getElementById("current-score").textContent=score;
-      setTimeout(()=>{ qIdx++; if(qIdx<triviaQuestions.length) showQuestion(); else finishTrivia(); },1600);
+      allBtns.forEach(btn=>{btn.disabled=true;if(btn.textContent===q.correctAnswer)btn.classList.add("correct");});
+      if(a===q.correctAnswer){triviaScore++;document.getElementById("feedback").textContent="Correct! 🏆";b.classList.add("correct");}
+      else{document.getElementById("feedback").textContent="Wrong! It was: "+q.correctAnswer;b.classList.add("wrong");}
+      document.getElementById("current-score").textContent=triviaScore;
+      setTimeout(()=>{qIdx++;if(qIdx<triviaQuestions.length)showQuestion();else finishTrivia();},1600);
     };
     btns.appendChild(b);
   });
 }
-
 function finishTrivia(){
-  const pct=Math.round((score/triviaQuestions.length)*100);
+  const pct=Math.round((triviaScore/triviaQuestions.length)*100);
   const emoji=pct>=80?"🏆":pct>=50?"😊":"💪";
-  document.getElementById("quiz-area").innerHTML=`<h3 style="color:var(--cyan)">Final Score: ${score}/${triviaQuestions.length} ${emoji}</h3><p style="color:#aaa">${pct>=80?"Italian expert!":pct>=50?"Not bad!":"Keep studying!"}</p>`;
+  document.getElementById("quiz-area").innerHTML=`<h3 style="color:var(--cyan)">Final Score: ${triviaScore}/${triviaQuestions.length} ${emoji}</h3><p style="color:#aaa">${pct>=80?"Italian expert!":pct>=50?"Not bad!":"Keep studying!"}</p>`;
   document.getElementById("restart-btn").style.display="block";
 }
+document.getElementById("restart-btn").onclick=()=>{qIdx=0;triviaScore=0;document.getElementById("restart-btn").style.display="none";showQuestion();document.getElementById("current-score").textContent=0;};
 
-document.getElementById("restart-btn").onclick=()=>{ qIdx=0; score=0; document.getElementById("restart-btn").style.display="none"; showQuestion(); document.getElementById("current-score").textContent=0; };
-
-window.onload=()=>{ loadAndPlayTrack(); showQuestion(); document.getElementById("total-questions").textContent=triviaQuestions.length; };
+window.onload=()=>{
+  showQuestion();
+  document.getElementById("total-questions").textContent=triviaQuestions.length;
+};
 </script>
+
+<!-- ============================================================
+  PUMPO ECOSYSTEM BAR — v1.0
+  Radio player + PumpoAI drawer — shared across all Pumpo pages
+============================================================ -->
+<style>
+  .pumpo-bar-wrap * { box-sizing: border-box; }
+  .pumpo-sticky-bar {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000;
+    background: rgba(13,13,13,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(255,0,128,0.3); box-shadow: 0 -4px 30px rgba(255,0,128,0.15);
+    padding: 8px 14px 10px; padding-bottom: max(10px, env(safe-area-inset-bottom));
+    display: flex; flex-direction: column; gap: 6px; font-family: 'Rajdhani', sans-serif;
+  }
+  .pumpo-marquee-wrap { background: rgba(255,0,128,0.12); border: 1px solid rgba(255,0,128,0.22); border-radius: 20px; overflow: hidden; width: 60%; max-width: 320px; margin: 0 auto; cursor: pointer; }
+  .pumpo-marquee-wrap:hover { background: rgba(255,0,128,0.18); }
+  #pumpo-song-marquee { display: inline-block; color: #ff0080; font-weight: 700; font-size: 0.82rem; white-space: nowrap; letter-spacing: 0.5px; padding: 5px 0; animation: pumpoMarquee 18s linear infinite; }
+  @keyframes pumpoMarquee { 0%{transform:translateX(100%)} 100%{transform:translateX(-100%)} }
+  .pumpo-controls-row { display: flex; align-items: center; gap: 7px; }
+  .pumpo-bar-btn { background: none; border: 1px solid #ff0080; color: #ff0080; font-size: 0.95rem; padding: 6px 9px; cursor: pointer; border-radius: 8px; transition: all 0.18s; flex-shrink: 0; line-height: 1; font-family: 'Rajdhani', sans-serif; }
+  .pumpo-bar-btn:hover, .pumpo-bar-btn:active { background: #ff0080; color: #0d0d0d; box-shadow: 0 0 10px rgba(255,0,128,0.4); }
+  .pumpo-bar-btn.pumpo-ai-btn { border-color: #40e0d0; color: #40e0d0; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; padding: 6px 10px; }
+  .pumpo-bar-btn.pumpo-ai-btn:hover, .pumpo-bar-btn.pumpo-ai-btn.active { background: #40e0d0; color: #0d0d0d; box-shadow: 0 0 10px rgba(64,224,208,0.35); }
+  #pumpo-audio-el { flex-grow: 1; min-width: 0; height: 34px; }
+
+  .pumpo-drawer { position: fixed; bottom: -100%; left: 0; right: 0; z-index: 7900; background: rgba(13,13,13,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,0,128,0.35); border-radius: 20px 20px 0 0; padding: 14px 14px 0; max-height: 55vh; display: flex; flex-direction: column; transition: bottom 0.32s cubic-bezier(0.32,0.72,0,1); font-family: 'Rajdhani', sans-serif; }
+  .pumpo-drawer.open { bottom: var(--pumpo-bar-h, 72px); }
+  .pumpo-drawer-handle { width: 34px; height: 3px; background: #333; border-radius: 2px; margin: 0 auto 10px; }
+  .pumpo-drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
+  .pumpo-drawer-title { font-family: 'Black Ops One', cursive; color: #ff0080; font-size: 0.95rem; letter-spacing: 2px; }
+  .pumpo-drawer-actions { display: flex; gap: 6px; }
+  .pumpo-drawer-btn { background: none; border: 1px solid #ff0080; color: #ff0080; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem; transition: 0.18s; }
+  .pumpo-drawer-btn:hover { background: #ff0080; color: #000; }
+  .pumpo-drawer-btn.cyan { border-color: #40e0d0; color: #40e0d0; }
+  .pumpo-drawer-btn.cyan:hover { background: #40e0d0; color: #000; }
+  .pumpo-playlist-scroll { overflow-y: auto; flex-grow: 1; padding-bottom: 14px; scrollbar-width: thin; scrollbar-color: #ff0080 transparent; }
+  .pumpo-track-row { display: flex; align-items: center; gap: 10px; padding: 9px 6px; border-radius: 8px; cursor: pointer; transition: background 0.15s; border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'Rajdhani', sans-serif; }
+  .pumpo-track-row:hover { background: rgba(255,0,128,0.08); }
+  .pumpo-track-row.playing { background: rgba(255,0,128,0.12); }
+  .pumpo-track-check { width: 18px; height: 18px; border-radius: 5px; border: 2px solid #444; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.18s; font-size: 0.7rem; }
+  .pumpo-track-check.checked { background: #ff0080; border-color: #ff0080; color: #fff; }
+  .pumpo-track-name { font-size: 0.9rem; font-weight: 600; color: #ddd; flex-grow: 1; }
+  .pumpo-track-row.playing .pumpo-track-name { color: #ff0080; }
+  .pumpo-track-now { font-size: 0.65rem; color: #ff0080; flex-shrink: 0; animation: pumpoPulse 1.4s infinite; }
+  @keyframes pumpoPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
+
+  .pumpo-ai-drawer {
+    position: fixed; bottom: -100%; right: 0; left: 0;
+    z-index: 7950;
+    background: rgba(10,10,10,0.98);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid rgba(64,224,208,0.3);
+    border-radius: 20px 20px 0 0;
+    padding: 14px 14px 0;
+    max-height: 60vh;
+    display: flex; flex-direction: column;
+    transition: bottom 0.32s cubic-bezier(0.32,0.72,0,1);
+    font-family: 'Rajdhani', sans-serif;
+  }
+  .pumpo-ai-drawer.open { bottom: var(--pumpo-bar-h, 72px); }
+
+  /* Compact chat mode — bottom right panel on wider screens */
+  @media (min-width: 600px) {
+    .pumpo-ai-drawer.chat-mode {
+      left: auto;
+      right: 16px;
+      width: 360px;
+      border-radius: 16px 16px 0 0;
+      border: 1px solid rgba(64,224,208,0.3);
+      border-bottom: none;
+      max-height: 440px;
+    }
+  }
+  .pumpo-ai-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
+  .pumpo-ai-title { font-family: 'Black Ops One', cursive; color: #40e0d0; font-size: 0.95rem; letter-spacing: 2px; }
+  .pumpo-ai-close { background: none; border: 1px solid #333; color: #666; padding: 3px 9px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; transition: 0.18s; }
+  .pumpo-ai-close:hover { border-color: #40e0d0; color: #40e0d0; }
+  .pumpo-ai-key-setup { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; }
+  .pumpo-ai-key-label { font-size: 0.75rem; color: #666; font-weight: 600; }
+  .pumpo-ai-key-label a { color: #40e0d0; text-decoration: none; }
+  .pumpo-ai-key-row { display: flex; gap: 7px; }
+  .pumpo-ai-key-input { flex: 1; min-width: 0; background: #1a1a1a; border: 1px solid #333; color: #f0ede6; font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; padding: 7px 10px; border-radius: 8px; outline: none; transition: border-color 0.15s; }
+  .pumpo-ai-key-input:focus { border-color: #40e0d0; }
+  .pumpo-ai-key-input::placeholder { color: #333; }
+  .pumpo-ai-key-save { background: #40e0d0; color: #0d0d0d; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-family: 'Black Ops One', cursive; font-size: 0.75rem; white-space: nowrap; transition: 0.18s; }
+  .pumpo-ai-key-save:hover { background: #2ec4b6; }
+  .pumpo-ai-messages { flex-grow: 1; overflow-y: auto; padding-bottom: 8px; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; scrollbar-color: #333 transparent; }
+  .pumpo-msg { max-width: 82%; padding: 9px 12px; border-radius: 12px; font-size: 0.88rem; line-height: 1.55; font-weight: 600; }
+  .pumpo-msg.user { background: rgba(255,0,128,0.15); border: 1px solid rgba(255,0,128,0.25); color: #f0ede6; align-self: flex-end; border-radius: 12px 12px 3px 12px; }
+  .pumpo-msg.ai { background: rgba(64,224,208,0.08); border: 1px solid rgba(64,224,208,0.2); color: #f0ede6; align-self: flex-start; border-radius: 12px 12px 12px 3px; }
+  .pumpo-msg.ai.thinking { color: #555; font-style: italic; }
+  .pumpo-ai-input-row { display: flex; gap: 7px; padding: 10px 0 max(14px, env(safe-area-inset-bottom)); flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 4px; }
+  .pumpo-ai-text-input { flex: 1; min-width: 0; background: #1a1a1a; border: 1px solid #333; color: #f0ede6; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; padding: 8px 12px; border-radius: 8px; outline: none; transition: border-color 0.15s; }
+  .pumpo-ai-text-input:focus { border-color: #40e0d0; }
+  .pumpo-ai-text-input::placeholder { color: #444; }
+  .pumpo-ai-send { background: #40e0d0; color: #0d0d0d; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-family: 'Black Ops One', cursive; font-size: 0.75rem; transition: 0.18s; white-space: nowrap; }
+  .pumpo-ai-send:hover { background: #2ec4b6; }
+  .pumpo-ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
+  .pumpo-toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(30px); background: #40e0d0; color: #000; font-weight: 700; padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; z-index: 9500; transition: transform 0.35s ease, opacity 0.35s ease; pointer-events: none; opacity: 0; font-family: 'Rajdhani', sans-serif; }
+  .pumpo-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+  @media (max-width: 480px) { .pumpo-marquee-wrap { width: 70%; } .pumpo-bar-btn { padding: 5px 7px; font-size: 0.85rem; } }
+</style>
+
+<div class="pumpo-bar-wrap">
+  <div class="pumpo-sticky-bar" id="pumpoBar">
+    <div class="pumpo-marquee-wrap" onclick="pumpoTogglePlaylist()">
+      <span id="pumpo-song-marquee">NOW PLAYING: Initializing...</span>
+    </div>
+    <div class="pumpo-controls-row">
+      <button class="pumpo-bar-btn" id="pumpoPrevBtn" title="Previous">&#9664;&#9664;</button>
+      <audio id="pumpo-audio-el" controls></audio>
+      <button class="pumpo-bar-btn" id="pumpoNextBtn" title="Next">&#9654;&#9654;</button>
+      <button class="pumpo-bar-btn" id="pumpoShareBtn" title="Share">&#10150;</button>
+      <button class="pumpo-bar-btn" id="pumpoPlaylistBtn" title="Playlist">&#127926;</button>
+      <button class="pumpo-bar-btn pumpo-ai-btn" id="pumpoAIBtn" title="PumpoAI">AI</button>
+    </div>
+  </div>
+
+  <div class="pumpo-drawer" id="pumpoPlaylistDrawer">
+    <div class="pumpo-drawer-handle"></div>
+    <div class="pumpo-drawer-header">
+      <span class="pumpo-drawer-title">🎵 PICK TRACKS</span>
+      <div class="pumpo-drawer-actions">
+        <button class="pumpo-drawer-btn cyan" id="pumpoSelectAll">All</button>
+        <button class="pumpo-drawer-btn" id="pumpoClearAll">None</button>
+        <button class="pumpo-drawer-btn" id="pumpoPlaySelected">▶ Shuffle</button>
+      </div>
+    </div>
+    <div class="pumpo-playlist-scroll" id="pumpoTrackList"></div>
+  </div>
+
+  <div class="pumpo-ai-drawer" id="pumpoAIDrawer">
+    <div class="pumpo-drawer-handle"></div>
+    <div class="pumpo-ai-header">
+      <span class="pumpo-ai-title">PUMPO AI</span>
+      <button class="pumpo-ai-close" onclick="pumpoToggleAI()">CLOSE</button>
+    </div>
+    <div class="pumpo-ai-key-setup" id="pumpoAIKeySetup">
+      <div class="pumpo-ai-key-label">Gemini API key required — free at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></div>
+      <div class="pumpo-ai-key-row">
+        <input type="password" class="pumpo-ai-key-input" id="pumpoAIKeyInput" placeholder="Paste Gemini key..." autocomplete="off">
+        <button class="pumpo-ai-key-save" onclick="pumpoSaveAIKey()">SAVE</button>
+      </div>
+    </div>
+    <div class="pumpo-ai-messages" id="pumpoAIMessages" style="display:none"></div>
+    <div class="pumpo-ai-input-row" id="pumpoAIInputRow" style="display:none">
+      <input type="text" class="pumpo-ai-text-input" id="pumpoAITextInput" placeholder="Ask anything about Pumpo..." maxlength="400" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pumpoSendMessage();}">
+      <button class="pumpo-ai-send" id="pumpoAISendBtn" onclick="pumpoSendMessage()">SEND</button>
+    </div>
+  </div>
+
+  <div class="pumpo-toast" id="pumpoToast"></div>
+</div>
+
+<script>
+(function(){
+  const PUMPO_PLAYLIST=[
+    {url:'https://radiopumpo.github.io/forzapumpo.mp3',name:'Forza Pumpo'},
+    {url:'https://radiopumpo.github.io/dnbpumpo.mp3',name:'DNB Pumpo'},
+    {url:'https://radiopumpo.github.io/housepumpo.mp3',name:'House Pumpo'},
+    {url:'https://radiopumpo.github.io/hiphoppumpo.mp3',name:'Hip Hop Pumpo'},
+    {url:'https://radiopumpo.github.io/rockpowerpumpo.mp3',name:'Rock Power Pumpo'},
+    {url:'https://radiopumpo.github.io/seashantypumpo.mp3',name:'Sea Shanty Pumpo'},
+    {url:'https://radiopumpo.github.io/unodinoipumpo.mp3',name:'Uno Di Noi Pumpo'},
+    {url:'https://radiopumpo.github.io/gospelpumpo.mp3',name:'Gospel Pumpo'},
+    {url:'https://radiopumpo.github.io/ACDCpumpo.mp3',name:'AC/DC Pumpo'},
+    {url:'https://radiopumpo.github.io/bobpumpo.mp3',name:'Bob Pumpo'},
+    {url:'https://radiopumpo.github.io/пумпо.mp3',name:'пумпо'},
+    {url:'https://radiopumpo.github.io/pumpolofinippon.mp3',name:'LoFi Nippon Pumpo'},
+    {url:'https://radiopumpo.github.io/pumpitup.mp3',name:'Pumpo Pump it up'},
+    {url:'https://radiopumpo.github.io/pumpoquersentir.mp3',name:'Pumpo Quer Sentir'},
+    {url:'https://radiopumpo.github.io/pumpothicthang.mp3',name:'Pumpo Thic Thang'},
+    {url:'https://radiopumpo.github.io/pumpotheninja.mp3',name:'Pumpo The Ninja'},
+    {url:'https://radiopumpo.github.io/pumpophonkbr.mp3',name:'A ora do Pumpo'},
+    {url:'https://radiopumpo.github.io/pumpophonkbr2.mp3',name:'A ora do Pumpo Dois'},
+  ];
+
+  const saved=JSON.parse(localStorage.getItem('pumpo_radio_state')||'{}');
+  let pIdx=saved.idx||0,pQueue=null,pQueuePos=0;
+  const pChecked=new Array(PUMPO_PLAYLIST.length).fill(true);
+  let pumpoAIKey=localStorage.getItem('pumpo_gemini_key')||'';
+  let pumpoAIHistory=[],pumpoAIOpen=false,pumpoPlaylistOpen=false;
+
+  const audio=document.getElementById('pumpo-audio-el');
+  const marquee=document.getElementById('pumpo-song-marquee');
+  const barEl=document.getElementById('pumpoBar');
+
+  function updateBarHeight(){const h=barEl.offsetHeight;document.documentElement.style.setProperty('--pumpo-bar-h',h+'px');}
+  window.addEventListener('resize',updateBarHeight);
+  setTimeout(updateBarHeight,100);
+
+  function pCurrentTrack(){return pQueue?pQueue[pQueuePos]:PUMPO_PLAYLIST[pIdx];}
+  function pLoad(){
+    const t=pCurrentTrack();
+    audio.src=t.url;
+    marquee.textContent='NOW PLAYING: '+t.name;
+    marquee.style.animation='none';
+    requestAnimationFrame(()=>{marquee.style.animation='';});
+    audio.play().catch(()=>{});
+    localStorage.setItem('pumpo_radio_state',JSON.stringify({idx:pIdx}));
+    pRefreshList();
+  }
+  function pNext(){if(pQueue){pQueuePos=(pQueuePos+1)%pQueue.length;}else{pIdx=(pIdx+1)%PUMPO_PLAYLIST.length;}pLoad();}
+  function pPrev(){if(pQueue){pQueuePos=(pQueuePos-1+pQueue.length)%pQueue.length;}else{pIdx=(pIdx-1+PUMPO_PLAYLIST.length)%PUMPO_PLAYLIST.length;}pLoad();}
+
+  document.getElementById('pumpoNextBtn').onclick=pNext;
+  document.getElementById('pumpoPrevBtn').onclick=pPrev;
+  audio.onended=pNext;
+
+  document.getElementById('pumpoShareBtn').onclick=()=>{
+    const t=pCurrentTrack();
+    const text=`🎵 Listening to "${t.name}" on Radio Pumpo 24/7! ${window.location.origin}`;
+    if(navigator.share){navigator.share({title:'Radio Pumpo',text,url:window.location.origin}).catch(()=>{});}
+    else{navigator.clipboard.writeText(text).then(()=>pumpoShowToast('Copied to clipboard! 🎵')).catch(()=>{});}
+  };
+
+  window.pumpoTogglePlaylist=function(){
+    pumpoPlaylistOpen=!pumpoPlaylistOpen;
+    if(pumpoAIOpen){pumpoAIOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}
+    document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',pumpoPlaylistOpen);
+    if(pumpoPlaylistOpen)pBuildList();
+  };
+  document.getElementById('pumpoPlaylistBtn').onclick=pumpoTogglePlaylist;
+
+  function pBuildList(){
+    const list=document.getElementById('pumpoTrackList');list.innerHTML='';
+    const cur=pCurrentTrack().url;
+    PUMPO_PLAYLIST.forEach((t,i)=>{
+      const row=document.createElement('div');
+      row.className='pumpo-track-row'+(t.url===cur?' playing':'');
+      row.innerHTML=`<div class="pumpo-track-check ${pChecked[i]?'checked':''}">${pChecked[i]?'✓':''}</div><span class="pumpo-track-name">${t.name}</span>${t.url===cur?'<span class="pumpo-track-now">▶ NOW</span>':''}`;
+      row.onclick=()=>{pChecked[i]=!pChecked[i];pBuildList();};
+      list.appendChild(row);
+    });
+  }
+  function pRefreshList(){if(pumpoPlaylistOpen)pBuildList();}
+
+  document.getElementById('pumpoSelectAll').onclick=()=>{pChecked.fill(true);pBuildList();};
+  document.getElementById('pumpoClearAll').onclick=()=>{pChecked.fill(false);pBuildList();};
+  document.getElementById('pumpoPlaySelected').onclick=()=>{
+    const sel=PUMPO_PLAYLIST.filter((_,i)=>pChecked[i]);
+    if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}
+    pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;
+    document.getElementById('pumpoPlaylistDrawer').classList.remove('open');pumpoPlaylistOpen=false;
+    pLoad();pumpoShowToast(`▶ Shuffling ${sel.length} track${sel.length>1?'s':''}!`);
+  };
+
+  document.addEventListener('click',e=>{
+    const pd=document.getElementById('pumpoPlaylistDrawer');
+    const ad=document.getElementById('pumpoAIDrawer');
+    const pb=document.getElementById('pumpoPlaylistBtn');
+    const ab=document.getElementById('pumpoAIBtn');
+    if(pumpoPlaylistOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');pumpoPlaylistOpen=false;}
+    if(pumpoAIOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');pumpoAIOpen=false;ab.classList.remove('active');}
+  });
+
+  const PUMPO_AI_SYSTEM=`You are PumpoAI, the AI assistant living inside the Pumpo ecosystem.
+
+WHAT YOU ARE
+You are part of a digital ecosystem built around a character called Pumpo — a nickname for a real person, a running joke that became a radio station, a radio station that became a suite of tools, and a suite of tools that is becoming something bigger. You don't know exactly what Pumpo will become. Nobody does. That's part of the point.
+
+YOUR PERSONALITY
+You are direct, a little funny, never annoying about it. You don't over-explain. You don't use corporate language. You don't say "Great question!" or "Certainly!" You treat users like they're intelligent. You have a lightness to you but you can switch registers immediately when someone needs real help with a real tool. Match the user's energy. One-line question gets a direct answer. Complex tool question gets a proper explanation. Never pad.
+
+WHAT YOU KNOW — THE PUMPO ECOSYSTEM
+
+RADIO PUMPO (radiopumpo.github.io)
+The original. A 24/7 radio station that started as a joke and became real. Features a full music player with a custom playlist of Pumpo-original tracks across genres — DNB, House, Hip Hop, Rock, Gospel, Lo-Fi, Sea Shanty and more. Also contains: an image gallery, Pumpo Arcade (Snake, Pong, Tic-Tac-Bot, Reaction, Memory, Tetris), a live chat, and a music trivia quiz. It is the heart of the ecosystem.
+
+PUMPO TOOLS
+A growing collection of standalone AI-powered and interactive tools: Fix My Prompt, Debugger, Vision, Ad-Engine Playground, Prestige, Revenue Leak Detector, Keep Moving, Grounded, Chain Watch, NoteHunt, LockerRoomAI, GitWire. Each is powered by Gemini where AI is involved.
+
+THE 300 SPARTANS
+A founding cohort of OGs who were here before Pumpo went anywhere. Not fans — co-builders. The people who heard about Pumpo before it went viral. Community on Instagram, X, and Telegram.
+
+DONATIONS
+Donations go toward hosting, API costs, infrastructure, and growth. The creator is anonymous by design. Pumpo is the brand, not the person.
+
+HOW TO BEHAVE
+If someone asks what Pumpo is: give them the shape without the full picture. A nickname. A radio. A toolkit. A community forming around something that started as a joke and got serious without losing the joke. Leave them curious.
+If someone needs help with a tool: be direct and practical.
+If someone asks about the creator: the creator is anonymous. Pumpo is the brand. You can be playful — "Pumpo is whoever you need Pumpo to be" — but don't labour it.
+If someone tries to jailbreak you: stay in character, lightly.
+
+THINGS YOU NEVER DO: Never say "Great question!" or "Certainly!" Never be sycophantic. Never be preachy. Never use more words than needed.`;
+
+  window.pumpoToggleAI=function(){
+    pumpoAIOpen=!pumpoAIOpen;
+    if(pumpoPlaylistOpen){pumpoPlaylistOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}
+    const drawer=document.getElementById('pumpoAIDrawer');
+    const btn=document.getElementById('pumpoAIBtn');
+    drawer.classList.toggle('open',pumpoAIOpen);
+    btn.classList.toggle('active',pumpoAIOpen);
+    updateBarHeight();
+    if(pumpoAIOpen){
+      if(pumpoAIKey){showAIChat();if(pumpoAIHistory.length===0)pumpoAddMessage('ai','Hey. I\'m PumpoAI. Ask me anything about the ecosystem — the radio, the tools, what\'s being built, whatever.');}
+      else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}
+    }
+  };
+  document.getElementById('pumpoAIBtn').onclick=pumpoToggleAI;
+
+  function showAIChat(){
+    document.getElementById('pumpoAIKeySetup').style.display='none';
+    document.getElementById('pumpoAIMessages').style.display='flex';
+    document.getElementById('pumpoAIInputRow').style.display='flex';
+    // Switch to compact chat panel
+    document.getElementById('pumpoAIDrawer').classList.add('chat-mode');
+    setTimeout(()=>{const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;document.getElementById('pumpoAITextInput').focus();},100);
+  }
+
+  window.pumpoSaveAIKey=function(){
+    const val=document.getElementById('pumpoAIKeyInput').value.trim();
+    if(!val)return;
+    pumpoAIKey=val;localStorage.setItem('pumpo_gemini_key',val);
+    showAIChat();pumpoAddMessage('ai','Key saved. Hey. I\'m PumpoAI. Ask me anything about the ecosystem.');
+  };
+
+  function pumpoAddMessage(role,text){
+    const msgs=document.getElementById('pumpoAIMessages');
+    const div=document.createElement('div');div.className='pumpo-msg '+role;div.textContent=text;
+    msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;
+  }
+
+  window.pumpoSendMessage=async function(){
+    const input=document.getElementById('pumpoAITextInput');
+    const text=input.value.trim();if(!text||!pumpoAIKey)return;
+    input.value='';
+    pumpoAddMessage('user',text);
+    pumpoAIHistory.push({role:'user',parts:[{text}]});
+    const sendBtn=document.getElementById('pumpoAISendBtn');sendBtn.disabled=true;
+    const thinking=pumpoAddMessage('ai','...');thinking.classList.add('thinking');
+    try{
+      const contents=pumpoAIHistory.length<=1
+        ?[{role:'user',parts:[{text:PUMPO_AI_SYSTEM+'\n\nUser message: '+text}]}]
+        :[{role:'user',parts:[{text:PUMPO_AI_SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...pumpoAIHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];
+      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${pumpoAIKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});
+      if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err?.error?.message||`HTTP ${res.status}`);}
+      const data=await res.json();
+      const reply=data.candidates[0].content.parts[0].text.trim();
+      thinking.textContent=reply;thinking.classList.remove('thinking');
+      pumpoAIHistory.push({role:'model',parts:[{text:reply}]});
+      if(pumpoAIHistory.length>20)pumpoAIHistory=pumpoAIHistory.slice(-20);
+    }catch(e){thinking.textContent='Something went wrong. Check your API key or try again.';thinking.classList.remove('thinking');console.error('[pumpoai]',e);}
+    sendBtn.disabled=false;
+    const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;
+  };
+
+  let pumpoToastTimer;
+  window.pumpoShowToast=function(msg){
+    const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');
+    clearTimeout(pumpoToastTimer);pumpoToastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+  };
+
+  // Init
+  if(pumpoAIKey)document.getElementById('pumpoAIKeyInput').value=pumpoAIKey;
+  pLoad();updateBarHeight();
+})();
+</script>
+
 </body>
 </html>
