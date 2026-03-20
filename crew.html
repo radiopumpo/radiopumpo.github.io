@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Pumpo Crew | Community</title>
+  <link rel="icon" type="image/png" href="https://radiopumpo.github.io/radiopumpologo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink: #ff0080;
+      --cyan: #40e0d0;
+      --bg: #0d0d0d;
+      --bg2: #111;
+      --bg3: #1a1a1a;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.15);
+      --text: #f0ede6;
+      --muted: #666;
+      --dimmed: #333;
+      --pink-glow: rgba(255,0,128,0.25);
+      --cyan-glow: rgba(64,224,208,0.25);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 140px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* NAV */
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 20px;
+      background: rgba(13,13,13,0.88);
+      backdrop-filter: blur(10px);
+      z-index: 500;
+      border-bottom: 1px solid rgba(255,0,128,0.2);
+    }
+    .nav-brand { font-family: 'Black Ops One', cursive; font-size: .9rem; color: var(--pink); letter-spacing: 2px; text-decoration: none; }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
+    .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: .7rem; border: 1px solid var(--cyan); padding: 5px 12px; border-radius: 20px; transition: .3s; letter-spacing: 1px; font-family: 'Space Mono', monospace; }
+    .nav-link:hover { background: var(--cyan); color: #0d0d0d; box-shadow: 0 0 12px var(--cyan-glow); }
+    .nav-link.radio { border-color: #ff0033; color: #ff6666; }
+    .nav-link.radio:hover { background: #ff0033; color: #fff; }
+    @media (max-width: 480px) { .nav-link { font-size: .6rem; padding: 4px 9px; } }
+
+    /* WRAP */
+    .wrap { max-width: 680px; margin: 0 auto; padding: 90px 1.25rem 3rem; }
+
+    /* HEADER */
+    .eyebrow { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
+    .page-title { font-family: 'Black Ops One', cursive; font-size: clamp(32px, 7vw, 54px); line-height: 1.0; color: var(--text); letter-spacing: 1px; margin-bottom: .6rem; }
+    .page-title span { color: var(--pink); }
+    .page-sub { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 600; max-width: 520px; margin-bottom: 2rem; }
+    .page-sub strong { color: var(--text); }
+
+    .hdivider { width: 100%; height: 1px; background: linear-gradient(to right, var(--pink), var(--cyan), transparent); opacity: .2; margin: 1.75rem 0; }
+
+    /* SPARTAN BLOCK */
+    .spartan-block {
+      background: linear-gradient(135deg, rgba(255,0,128,0.06), rgba(64,224,208,0.04));
+      border: 1px solid rgba(255,0,128,0.2);
+      border-radius: 16px;
+      padding: 1.4rem 1.5rem;
+      margin-bottom: 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .spartan-block::before {
+      content: '300';
+      position: absolute; right: -10px; top: -20px;
+      font-family: 'Black Ops One', cursive;
+      font-size: 100px; color: rgba(255,0,128,0.04);
+      pointer-events: none; line-height: 1;
+    }
+    .spartan-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--pink); margin-bottom: .6rem; }
+    .spartan-title { font-family: 'Black Ops One', cursive; font-size: 18px; color: var(--text); letter-spacing: .5px; margin-bottom: .5rem; }
+    .spartan-text { font-size: 13px; color: var(--muted); line-height: 1.7; font-weight: 600; }
+
+    /* PLATFORM CARDS */
+    .platforms { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; }
+
+    .platform-card {
+      background: var(--bg3);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem 1.25rem;
+      display: flex; align-items: center; gap: 16px;
+      text-decoration: none; color: inherit;
+      transition: all .2s;
+      position: relative;
+    }
+    .platform-card:hover { transform: translateX(4px); border-color: var(--border2); }
+    .platform-card.coming-soon { opacity: .35; pointer-events: none; }
+
+    .platform-icon {
+      width: 46px; height: 46px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; flex-shrink: 0;
+    }
+    .platform-info { flex: 1; min-width: 0; }
+    .platform-name { font-family: 'Black Ops One', cursive; font-size: 14px; letter-spacing: .5px; margin-bottom: 2px; }
+    .platform-desc { font-size: 12px; color: var(--muted); font-weight: 600; line-height: 1.5; }
+    .platform-tag { font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: .12em; text-transform: uppercase; padding: 3px 8px; border-radius: 20px; white-space: nowrap; flex-shrink: 0; }
+    .platform-tag.active { background: rgba(0,196,106,0.15); color: #00c46a; border: 1px solid rgba(0,196,106,0.3); }
+    .platform-tag.soon { background: rgba(255,255,255,0.04); color: var(--dimmed); border: 1px solid var(--border); }
+
+    /* Instagram */
+    .platform-card.instagram:hover { border-color: #e1306c; box-shadow: 0 4px 20px rgba(225,48,108,0.15); }
+    .platform-card.instagram .platform-icon { background: linear-gradient(135deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .platform-card.instagram .platform-name { color: #e1306c; }
+
+    /* X / Twitter */
+    .platform-card.twitter:hover { border-color: #fff; box-shadow: 0 4px 20px rgba(255,255,255,0.08); }
+    .platform-card.twitter .platform-icon { background: #000; border: 1px solid #333; }
+    .platform-card.twitter .platform-name { color: #fff; }
+
+    /* Telegram */
+    .platform-card.telegram:hover { border-color: #29b6f6; box-shadow: 0 4px 20px rgba(41,182,246,0.15); }
+    .platform-card.telegram .platform-icon { background: rgba(41,182,246,0.12); }
+    .platform-card.telegram .platform-name { color: #29b6f6; }
+
+    /* Reddit */
+    .platform-card.reddit:hover { border-color: #ff4500; box-shadow: 0 4px 20px rgba(255,69,0,0.15); }
+    .platform-card.reddit .platform-icon { background: rgba(255,69,0,0.1); }
+    .platform-card.reddit .platform-name { color: #ff4500; }
+
+    /* TikTok */
+    .platform-card.tiktok:hover { border-color: #69c9d0; box-shadow: 0 4px 20px rgba(105,201,208,0.15); }
+    .platform-card.tiktok .platform-icon { background: #010101; border: 1px solid #333; }
+    .platform-card.tiktok .platform-name { color: #69c9d0; }
+
+    /* YouTube */
+    .platform-card.youtube:hover { border-color: #ff0000; box-shadow: 0 4px 20px rgba(255,0,0,0.15); }
+    .platform-card.youtube .platform-icon { background: rgba(255,0,0,0.1); }
+    .platform-card.youtube .platform-name { color: #ff0000; }
+
+    /* BOTTOM CTA */
+    .bottom-cta { text-align: center; padding: 1.5rem 0; }
+    .bottom-cta-text { font-size: 13px; color: var(--muted); font-weight: 600; line-height: 1.7; margin-bottom: 1rem; }
+    .bottom-links { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .bottom-link { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .12em; text-transform: uppercase; padding: 6px 14px; border-radius: 20px; border: 1px solid var(--border2); color: var(--muted); text-decoration: none; transition: .2s; }
+    .bottom-link:hover { border-color: var(--pink); color: var(--pink); }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <span class="nav-brand">PUMPO</span>
+    <div class="nav-right">
+      <a href="index.html" class="nav-link">🔧 TOOLS</a>
+      <a href="https://radiopumpo.github.io" class="nav-link radio">📻 RADIO</a>
+      <a href="https://radiopumpo.github.io/merch.html" class="nav-link">🛍 MERCH</a>
+      <a href="https://radiopumpo.github.io/support.html" class="nav-link support">♥ SUPPORT</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+
+    <div class="eyebrow">pumpo ecosystem // crew</div>
+    <div class="page-title">THE<br><span>PUMPO</span><br>CREW.</div>
+    <p class="page-sub">
+      A community that started as a group of friends and a joke that got out of hand.
+      Now it's a radio station, a toolset, and something still becoming.
+      <strong>Pick your platform. Join the conversation.</strong>
+    </p>
+
+    <div class="hdivider"></div>
+
+    <!-- 300 Spartans block -->
+    <div class="spartan-block">
+      <div class="spartan-label">The founding cohort</div>
+      <div class="spartan-title">The 300 Spartans</div>
+      <p class="spartan-text">
+        Before this was anything, there were people who already knew about Pumpo.
+        The 300 Spartans are the founding crew — not fans, not followers.
+        Co-builders. The people who were here before it went anywhere.
+        If that's you, you already know.
+      </p>
+    </div>
+
+    <!-- Platform cards -->
+    <div class="platforms">
+
+      <!-- ⚠️ Replace # with your actual Instagram URL -->
+      <a href="#" target="_blank" rel="noopener" class="platform-card instagram">
+        <div class="platform-icon">📸</div>
+        <div class="platform-info">
+          <div class="platform-name">Instagram</div>
+          <div class="platform-desc">Visual brand layer. Radio artwork, tool previews, the Pumpo aesthetic. Where new people find us.</div>
+        </div>
+        <span class="platform-tag active">ACTIVE</span>
+      </a>
+
+      <!-- ⚠️ Replace # with your actual X/Twitter URL -->
+      <a href="#" target="_blank" rel="noopener" class="platform-card twitter">
+        <div class="platform-icon" style="color:#fff;font-size:16px;font-weight:900;">𝕏</div>
+        <div class="platform-info">
+          <div class="platform-name">X (Twitter)</div>
+          <div class="platform-desc">Builder updates, tool launches, GitWire drops, and whatever Pumpo has to say. High signal.</div>
+        </div>
+        <span class="platform-tag active">ACTIVE</span>
+      </a>
+
+      <!-- ⚠️ Replace # with your actual Telegram URL -->
+      <a href="#" target="_blank" rel="noopener" class="platform-card telegram">
+        <div class="platform-icon">✈️</div>
+        <div class="platform-info">
+          <div class="platform-name">Telegram</div>
+          <div class="platform-desc">The real community. Close circle, direct conversation. Where the 300 Spartans actually talk.</div>
+        </div>
+        <span class="platform-tag active">ACTIVE</span>
+      </a>
+
+      <div class="platform-card reddit coming-soon">
+        <div class="platform-icon">🤖</div>
+        <div class="platform-info">
+          <div class="platform-name">Reddit</div>
+          <div class="platform-desc">A subreddit is coming once the community is big enough to sustain it.</div>
+        </div>
+        <span class="platform-tag soon">SOON</span>
+      </div>
+
+      <div class="platform-card tiktok coming-soon">
+        <div class="platform-icon" style="font-size:20px;">🎵</div>
+        <div class="platform-info">
+          <div class="platform-name">TikTok</div>
+          <div class="platform-desc">Short clips of the radio, the arcade, the tools in action. When the time is right.</div>
+        </div>
+        <span class="platform-tag soon">SOON</span>
+      </div>
+
+      <div class="platform-card youtube coming-soon">
+        <div class="platform-icon">▶️</div>
+        <div class="platform-info">
+          <div class="platform-name">YouTube</div>
+          <div class="platform-desc">Long-form content, tool walkthroughs, and whatever format Pumpo grows into.</div>
+        </div>
+        <span class="platform-tag soon">SOON</span>
+      </div>
+
+    </div>
+
+    <div class="hdivider"></div>
+
+    <div class="bottom-cta">
+      <p class="bottom-cta-text">
+        Want to support the ecosystem directly?<br>
+        Every contribution keeps the tools free and the radio running.
+      </p>
+      <div class="bottom-links">
+        <a href="support.html" class="bottom-link">♥ Support Pumpo</a>
+        <a href="index.html" class="bottom-link">← Back to Tools</a>
+        <a href="https://radiopumpo.github.io" class="bottom-link">📻 Radio Pumpo</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- PUMPO BAR — paste shared snippet here -->
+
+</body>
+</html>
