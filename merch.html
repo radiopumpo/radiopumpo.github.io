@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Pumpo Merch | Coming Soon</title>
+  <link rel="icon" type="image/png" href="https://radiopumpo.github.io/radiopumpologo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --pink: #ff0080;
+      --cyan: #40e0d0;
+      --bg: #0d0d0d;
+      --bg2: #111;
+      --bg3: #1a1a1a;
+      --bg4: #222;
+      --border: rgba(255,255,255,0.08);
+      --border2: rgba(255,255,255,0.14);
+      --text: #f0ede6;
+      --muted: #666;
+      --dimmed: #2a2a2a;
+      --pink-glow: rgba(255,0,128,0.25);
+      --cyan-glow: rgba(64,224,208,0.2);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { -webkit-text-size-adjust: 100%; }
+
+    body {
+      font-family: 'Rajdhani', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding-bottom: 140px;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
+      pointer-events: none; z-index: 9999;
+    }
+
+    /* NAV */
+    .top-nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 20px;
+      background: rgba(13,13,13,0.88); backdrop-filter: blur(10px);
+      z-index: 500; border-bottom: 1px solid rgba(255,0,128,0.2);
+    }
+    .nav-brand { font-family: 'Black Ops One', cursive; font-size: .9rem; color: var(--pink); letter-spacing: 2px; text-decoration: none; }
+    .nav-right { display: flex; gap: 8px; align-items: center; }
+    .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: .7rem; border: 1px solid var(--cyan); padding: 5px 12px; border-radius: 20px; transition: .3s; letter-spacing: 1px; font-family: 'Space Mono', monospace; }
+    .nav-link:hover { background: var(--cyan); color: #0d0d0d; }
+    .nav-link.radio { border-color: #ff0033; color: #ff6666; }
+    .nav-link.radio:hover { background: #ff0033; color: #fff; }
+    @media (max-width: 480px) { .nav-link { font-size: .6rem; padding: 4px 9px; } }
+
+    /* WRAP */
+    .wrap { max-width: 960px; margin: 0 auto; padding: 90px 1.25rem 3rem; }
+
+    /* HEADER */
+    .eyebrow { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .22em; text-transform: uppercase; color: var(--muted); margin-bottom: .5rem; }
+    .page-title { font-family: 'Black Ops One', cursive; font-size: clamp(32px, 7vw, 54px); line-height: 1.0; color: var(--text); letter-spacing: 1px; margin-bottom: .6rem; }
+    .page-title span { color: var(--pink); }
+    .page-sub { font-size: 14px; color: var(--muted); line-height: 1.7; font-weight: 600; max-width: 520px; margin-bottom: .75rem; }
+
+    /* LAUNCH BANNER */
+    .launch-banner {
+      display: inline-flex; align-items: center; gap: 10px;
+      background: rgba(255,0,128,0.08); border: 1px solid rgba(255,0,128,0.25);
+      border-radius: 20px; padding: 6px 14px; margin-bottom: 2rem;
+      font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .15em; text-transform: uppercase;
+      color: var(--pink);
+    }
+    .launch-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--pink); animation: ldot 1.4s infinite; }
+    @keyframes ldot { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+    .hdivider { width: 100%; height: 1px; background: linear-gradient(to right, var(--pink), var(--cyan), transparent); opacity: .18; margin: 1.75rem 0; }
+
+    /* SECTION LABEL */
+    .section-row { display: flex; align-items: center; gap: 14px; margin-bottom: 1.1rem; }
+    .section-lbl { font-family: 'Black Ops One', cursive; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; white-space: nowrap; }
+    .section-lbl.bold { color: var(--pink); }
+    .section-lbl.subtle { color: var(--muted); }
+    .section-rule { flex: 1; height: 1px; background: var(--border); }
+
+    /* PRODUCT GRID */
+    .product-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; margin-bottom: 2rem; }
+
+    /* PRODUCT CARD */
+    .product-card {
+      background: var(--bg3); border: 1px solid var(--border);
+      border-radius: 16px; overflow: hidden;
+      transition: transform .25s, border-color .25s, box-shadow .25s;
+      display: flex; flex-direction: column;
+    }
+    .product-card:hover { transform: translateY(-4px); border-color: var(--border2); box-shadow: 0 12px 30px rgba(0,0,0,0.4); }
+    .product-card.bold-piece:hover { border-color: var(--pink); box-shadow: 0 12px 30px var(--pink-glow); }
+    .product-card.subtle-piece:hover { border-color: rgba(255,255,255,0.25); }
+
+    /* Mock product image area */
+    .product-img {
+      width: 100%; aspect-ratio: 1/1;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+      flex-shrink: 0;
+    }
+    .product-emoji { font-size: 64px; filter: drop-shadow(0 4px 12px rgba(0,0,0,0.5)); }
+    .product-badge-corner {
+      position: absolute; top: 10px; left: 10px;
+      font-family: 'Space Mono', monospace; font-size: 8px; letter-spacing: .12em;
+      padding: 3px 8px; border-radius: 20px; text-transform: uppercase;
+    }
+    .product-badge-corner.bold-tag { background: var(--pink); color: #fff; }
+    .product-badge-corner.subtle-tag { background: rgba(255,255,255,0.08); color: var(--muted); border: 1px solid var(--border2); }
+
+    .product-info { padding: .9rem 1rem 1rem; flex: 1; display: flex; flex-direction: column; gap: 6px; }
+    .product-name { font-family: 'Black Ops One', cursive; font-size: 13px; letter-spacing: .5px; }
+    .product-desc { font-size: 11px; color: var(--muted); line-height: 1.55; font-weight: 600; flex: 1; }
+    .product-footer { display: flex; align-items: center; justify-content: space-between; margin-top: 8px; }
+    .product-price { font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text); }
+    .product-price .est { font-size: 8px; color: var(--muted); display: block; }
+
+    .buy-btn {
+      background: var(--dimmed); border: 1px solid var(--border2);
+      color: var(--muted); font-family: 'Space Mono', monospace;
+      font-size: 8px; letter-spacing: .12em; text-transform: uppercase;
+      padding: 6px 12px; border-radius: 20px; cursor: not-allowed;
+    }
+    /* When live, swap to: */
+    .buy-btn.live {
+      background: var(--pink); border-color: var(--pink);
+      color: #fff; cursor: pointer;
+    }
+    .buy-btn.live:hover { background: #cc0066; }
+
+    /* NOTIFY FORM */
+    .notify-block {
+      background: linear-gradient(135deg, rgba(255,0,128,0.06), rgba(64,224,208,0.04));
+      border: 1px solid rgba(255,0,128,0.2);
+      border-radius: 16px; padding: 1.5rem;
+      text-align: center; margin-bottom: 2rem;
+    }
+    .notify-title { font-family: 'Black Ops One', cursive; font-size: 18px; margin-bottom: .4rem; color: var(--text); }
+    .notify-sub { font-size: 12px; color: var(--muted); font-weight: 600; margin-bottom: 1rem; line-height: 1.6; }
+    .notify-row { display: flex; gap: 8px; max-width: 420px; margin: 0 auto; }
+    .notify-input {
+      flex: 1; background: var(--bg2); border: 1px solid var(--border2);
+      color: var(--text); font-family: 'Rajdhani', sans-serif; font-weight: 600;
+      font-size: 13px; padding: .6rem 1rem; border-radius: 8px; outline: none;
+      transition: border-color .15s;
+    }
+    .notify-input:focus { border-color: var(--pink); }
+    .notify-input::placeholder { color: var(--dimmed); }
+    .notify-btn {
+      background: var(--pink); color: #fff; border: none;
+      padding: .6rem 1.1rem; border-radius: 8px; cursor: pointer;
+      font-family: 'Black Ops One', cursive; font-size: 11px; letter-spacing: .5px;
+      transition: .2s; white-space: nowrap;
+    }
+    .notify-btn:hover { background: #cc0066; }
+    .notify-note { font-family: 'Space Mono', monospace; font-size: 8px; color: var(--dimmed); margin-top: .6rem; letter-spacing: .08em; }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <span class="nav-brand">PUMPO</span>
+    <div class="nav-right">
+      <a href="crew.html" class="nav-link">👥 CREW</a>
+      <a href="index.html" class="nav-link">🔧 TOOLS</a>
+      <a href="https://radiopumpo.github.io" class="nav-link radio">📻 RADIO</a>
+      <a href="https://radiopumpo.github.io/support.html" class="nav-link support">♥ SUPPORT</a>
+    </div>
+  </nav>
+
+  <div class="wrap">
+
+    <div class="eyebrow">pumpo ecosystem // merch</div>
+    <div class="page-title">PUMPO<br><span>DROPS.</span></div>
+    <p class="page-sub">Wearables for the crew. Bold pieces and quiet signals. Designed for people who were here before it was anything.</p>
+
+    <div class="launch-banner">
+      <div class="launch-dot"></div>
+      Showcase only — shop launches soon
+    </div>
+
+    <!-- BOLD PIECES -->
+    <div class="section-row">
+      <span class="section-lbl bold">Statement pieces</span>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="product-grid">
+
+      <!-- Oversized Tee -->
+      <div class="product-card bold-piece">
+        <div class="product-img" style="background:linear-gradient(135deg,#1a0010,#0d0d0d)">
+          <span class="product-badge-corner bold-tag">BOLD</span>
+          <span class="product-emoji">👕</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="color:var(--pink)">PUMPO OVERSIZED TEE</div>
+          <div class="product-desc">Heavy cotton oversized fit. Full-chest PUMPO graphic in neon pink on washed black. The statement piece.</div>
+          <div class="product-footer">
+            <div class="product-price">~€35–45<span class="est">est. retail</span></div>
+            <div class="buy-btn">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hoodie -->
+      <div class="product-card bold-piece">
+        <div class="product-img" style="background:linear-gradient(135deg,#001a1a,#0d0d0d)">
+          <span class="product-badge-corner bold-tag">BOLD</span>
+          <span class="product-emoji">🧥</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="color:var(--cyan)">RADIO PUMPO HOODIE</div>
+          <div class="product-desc">Heavyweight pullover. "RADIO PUMPO 24/7" across the back in cyan. Front left chest logo. Unisex fit.</div>
+          <div class="product-footer">
+            <div class="product-price">~€65–80<span class="est">est. retail</span></div>
+            <div class="buy-btn">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Print / Poster -->
+      <div class="product-card bold-piece">
+        <div class="product-img" style="background:linear-gradient(135deg,#0d0020,#0d0d0d)">
+          <span class="product-badge-corner bold-tag">BOLD</span>
+          <span class="product-emoji">🖼️</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="color:#9d00ff">PUMPO ART PRINT</div>
+          <div class="product-desc">A3 risograph-style print. Limited run. Numbered. The radio, the tools, the lore — in one visual.</div>
+          <div class="product-footer">
+            <div class="product-price">~€25–35<span class="est">est. retail</span></div>
+            <div class="buy-btn">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="hdivider"></div>
+
+    <!-- SUBTLE PIECES -->
+    <div class="section-row">
+      <span class="section-lbl subtle">Everyday carry</span>
+      <div class="section-rule"></div>
+    </div>
+
+    <div class="product-grid">
+
+      <!-- Cap -->
+      <div class="product-card subtle-piece">
+        <div class="product-img" style="background:#111">
+          <span class="product-badge-corner subtle-tag">SUBTLE</span>
+          <span class="product-emoji">🧢</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="color:var(--text)">PUMPO 6-PANEL CAP</div>
+          <div class="product-desc">All black structured cap. Small embroidered PUMPO logo on front. Clean. No neon. For when you know.</div>
+          <div class="product-footer">
+            <div class="product-price">~€30–40<span class="est">est. retail</span></div>
+            <div class="buy-btn">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tote -->
+      <div class="product-card subtle-piece">
+        <div class="product-img" style="background:#111">
+          <span class="product-badge-corner subtle-tag">SUBTLE</span>
+          <span class="product-emoji">🛍️</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="color:var(--text)">PUMPO TOTE</div>
+          <div class="product-desc">Natural canvas. Minimal PUMPO wordmark screenprinted in black. Everyday carry without the noise.</div>
+          <div class="product-footer">
+            <div class="product-price">~€18–25<span class="est">est. retail</span></div>
+            <div class="buy-btn">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Phone Case -->
+      <div class="product-card subtle-piece">
+        <div class="product-img" style="background:#111">
+          <span class="product-badge-corner subtle-tag">SUBTLE</span>
+          <span class="product-emoji">📱</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="color:var(--text)">PUMPO PHONE CASE</div>
+          <div class="product-desc">Matte black. Small pink PUMPO mark bottom right. iPhone and Android. The kind of thing only crew notices.</div>
+          <div class="product-footer">
+            <div class="product-price">~€20–28<span class="est">est. retail</span></div>
+            <div class="buy-btn">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Sticker Pack -->
+      <div class="product-card subtle-piece">
+        <div class="product-img" style="background:#111">
+          <span class="product-badge-corner subtle-tag">SUBTLE</span>
+          <span class="product-emoji">🏷️</span>
+        </div>
+        <div class="product-info">
+          <div class="product-name" style="color:var(--text)">PUMPO STICKER PACK</div>
+          <div class="product-desc">5-piece die-cut pack. Radio Pumpo, Pumpo Tools, 300 Spartans, and two wildcards. Waterproof vinyl.</div>
+          <div class="product-footer">
+            <div class="product-price">~€8–12<span class="est">est. retail</span></div>
+            <div class="buy-btn">Coming Soon</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="hdivider"></div>
+
+    <!-- NOTIFY -->
+    <div class="notify-block">
+      <div class="notify-title">Be first to know when the shop opens.</div>
+      <p class="notify-sub">OGs get early access and first dibs on limited pieces.<br>Drop your email and we'll hit you when it's live.</p>
+      <div class="notify-row">
+        <input type="email" class="notify-input" placeholder="your@email.com" id="notify-email">
+        <button class="notify-btn" onclick="notifySignup()">NOTIFY ME</button>
+      </div>
+      <div class="notify-note" id="notify-msg">No spam. One email when the shop is live.</div>
+    </div>
+
+  </div>
+
+  <!-- PUMPO BAR — paste shared snippet here -->
+
+  <script>
+  function notifySignup() {
+    const email = document.getElementById('notify-email').value.trim();
+    const msg = document.getElementById('notify-msg');
+    if (!email || !email.includes('@')) {
+      msg.textContent = 'Enter a valid email address.';
+      msg.style.color = '#ff4444';
+      return;
+    }
+    // Store locally for now — replace with backend call when ready
+    const list = JSON.parse(localStorage.getItem('pumpo_merch_waitlist') || '[]');
+    if (!list.includes(email)) { list.push(email); localStorage.setItem('pumpo_merch_waitlist', JSON.stringify(list)); }
+    document.getElementById('notify-email').value = '';
+    msg.textContent = 'You\'re on the list. We\'ll be in touch.';
+    msg.style.color = '#00c46a';
+  }
+  </script>
+
+</body>
+</html>
