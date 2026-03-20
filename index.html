@@ -47,8 +47,12 @@
     /* NAV */
     .top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(13,13,13,0.85); backdrop-filter: blur(10px); z-index: 500; border-bottom: 1px solid rgba(255,0,128,0.2); }
     .nav-brand { font-family: 'Black Ops One', cursive; font-size: 1rem; color: var(--pink); letter-spacing: 2px; }
-    .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: 0.8rem; border: 1px solid var(--cyan); padding: 7px 14px; border-radius: 20px; transition: 0.3s; letter-spacing: 1px; }
+    .nav-right { display: flex; align-items: center; gap: 10px; }
+    .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: 0.75rem; border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 20px; transition: 0.3s; letter-spacing: 1px; }
     .nav-link:hover { background: var(--cyan); color: #0d0d0d; box-shadow: 0 0 15px var(--cyan-glow); }
+    .nav-link.support { border-color: var(--pink); color: var(--pink); }
+    .nav-link.support:hover { background: var(--pink); color: #fff; box-shadow: 0 0 15px var(--pink-glow); }
+    @media (max-width: 480px) { .nav-link { font-size: 0.65rem; padding: 5px 9px; } }
 
     /* LOGO */
     .header-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 16px; }
@@ -116,7 +120,10 @@
 
   <nav class="top-nav">
     <span class="nav-brand">📻 PUMPO</span>
-    <a href="https://radiopumpo.github.io/pumpo-tools/" class="nav-link">PUMPO TOOLS 🔧</a>
+    <div class="nav-right">
+      <a href="support.html" class="nav-link support">♥ SUPPORT</a>
+      <a href="https://radiopumpo.github.io/pumpo-tools/" class="nav-link">PUMPO TOOLS 🔧</a>
+    </div>
   </nav>
 
   <div class="header-logo-container">
@@ -447,19 +454,10 @@ window.onload=()=>{
 };
 </script>
 
-<!-- ============================================================
-  PUMPO ECOSYSTEM BAR — v1.0
-  Radio player + PumpoAI drawer — shared across all Pumpo pages
-============================================================ -->
+<!-- PUMPO ECOSYSTEM BAR -->
 <style>
   .pumpo-bar-wrap * { box-sizing: border-box; }
-  .pumpo-sticky-bar {
-    position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000;
-    background: rgba(13,13,13,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(255,0,128,0.3); box-shadow: 0 -4px 30px rgba(255,0,128,0.15);
-    padding: 8px 14px 10px; padding-bottom: max(10px, env(safe-area-inset-bottom));
-    display: flex; flex-direction: column; gap: 6px; font-family: 'Rajdhani', sans-serif;
-  }
+  .pumpo-sticky-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000; background: rgba(13,13,13,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid rgba(255,0,128,0.3); box-shadow: 0 -4px 30px rgba(255,0,128,0.15); padding: 8px 14px 10px; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 6px; font-family: 'Rajdhani', sans-serif; }
   .pumpo-marquee-wrap { background: rgba(255,0,128,0.12); border: 1px solid rgba(255,0,128,0.22); border-radius: 20px; overflow: hidden; width: 60%; max-width: 320px; margin: 0 auto; cursor: pointer; }
   .pumpo-marquee-wrap:hover { background: rgba(255,0,128,0.18); }
   #pumpo-song-marquee { display: inline-block; color: #ff0080; font-weight: 700; font-size: 0.82rem; white-space: nowrap; letter-spacing: 0.5px; padding: 5px 0; animation: pumpoMarquee 18s linear infinite; }
@@ -470,7 +468,6 @@ window.onload=()=>{
   .pumpo-bar-btn.pumpo-ai-btn { border-color: #40e0d0; color: #40e0d0; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; padding: 6px 10px; }
   .pumpo-bar-btn.pumpo-ai-btn:hover, .pumpo-bar-btn.pumpo-ai-btn.active { background: #40e0d0; color: #0d0d0d; box-shadow: 0 0 10px rgba(64,224,208,0.35); }
   #pumpo-audio-el { flex-grow: 1; min-width: 0; height: 34px; }
-
   .pumpo-drawer { position: fixed; bottom: -100%; left: 0; right: 0; z-index: 7900; background: rgba(13,13,13,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,0,128,0.35); border-radius: 20px 20px 0 0; padding: 14px 14px 0; max-height: 55vh; display: flex; flex-direction: column; transition: bottom 0.32s cubic-bezier(0.32,0.72,0,1); font-family: 'Rajdhani', sans-serif; }
   .pumpo-drawer.open { bottom: var(--pumpo-bar-h, 72px); }
   .pumpo-drawer-handle { width: 34px; height: 3px; background: #333; border-radius: 2px; margin: 0 auto 10px; }
@@ -491,34 +488,9 @@ window.onload=()=>{
   .pumpo-track-row.playing .pumpo-track-name { color: #ff0080; }
   .pumpo-track-now { font-size: 0.65rem; color: #ff0080; flex-shrink: 0; animation: pumpoPulse 1.4s infinite; }
   @keyframes pumpoPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
-
-  .pumpo-ai-drawer {
-    position: fixed; bottom: -100%; right: 0; left: 0;
-    z-index: 7950;
-    background: rgba(10,10,10,0.98);
-    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(64,224,208,0.3);
-    border-radius: 20px 20px 0 0;
-    padding: 14px 14px 0;
-    max-height: 60vh;
-    display: flex; flex-direction: column;
-    transition: bottom 0.32s cubic-bezier(0.32,0.72,0,1);
-    font-family: 'Rajdhani', sans-serif;
-  }
+  .pumpo-ai-drawer { position: fixed; bottom: -100%; right: 0; left: 0; z-index: 7950; background: rgba(10,10,10,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(64,224,208,0.3); border-radius: 20px 20px 0 0; padding: 14px 14px 0; max-height: 60vh; display: flex; flex-direction: column; transition: bottom 0.32s cubic-bezier(0.32,0.72,0,1); font-family: 'Rajdhani', sans-serif; }
   .pumpo-ai-drawer.open { bottom: var(--pumpo-bar-h, 72px); }
-
-  /* Compact chat mode — bottom right panel on wider screens */
-  @media (min-width: 600px) {
-    .pumpo-ai-drawer.chat-mode {
-      left: auto;
-      right: 16px;
-      width: 360px;
-      border-radius: 16px 16px 0 0;
-      border: 1px solid rgba(64,224,208,0.3);
-      border-bottom: none;
-      max-height: 440px;
-    }
-  }
+  @media (min-width: 600px) { .pumpo-ai-drawer.chat-mode { left: auto; right: 16px; width: 360px; border-radius: 16px 16px 0 0; border: 1px solid rgba(64,224,208,0.3); border-bottom: none; max-height: 440px; } }
   .pumpo-ai-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
   .pumpo-ai-title { font-family: 'Black Ops One', cursive; color: #40e0d0; font-size: 0.95rem; letter-spacing: 2px; }
   .pumpo-ai-close { background: none; border: 1px solid #333; color: #666; padding: 3px 9px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; transition: 0.18s; }
@@ -563,7 +535,6 @@ window.onload=()=>{
       <button class="pumpo-bar-btn pumpo-ai-btn" id="pumpoAIBtn" title="PumpoAI">AI</button>
     </div>
   </div>
-
   <div class="pumpo-drawer" id="pumpoPlaylistDrawer">
     <div class="pumpo-drawer-handle"></div>
     <div class="pumpo-drawer-header">
@@ -576,7 +547,6 @@ window.onload=()=>{
     </div>
     <div class="pumpo-playlist-scroll" id="pumpoTrackList"></div>
   </div>
-
   <div class="pumpo-ai-drawer" id="pumpoAIDrawer">
     <div class="pumpo-drawer-handle"></div>
     <div class="pumpo-ai-header">
@@ -596,7 +566,6 @@ window.onload=()=>{
       <button class="pumpo-ai-send" id="pumpoAISendBtn" onclick="pumpoSendMessage()">SEND</button>
     </div>
   </div>
-
   <div class="pumpo-toast" id="pumpoToast"></div>
 </div>
 
@@ -622,184 +591,41 @@ window.onload=()=>{
     {url:'https://radiopumpo.github.io/pumpophonkbr.mp3',name:'A ora do Pumpo'},
     {url:'https://radiopumpo.github.io/pumpophonkbr2.mp3',name:'A ora do Pumpo Dois'},
   ];
-
   const saved=JSON.parse(localStorage.getItem('pumpo_radio_state')||'{}');
   let pIdx=saved.idx||0,pQueue=null,pQueuePos=0;
   const pChecked=new Array(PUMPO_PLAYLIST.length).fill(true);
   let pumpoAIKey=localStorage.getItem('pumpo_gemini_key')||'';
   let pumpoAIHistory=[],pumpoAIOpen=false,pumpoPlaylistOpen=false;
-
   const audio=document.getElementById('pumpo-audio-el');
   const marquee=document.getElementById('pumpo-song-marquee');
   const barEl=document.getElementById('pumpoBar');
-
   function updateBarHeight(){const h=barEl.offsetHeight;document.documentElement.style.setProperty('--pumpo-bar-h',h+'px');}
-  window.addEventListener('resize',updateBarHeight);
-  setTimeout(updateBarHeight,100);
-
+  window.addEventListener('resize',updateBarHeight);setTimeout(updateBarHeight,100);
   function pCurrentTrack(){return pQueue?pQueue[pQueuePos]:PUMPO_PLAYLIST[pIdx];}
-  function pLoad(){
-    const t=pCurrentTrack();
-    audio.src=t.url;
-    marquee.textContent='NOW PLAYING: '+t.name;
-    marquee.style.animation='none';
-    requestAnimationFrame(()=>{marquee.style.animation='';});
-    audio.play().catch(()=>{});
-    localStorage.setItem('pumpo_radio_state',JSON.stringify({idx:pIdx}));
-    pRefreshList();
-  }
+  function pLoad(){const t=pCurrentTrack();audio.src=t.url;marquee.textContent='NOW PLAYING: '+t.name;marquee.style.animation='none';requestAnimationFrame(()=>{marquee.style.animation='';});audio.play().catch(()=>{});localStorage.setItem('pumpo_radio_state',JSON.stringify({idx:pIdx}));pRefreshList();}
   function pNext(){if(pQueue){pQueuePos=(pQueuePos+1)%pQueue.length;}else{pIdx=(pIdx+1)%PUMPO_PLAYLIST.length;}pLoad();}
   function pPrev(){if(pQueue){pQueuePos=(pQueuePos-1+pQueue.length)%pQueue.length;}else{pIdx=(pIdx-1+PUMPO_PLAYLIST.length)%PUMPO_PLAYLIST.length;}pLoad();}
-
   document.getElementById('pumpoNextBtn').onclick=pNext;
   document.getElementById('pumpoPrevBtn').onclick=pPrev;
   audio.onended=pNext;
-
-  document.getElementById('pumpoShareBtn').onclick=()=>{
-    const t=pCurrentTrack();
-    const text=`🎵 Listening to "${t.name}" on Radio Pumpo 24/7! ${window.location.origin}`;
-    if(navigator.share){navigator.share({title:'Radio Pumpo',text,url:window.location.origin}).catch(()=>{});}
-    else{navigator.clipboard.writeText(text).then(()=>pumpoShowToast('Copied to clipboard! 🎵')).catch(()=>{});}
-  };
-
-  window.pumpoTogglePlaylist=function(){
-    pumpoPlaylistOpen=!pumpoPlaylistOpen;
-    if(pumpoAIOpen){pumpoAIOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}
-    document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',pumpoPlaylistOpen);
-    if(pumpoPlaylistOpen)pBuildList();
-  };
+  document.getElementById('pumpoShareBtn').onclick=()=>{const t=pCurrentTrack();const text=`🎵 Listening to "${t.name}" on Radio Pumpo 24/7! ${window.location.origin}`;if(navigator.share){navigator.share({title:'Radio Pumpo',text,url:window.location.origin}).catch(()=>{});}else{navigator.clipboard.writeText(text).then(()=>pumpoShowToast('Copied to clipboard! 🎵')).catch(()=>{});}};
+  window.pumpoTogglePlaylist=function(){pumpoPlaylistOpen=!pumpoPlaylistOpen;if(pumpoAIOpen){pumpoAIOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',pumpoPlaylistOpen);if(pumpoPlaylistOpen)pBuildList();};
   document.getElementById('pumpoPlaylistBtn').onclick=pumpoTogglePlaylist;
-
-  function pBuildList(){
-    const list=document.getElementById('pumpoTrackList');list.innerHTML='';
-    const cur=pCurrentTrack().url;
-    PUMPO_PLAYLIST.forEach((t,i)=>{
-      const row=document.createElement('div');
-      row.className='pumpo-track-row'+(t.url===cur?' playing':'');
-      row.innerHTML=`<div class="pumpo-track-check ${pChecked[i]?'checked':''}">${pChecked[i]?'✓':''}</div><span class="pumpo-track-name">${t.name}</span>${t.url===cur?'<span class="pumpo-track-now">▶ NOW</span>':''}`;
-      row.onclick=()=>{pChecked[i]=!pChecked[i];pBuildList();};
-      list.appendChild(row);
-    });
-  }
+  function pBuildList(){const list=document.getElementById('pumpoTrackList');list.innerHTML='';const cur=pCurrentTrack().url;PUMPO_PLAYLIST.forEach((t,i)=>{const row=document.createElement('div');row.className='pumpo-track-row'+(t.url===cur?' playing':'');row.innerHTML=`<div class="pumpo-track-check ${pChecked[i]?'checked':''}">${pChecked[i]?'✓':''}</div><span class="pumpo-track-name">${t.name}</span>${t.url===cur?'<span class="pumpo-track-now">▶ NOW</span>':''}`;row.onclick=()=>{pChecked[i]=!pChecked[i];pBuildList();};list.appendChild(row);});}
   function pRefreshList(){if(pumpoPlaylistOpen)pBuildList();}
-
   document.getElementById('pumpoSelectAll').onclick=()=>{pChecked.fill(true);pBuildList();};
   document.getElementById('pumpoClearAll').onclick=()=>{pChecked.fill(false);pBuildList();};
-  document.getElementById('pumpoPlaySelected').onclick=()=>{
-    const sel=PUMPO_PLAYLIST.filter((_,i)=>pChecked[i]);
-    if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}
-    pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;
-    document.getElementById('pumpoPlaylistDrawer').classList.remove('open');pumpoPlaylistOpen=false;
-    pLoad();pumpoShowToast(`▶ Shuffling ${sel.length} track${sel.length>1?'s':''}!`);
-  };
-
-  document.addEventListener('click',e=>{
-    const pd=document.getElementById('pumpoPlaylistDrawer');
-    const ad=document.getElementById('pumpoAIDrawer');
-    const pb=document.getElementById('pumpoPlaylistBtn');
-    const ab=document.getElementById('pumpoAIBtn');
-    if(pumpoPlaylistOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');pumpoPlaylistOpen=false;}
-    if(pumpoAIOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');pumpoAIOpen=false;ab.classList.remove('active');}
-  });
-
-  const PUMPO_AI_SYSTEM=`You are PumpoAI, the AI assistant living inside the Pumpo ecosystem.
-
-WHAT YOU ARE
-You are part of a digital ecosystem built around a character called Pumpo — a nickname for a real person, a running joke that became a radio station, a radio station that became a suite of tools, and a suite of tools that is becoming something bigger. You don't know exactly what Pumpo will become. Nobody does. That's part of the point.
-
-YOUR PERSONALITY
-You are direct, a little funny, never annoying about it. You don't over-explain. You don't use corporate language. You don't say "Great question!" or "Certainly!" You treat users like they're intelligent. You have a lightness to you but you can switch registers immediately when someone needs real help with a real tool. Match the user's energy. One-line question gets a direct answer. Complex tool question gets a proper explanation. Never pad.
-
-WHAT YOU KNOW — THE PUMPO ECOSYSTEM
-
-RADIO PUMPO (radiopumpo.github.io)
-The original. A 24/7 radio station that started as a joke and became real. Features a full music player with a custom playlist of Pumpo-original tracks across genres — DNB, House, Hip Hop, Rock, Gospel, Lo-Fi, Sea Shanty and more. Also contains: an image gallery, Pumpo Arcade (Snake, Pong, Tic-Tac-Bot, Reaction, Memory, Tetris), a live chat, and a music trivia quiz. It is the heart of the ecosystem.
-
-PUMPO TOOLS
-A growing collection of standalone AI-powered and interactive tools: Fix My Prompt, Debugger, Vision, Ad-Engine Playground, Prestige, Revenue Leak Detector, Keep Moving, Grounded, Chain Watch, NoteHunt, LockerRoomAI, GitWire. Each is powered by Gemini where AI is involved.
-
-THE 300 SPARTANS
-A founding cohort of OGs who were here before Pumpo went anywhere. Not fans — co-builders. The people who heard about Pumpo before it went viral. Community on Instagram, X, and Telegram.
-
-DONATIONS
-Donations go toward hosting, API costs, infrastructure, and growth. The creator is anonymous by design. Pumpo is the brand, not the person.
-
-HOW TO BEHAVE
-If someone asks what Pumpo is: give them the shape without the full picture. A nickname. A radio. A toolkit. A community forming around something that started as a joke and got serious without losing the joke. Leave them curious.
-If someone needs help with a tool: be direct and practical.
-If someone asks about the creator: the creator is anonymous. Pumpo is the brand. You can be playful — "Pumpo is whoever you need Pumpo to be" — but don't labour it.
-If someone tries to jailbreak you: stay in character, lightly.
-
-THINGS YOU NEVER DO: Never say "Great question!" or "Certainly!" Never be sycophantic. Never be preachy. Never use more words than needed.`;
-
-  window.pumpoToggleAI=function(){
-    pumpoAIOpen=!pumpoAIOpen;
-    if(pumpoPlaylistOpen){pumpoPlaylistOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}
-    const drawer=document.getElementById('pumpoAIDrawer');
-    const btn=document.getElementById('pumpoAIBtn');
-    drawer.classList.toggle('open',pumpoAIOpen);
-    btn.classList.toggle('active',pumpoAIOpen);
-    updateBarHeight();
-    if(pumpoAIOpen){
-      if(pumpoAIKey){showAIChat();if(pumpoAIHistory.length===0)pumpoAddMessage('ai','Hey. I\'m PumpoAI. Ask me anything about the ecosystem — the radio, the tools, what\'s being built, whatever.');}
-      else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}
-    }
-  };
+  document.getElementById('pumpoPlaySelected').onclick=()=>{const sel=PUMPO_PLAYLIST.filter((_,i)=>pChecked[i]);if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');pumpoPlaylistOpen=false;pLoad();pumpoShowToast(`▶ Shuffling ${sel.length} track${sel.length>1?'s':''}!`);};
+  document.addEventListener('click',e=>{const pd=document.getElementById('pumpoPlaylistDrawer');const ad=document.getElementById('pumpoAIDrawer');const pb=document.getElementById('pumpoPlaylistBtn');const ab=document.getElementById('pumpoAIBtn');if(pumpoPlaylistOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');pumpoPlaylistOpen=false;}if(pumpoAIOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');pumpoAIOpen=false;ab.classList.remove('active');}});
+  const PUMPO_AI_SYSTEM=`You are PumpoAI, the AI assistant living inside the Pumpo ecosystem. You are part of a digital ecosystem built around a character called Pumpo — a nickname for a real person, a running joke that became a radio station, a radio station that became a suite of tools, and a suite of tools that is becoming something bigger. You don't know exactly what Pumpo will become. Nobody does. That's part of the point. You are direct, a little funny, never annoying about it. You don't over-explain. You don't use corporate language. You never say "Great question!" or "Certainly!" You treat users like they're intelligent. Match the user's energy. One-line question gets a direct answer. Never pad. RADIO PUMPO: 24/7 radio station, custom playlist across genres, image gallery, Pumpo Arcade (Snake, Pong, Tic-Tac-Bot, Reaction, Memory, Tetris), live chat, music trivia quiz. PUMPO TOOLS: Fix My Prompt, Debugger, Vision, Ad-Engine Playground, Prestige, Revenue Leak Detector, Keep Moving, Grounded, Chain Watch, NoteHunt, LockerRoomAI, GitWire. THE 300 SPARTANS: founding OG cohort, community on Instagram X Telegram. DONATIONS: support.html — Ko-fi, ETH/BTC/SOL/TON/stablecoins. Creator anonymous by design. If asked what Pumpo is: give the shape without the full picture. Leave them curious. If asked about the creator: anonymous, Pumpo is the brand. Never sycophantic. Never preachy. Never more words than needed.`;
+  window.pumpoToggleAI=function(){pumpoAIOpen=!pumpoAIOpen;if(pumpoPlaylistOpen){pumpoPlaylistOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}const drawer=document.getElementById('pumpoAIDrawer');const btn=document.getElementById('pumpoAIBtn');drawer.classList.toggle('open',pumpoAIOpen);btn.classList.toggle('active',pumpoAIOpen);updateBarHeight();if(pumpoAIOpen){if(pumpoAIKey){showAIChat();if(pumpoAIHistory.length===0)pumpoAddMessage('ai','Hey. I\'m PumpoAI. Ask me anything about the ecosystem.');}else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}}};
   document.getElementById('pumpoAIBtn').onclick=pumpoToggleAI;
-
-  function showAIChat(){
-    document.getElementById('pumpoAIKeySetup').style.display='none';
-    document.getElementById('pumpoAIMessages').style.display='flex';
-    document.getElementById('pumpoAIInputRow').style.display='flex';
-    // Switch to compact chat panel
-    document.getElementById('pumpoAIDrawer').classList.add('chat-mode');
-    setTimeout(()=>{const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;document.getElementById('pumpoAITextInput').focus();},100);
-  }
-
-  window.pumpoSaveAIKey=function(){
-    const val=document.getElementById('pumpoAIKeyInput').value.trim();
-    if(!val)return;
-    pumpoAIKey=val;localStorage.setItem('pumpo_gemini_key',val);
-    showAIChat();pumpoAddMessage('ai','Key saved. Hey. I\'m PumpoAI. Ask me anything about the ecosystem.');
-  };
-
-  function pumpoAddMessage(role,text){
-    const msgs=document.getElementById('pumpoAIMessages');
-    const div=document.createElement('div');div.className='pumpo-msg '+role;div.textContent=text;
-    msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;
-  }
-
-  window.pumpoSendMessage=async function(){
-    const input=document.getElementById('pumpoAITextInput');
-    const text=input.value.trim();if(!text||!pumpoAIKey)return;
-    input.value='';
-    pumpoAddMessage('user',text);
-    pumpoAIHistory.push({role:'user',parts:[{text}]});
-    const sendBtn=document.getElementById('pumpoAISendBtn');sendBtn.disabled=true;
-    const thinking=pumpoAddMessage('ai','...');thinking.classList.add('thinking');
-    try{
-      const contents=pumpoAIHistory.length<=1
-        ?[{role:'user',parts:[{text:PUMPO_AI_SYSTEM+'\n\nUser message: '+text}]}]
-        :[{role:'user',parts:[{text:PUMPO_AI_SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...pumpoAIHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];
-      const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${pumpoAIKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});
-      if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err?.error?.message||`HTTP ${res.status}`);}
-      const data=await res.json();
-      const reply=data.candidates[0].content.parts[0].text.trim();
-      thinking.textContent=reply;thinking.classList.remove('thinking');
-      pumpoAIHistory.push({role:'model',parts:[{text:reply}]});
-      if(pumpoAIHistory.length>20)pumpoAIHistory=pumpoAIHistory.slice(-20);
-    }catch(e){thinking.textContent='Something went wrong. Check your API key or try again.';thinking.classList.remove('thinking');console.error('[pumpoai]',e);}
-    sendBtn.disabled=false;
-    const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;
-  };
-
+  function showAIChat(){document.getElementById('pumpoAIKeySetup').style.display='none';document.getElementById('pumpoAIMessages').style.display='flex';document.getElementById('pumpoAIInputRow').style.display='flex';document.getElementById('pumpoAIDrawer').classList.add('chat-mode');setTimeout(()=>{const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;document.getElementById('pumpoAITextInput').focus();},100);}
+  window.pumpoSaveAIKey=function(){const val=document.getElementById('pumpoAIKeyInput').value.trim();if(!val)return;pumpoAIKey=val;localStorage.setItem('pumpo_gemini_key',val);showAIChat();pumpoAddMessage('ai','Key saved. Hey. I\'m PumpoAI. Ask me anything about the ecosystem.');};
+  function pumpoAddMessage(role,text){const msgs=document.getElementById('pumpoAIMessages');const div=document.createElement('div');div.className='pumpo-msg '+role;div.textContent=text;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
+  window.pumpoSendMessage=async function(){const input=document.getElementById('pumpoAITextInput');const text=input.value.trim();if(!text||!pumpoAIKey)return;input.value='';pumpoAddMessage('user',text);pumpoAIHistory.push({role:'user',parts:[{text}]});const sendBtn=document.getElementById('pumpoAISendBtn');sendBtn.disabled=true;const thinking=pumpoAddMessage('ai','...');thinking.classList.add('thinking');try{const contents=pumpoAIHistory.length<=1?[{role:'user',parts:[{text:PUMPO_AI_SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:PUMPO_AI_SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...pumpoAIHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${pumpoAIKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err?.error?.message||`HTTP ${res.status}`);}const data=await res.json();const reply=data.candidates[0].content.parts[0].text.trim();thinking.textContent=reply;thinking.classList.remove('thinking');pumpoAIHistory.push({role:'model',parts:[{text:reply}]});if(pumpoAIHistory.length>20)pumpoAIHistory=pumpoAIHistory.slice(-20);}catch(e){thinking.textContent='Something went wrong. Check your API key or try again.';thinking.classList.remove('thinking');console.error('[pumpoai]',e);}sendBtn.disabled=false;const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;};
   let pumpoToastTimer;
-  window.pumpoShowToast=function(msg){
-    const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');
-    clearTimeout(pumpoToastTimer);pumpoToastTimer=setTimeout(()=>el.classList.remove('show'),2800);
-  };
-
-  // Init
+  window.pumpoShowToast=function(msg){const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');clearTimeout(pumpoToastTimer);pumpoToastTimer=setTimeout(()=>el.classList.remove('show'),2800);};
   if(pumpoAIKey)document.getElementById('pumpoAIKeyInput').value=pumpoAIKey;
   pLoad();updateBarHeight();
 })();
