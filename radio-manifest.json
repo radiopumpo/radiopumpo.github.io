@@ -49,60 +49,60 @@
   "segments": {
 
     "station_ids": [
-      { "id": "sid01", "file": "segments/sid01.mp3",  "duration": 5 },
-      { "id": "sid02", "file": "segments/sid02.mp3",  "duration": 5 },
-      { "id": "sid03", "file": "segments/sid03.mp3",  "duration": 6 },
-      { "id": "sid04", "file": "segments/sid04.mp3",  "duration": 5 },
-      { "id": "sid05", "file": "segments/sid05.mp3",  "duration": 5 },
-      { "id": "sid06", "file": "segments/sid06.mp3",  "duration": 6 },
-      { "id": "sid07", "file": "segments/sid07.mp3",  "duration": 5 },
-      { "id": "sid08", "file": "segments/sid08.mp3",  "duration": 5 },
-      { "id": "sid09", "file": "segments/sid09.mp3",  "duration": 7 },
-      { "id": "sid10", "file": "segments/sid10.mp3",  "duration": 5 },
+      { "id": "sid01", "file": "segments/sid01.mp3",  "duration": 3 },
+      { "id": "sid02", "file": "segments/sid02.mp3",  "duration": 3 },
+      { "id": "sid03", "file": "segments/sid03.mp3",  "duration": 4 },
+      { "id": "sid04", "file": "segments/sid04.mp3",  "duration": 4 },
+      { "id": "sid05", "file": "segments/sid05.mp3",  "duration": 4 },
+      { "id": "sid06", "file": "segments/sid06.mp3",  "duration": 3 },
+      { "id": "sid07", "file": "segments/sid07.mp3",  "duration": 3 },
+      { "id": "sid08", "file": "segments/sid08.mp3",  "duration": 4 },
+      { "id": "sid09", "file": "segments/sid09.mp3",  "duration": 4 },
+      { "id": "sid10", "file": "segments/sid10.mp3",  "duration": 6 },
       { "id": "sid11", "file": "segments/sid11.mp3",  "duration": 5 },
-      { "id": "sid12", "file": "segments/sid12.mp3",  "duration": 5 }
+      { "id": "sid12", "file": "segments/sid12.mp3",  "duration": 3 }
     ],
 
     "breakfast": [
-      { "id": "brk01", "file": "segments/segmentsbrk01.mp3", "duration": 18 },
-      { "id": "brk02", "file": "segments/segmentsbrk02.mp3", "duration": 15 },
-      { "id": "brk03", "file": "segments/segmentsbrk03.mp3", "duration": 20 },
-      { "id": "brk04", "file": "segments/segmentsbrk04.mp3", "duration": 16 },
-      { "id": "brk05", "file": "segments/segmentsbrk05.mp3", "duration": 14 },
-      { "id": "brk06", "file": "segments/segmentsbrk06.mp3", "duration": 19 },
-      { "id": "brk07", "file": "segments/segmentsbrk07.mp3", "duration": 17 },
-      { "id": "brk08", "file": "segments/segmentsbrk08.mp3", "duration": 22 }
+      { "id": "brk01", "file": "segments/segmentsbrk01.mp3", "duration": 5 },
+      { "id": "brk02", "file": "segments/segmentsbrk02.mp3", "duration": 6 },
+      { "id": "brk03", "file": "segments/segmentsbrk03.mp3", "duration": 7 },
+      { "id": "brk04", "file": "segments/segmentsbrk04.mp3", "duration": 5 },
+      { "id": "brk05", "file": "segments/segmentsbrk05.mp3", "duration": 5 },
+      { "id": "brk06", "file": "segments/segmentsbrk06.mp3", "duration": 3 },
+      { "id": "brk07", "file": "segments/segmentsbrk07.mp3", "duration": 6 },
+      { "id": "brk08", "file": "segments/segmentsbrk08.mp3", "duration": 5 }
     ],
 
     "afternoons": [
-      { "id": "aft01", "file": "segments/segmentsaft01.mp3", "duration": 18 },
-      { "id": "aft02", "file": "segments/segmentsaft02.mp3", "duration": 20 },
-      { "id": "aft03", "file": "segments/segmentsaft03.mp3", "duration": 15 },
-      { "id": "aft04", "file": "segments/segmentsaft04.mp3", "duration": 17 },
-      { "id": "aft05", "file": "segments/segmentsaft05.mp3", "duration": 19 },
-      { "id": "aft06", "file": "segments/segmentsaft06.mp3", "duration": 16 },
-      { "id": "aft07", "file": "segments/segmentsaft07.mp3", "duration": 21 },
-      { "id": "aft08", "file": "segments/segmentsaft08.mp3", "duration": 14 }
+      { "id": "aft01", "file": "segments/segmentsaft01.mp3", "duration": 5 },
+      { "id": "aft02", "file": "segments/segmentsaft02.mp3", "duration": 7 },
+      { "id": "aft03", "file": "segments/segmentsaft03.mp3", "duration": 6 },
+      { "id": "aft04", "file": "segments/segmentsaft04.mp3", "duration": 6 },
+      { "id": "aft05", "file": "segments/segmentsaft05.mp3", "duration": 5 },
+      { "id": "aft06", "file": "segments/segmentsaft06.mp3", "duration": 7 },
+      { "id": "aft07", "file": "segments/segmentsaft07.mp3", "duration": 7 },
+      { "id": "aft08", "file": "segments/segmentsaft08.mp3", "duration": 3 }
     ],
 
     "latenight": [
-      { "id": "ln01", "file": "segments/segmentsln01.mp3", "duration": 22 },
-      { "id": "ln02", "file": "segments/segmentsln02.mp3", "duration": 25 },
-      { "id": "ln03", "file": "segments/segmentsln03.mp3", "duration": 20 },
-      { "id": "ln04", "file": "segments/segmentsln04.mp3", "duration": 18 },
-      { "id": "ln05", "file": "segments/segmentsln05.mp3", "duration": 28 },
-      { "id": "ln06", "file": "segments/segmentsln06.mp3", "duration": 23 },
-      { "id": "ln07", "file": "segments/segmentsln07.mp3", "duration": 19 },
-      { "id": "ln08", "file": "segments/segmentsln08.mp3", "duration": 24 }
+      { "id": "ln01", "file": "segments/segmentsln01.mp3", "duration": 5 },
+      { "id": "ln02", "file": "segments/segmentsln02.mp3", "duration": 8 },
+      { "id": "ln03", "file": "segments/segmentsln03.mp3", "duration": 6 },
+      { "id": "ln04", "file": "segments/segmentsln04.mp3", "duration": 6 },
+      { "id": "ln05", "file": "segments/segmentsln05.mp3", "duration": 7 },
+      { "id": "ln06", "file": "segments/segmentsln06.mp3", "duration": 6 },
+      { "id": "ln07", "file": "segments/segmentsln07.mp3", "duration": 7 },
+      { "id": "ln08", "file": "segments/segmentsln08.mp3", "duration": 7 }
     ],
 
     "show_wrappers": {
-      "breakfast_intro":  { "file": "segments/segmentsbrkintro.mp3", "duration": 28 },
-      "breakfast_outro":  { "file": "segments/segmentsbrkoutro.mp3", "duration": 20 },
-      "afternoons_intro": { "file": "segments/segmentsaftintro.mp3", "duration": 25 },
-      "afternoons_outro": { "file": "segments/segmentsaftoutro.mp3", "duration": 18 },
-      "latenight_intro":  { "file": "segments/segmentslnintro.mp3",  "duration": 30 },
-      "latenight_outro":  { "file": "segments/segmentslnoutro.mp3",  "duration": 22 }
+      "breakfast_intro":  { "file": "segments/segmentsbrkintro.mp3", "duration": 10 },
+      "breakfast_outro":  { "file": "segments/segmentsbrkoutro.mp3", "duration": 8 },
+      "afternoons_intro": { "file": "segments/segmentsaftintro.mp3", "duration": 9 },
+      "afternoons_outro": { "file": "segments/segmentsaftoutro.mp3", "duration": 8 },
+      "latenight_intro":  { "file": "segments/segmentslnintro.mp3",  "duration": 8 },
+      "latenight_outro":  { "file": "segments/segmentslnoutro.mp3",  "duration": 6 }
     }
   },
 
