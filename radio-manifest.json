@@ -36,7 +36,7 @@
     { "id": "t17", "file": "https://radiopumpo.github.io/ACDCpumpo.mp3",          "title": "AC/DC Pumpo",             "duration": 210, "dayparts": ["afternoons","latenight"] },
     { "id": "t18", "file": "https://radiopumpo.github.io/bobpumpo.mp3",           "title": "Bob Pumpo",               "duration": 210, "dayparts": ["afternoons","latenight"] },
     { "id": "t19", "file": "https://radiopumpo.github.io/copacabana.mp3",         "title": "Pumpo em Copacabana",     "duration": 210, "dayparts": ["breakfast","afternoons","latenight"] },
-    { "id": "t20", "file": "https://radiopumpo.github.io/%D0%BF%D1%83%D0%BC%D0%BF%D0%BE.mp3", "title": "пумпо",    "duration": 210, "dayparts": ["latenight"] },
+    { "id": "t20", "file": "https://radiopumpo.github.io/pumporus.mp3",           "title": "пумпо",                   "duration": 210, "dayparts": ["latenight"] },
     { "id": "t21", "file": "https://radiopumpo.github.io/pumpolofinippon.mp3",    "title": "LoFi Nippon Pumpo",       "duration": 210, "dayparts": ["latenight"] },
     { "id": "t22", "file": "https://radiopumpo.github.io/pumpitup.mp3",           "title": "Pumpo Pump it up",        "duration": 210, "dayparts": ["breakfast","afternoons","latenight"] },
     { "id": "t23", "file": "https://radiopumpo.github.io/pumpoquersentir.mp3",    "title": "Pumpo Quer Sentir",       "duration": 210, "dayparts": ["afternoons","latenight"] },
