@@ -1,147 +1,161 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Radio Pumpo 24/7</title>
-
   <link rel="apple-touch-icon" href="radiopumpologo.png">
   <link rel="icon" type="image/png" href="radiopumpologo.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&display=swap" rel="stylesheet">
-
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root {
-      --pink: #ff0080;
-      --cyan: #40e0d0;
-      --bg: #0d0d0d;
-      --card: rgba(255,255,255,0.06);
-      --pink-glow: rgba(255,0,128,0.4);
-      --cyan-glow: rgba(64,224,208,0.3);
+    :root{
+      --pink:#ff0080;--cyan:#40e0d0;--amber:#ffaa00;
+      --bg:#0d0d0d;--bg2:#111;--bg3:#181818;
+      --text:#f0ede6;--muted:#555;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+      --pink-glow:rgba(255,0,128,0.4);--cyan-glow:rgba(64,224,208,0.3);
+      --mono:'Space Mono',monospace;--sans:'Rajdhani',sans-serif;--display:'Black Ops One',cursive;
     }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      font-family: "Rajdhani", sans-serif;
-      background: var(--bg);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 70px 20px 140px;
-      overflow-x: hidden;
-    }
-
-    body::before {
-      content: '';
-      position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.03) 2px, rgba(0,0,0,0.03) 4px);
-      pointer-events: none;
-      z-index: 9999;
-    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;padding-bottom:160px;}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
 
     /* NAV */
-    .top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(13,13,13,0.85); backdrop-filter: blur(10px); z-index: 500; border-bottom: 1px solid rgba(255,0,128,0.2); }
-    .nav-brand { font-family: 'Black Ops One', cursive; font-size: 1rem; color: var(--pink); letter-spacing: 2px; }
-    .nav-right { display: flex; align-items: center; gap: 10px; }
-    .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: 0.75rem; border: 1px solid var(--cyan); padding: 6px 12px; border-radius: 20px; transition: 0.3s; letter-spacing: 1px; }
-    .nav-link:hover { background: var(--cyan); color: #0d0d0d; box-shadow: 0 0 15px var(--cyan-glow); }
-    .nav-link.support { border-color: var(--pink); color: var(--pink); }
-    .nav-link.support:hover { background: var(--pink); color: #fff; box-shadow: 0 0 15px var(--pink-glow); }
-    @media (max-width: 480px) { .nav-link { font-size: 0.65rem; padding: 5px 9px; } }
+    .top-nav{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(13,13,13,0.92);backdrop-filter:blur(12px);z-index:500;border-bottom:1px solid rgba(255,0,128,0.15);}
+    .nav-brand{font-family:var(--display);font-size:.95rem;color:var(--pink);letter-spacing:2px;text-decoration:none;}
+    .nav-right{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+    .nav-link{color:var(--cyan);text-decoration:none;font-weight:700;font-size:.62rem;border:1px solid rgba(64,224,208,0.25);padding:5px 10px;border-radius:20px;transition:.2s;letter-spacing:.5px;font-family:var(--mono);}
+    .nav-link:hover{background:var(--cyan);color:#0d0d0d;}
+    .nav-link.support{border-color:rgba(255,0,128,0.25);color:var(--pink);}
+    .nav-link.support:hover{background:var(--pink);color:#fff;}
+    @media(max-width:520px){.nav-link{font-size:.55rem;padding:4px 8px;}}
 
-    /* LOGO */
-    .header-logo-container { width: 100%; display: flex; justify-content: center; margin-bottom: 16px; }
-    #headerLogo { display: block; max-width: 480px; width: 100%; height: auto; filter: drop-shadow(0 0 20px var(--pink-glow)); animation: logoFadeIn 1.8s ease-out forwards; opacity: 0; }
-    @keyframes logoFadeIn { 0% { opacity: 0; transform: translateY(20px) scale(0.96); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+    /* HERO */
+    .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1.5rem 4rem;text-align:center;overflow:hidden;}
+    #heroCanvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+    .hero-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 45%,rgba(13,13,13,0.75) 100%);}
+    .hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.1rem;max-width:560px;}
 
-    .live-badge { background: #ff0033; padding: 5px 14px; border-radius: 12px; font-weight: 700; font-size: 0.8rem; letter-spacing: 2px; margin-bottom: 22px; opacity: 0; animation: pulse 1.4s infinite, fadeIn 1.5s ease-out 0.8s forwards; }
-    @keyframes fadeIn { to { opacity: 1; } }
-    @keyframes pulse { 0%,100%{opacity:.6;} 50%{opacity:1;} }
+    .hero-logo{max-width:min(320px,78vw);width:100%;filter:drop-shadow(0 0 30px var(--pink-glow));animation:logoIn 2s ease-out forwards;opacity:0;}
+    @keyframes logoIn{0%{opacity:0;transform:translateY(18px) scale(.95)}100%{opacity:1;transform:none}}
 
-    /* GALLERY */
-    .image-gallery { margin-top: 50px; width: 100%; max-width: 1100px; overflow-x: auto; padding-bottom: 14px; display: flex; gap: 14px; justify-content: center; scrollbar-width: thin; scrollbar-color: var(--pink) transparent; }
-    .image-gallery img { height: 170px; width: auto; border-radius: 14px; box-shadow: 0 0 16px rgba(255,255,255,0.15); transition: transform 0.25s ease, box-shadow 0.25s ease; cursor: pointer; flex-shrink: 0; }
-    .image-gallery img:hover { transform: scale(1.06); box-shadow: 0 0 25px var(--pink-glow); }
+    .live-badge{background:rgba(255,0,51,0.12);border:1px solid rgba(255,0,51,0.35);color:#ff3355;padding:4px 14px;border-radius:12px;font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;animation:livePulse 1.4s infinite;}
+    @keyframes livePulse{0%,100%{opacity:.65}50%{opacity:1}}
+
+    .hero-story{font-size:clamp(14px,2.2vw,17px);color:rgba(240,237,230,0.7);font-weight:600;line-height:1.9;max-width:440px;}
+    .hero-story em{color:var(--cyan);font-style:normal;}
+    .hero-story strong{color:var(--pink);}
+
+    .hero-cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:.4rem;}
+    .cta-tune{font-family:var(--display);font-size:.95rem;letter-spacing:1px;padding:.82rem 2.1rem;border-radius:4px;background:var(--pink);color:#fff;border:none;cursor:pointer;transition:all .2s;box-shadow:0 4px 22px rgba(255,0,128,.38);position:relative;overflow:hidden;}
+    .cta-tune::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);transition:left .4s;}
+    .cta-tune:hover::before{left:100%;}
+    .cta-tune:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,0,128,.55);}
+    .cta-ai{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.82rem 1.4rem;border-radius:4px;border:1px solid rgba(64,224,208,.35);color:var(--cyan);background:transparent;cursor:pointer;transition:.2s;}
+    .cta-ai:hover{border-color:var(--cyan);background:rgba(64,224,208,.07);box-shadow:0 0 14px rgba(64,224,208,.18);}
+
+    .hero-teaser{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:rgba(255,255,255,.18);text-transform:uppercase;margin-top:.5rem;line-height:1.8;}
+    .hero-teaser a{color:rgba(255,255,255,.25);text-decoration:none;transition:.2s;}
+    .hero-teaser a:hover{color:var(--cyan);}
+
+    .scroll-hint{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:1.25rem;animation:bobble 2s ease-in-out infinite;}
+    @keyframes bobble{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
+    .scroll-hint-line{width:1px;height:26px;background:linear-gradient(to bottom,transparent,var(--pink));}
+    .scroll-hint-label{font-family:var(--mono);font-size:.48rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
 
     /* ARCADE */
-    .arcade-container { margin-top: 60px; width: 90%; max-width: 640px; background: rgba(0,0,0,0.55); border: 2px solid var(--cyan); border-radius: 22px; padding: 24px; text-align: center; box-shadow: 0 0 25px var(--cyan-glow); }
-    .arcade-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); margin-top: 0; letter-spacing: 2px; font-size: 1.3rem; }
-    .arcade-menu { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-bottom: 18px; }
-    .game-btn { background: transparent; border: 1px solid var(--pink); color: var(--pink); padding: 8px 14px; border-radius: 8px; cursor: pointer; font-weight: 700; font-size: 0.9rem; font-family: 'Rajdhani', sans-serif; transition: 0.2s; letter-spacing: 1px; }
-    .game-btn:hover { background: var(--pink); color: #fff; box-shadow: 0 0 10px var(--pink-glow); }
-    #game-stage { background: #000; width: 100%; aspect-ratio: 1/1; max-width: 420px; margin: 0 auto; border-radius: 14px; display: flex; align-items: center; justify-content: center; border: 1px solid #222; position: relative; overflow: hidden; touch-action: none; }
-
-    .touch-controls { display: none; margin-top: 12px; }
-    .touch-row { display: flex; justify-content: center; gap: 10px; margin: 4px 0; }
-    .t-btn { width: 56px; height: 56px; background: rgba(255,255,255,0.08); border: 1px solid var(--cyan); border-radius: 10px; color: var(--cyan); font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; -webkit-user-select: none; user-select: none; transition: 0.15s; }
-    .t-btn:active { background: var(--cyan); color: #000; }
-    @media (pointer: coarse) { .touch-controls { display: block; } }
-
-    .ttt-grid, .mem-grid { display: grid; gap: 8px; width: 85%; }
-    .ttt-grid { grid-template-columns: repeat(3,1fr); }
-    .mem-grid { grid-template-columns: repeat(4,1fr); }
-    .cell { aspect-ratio: 1/1; background: #111; border: 1px solid var(--cyan); display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 700; border-radius: 6px; transition: background 0.2s; }
-    .ttt-cell { font-size: 2.5rem; }
-    .mem-cell { font-size: 1.5rem; background: var(--pink); }
-    .mem-cell.flipped { background: #111; }
-    #reaction-box { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; font-weight: 700; text-align: center; padding: 20px; }
-
-    /* MODAL */
-    .modal { display: none; position: fixed; z-index: 6000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.92); backdrop-filter: blur(10px); align-items: center; justify-content: center; flex-direction: column; }
-    .modal-content { max-width: 90vw; max-height: 78vh; border-radius: 12px; object-fit: contain; box-shadow: 0 0 40px var(--pink-glow); }
-    .close { position: absolute; top: 18px; right: 28px; color: #f1f1f1; font-size: 38px; cursor: pointer; transition: color 0.2s; }
-    .close:hover { color: var(--pink); }
-
-    /* CHAT */
-    .guestbook-container { margin-top: 60px; width: 90%; max-width: 800px; padding: 24px; background: var(--card); border-radius: 20px; border: 1px solid rgba(255,255,255,0.08); }
-    .guestbook-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); letter-spacing: 2px; margin-top: 0; font-size: 1.2rem; }
+    .section-wrap{max-width:820px;margin:0 auto;padding:3rem 1.5rem;}
+    .section-head{margin-bottom:1.25rem;}
+    .section-eyebrow{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;}
+    .section-title{font-family:var(--display);font-size:clamp(17px,3vw,26px);color:var(--text);}
+    .section-title span{color:var(--cyan);}
+    .divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,0,128,.25),transparent);opacity:.5;}
+    .arcade-card{background:rgba(255,255,255,.03);border:1px solid rgba(64,224,208,.15);border-radius:14px;padding:1.4rem;box-shadow:0 0 18px rgba(64,224,208,.04);}
+    .arcade-menu{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.1rem;}
+    .game-btn{background:transparent;border:1px solid rgba(255,0,128,.3);color:var(--pink);padding:7px 13px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--sans);transition:.2s;letter-spacing:.5px;}
+    .game-btn:hover{background:var(--pink);color:#fff;box-shadow:0 0 10px var(--pink-glow);}
+    #game-stage{background:#000;width:100%;aspect-ratio:1/1;max-width:360px;margin:0 auto;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid #1a1a1a;position:relative;overflow:hidden;touch-action:none;}
+    .touch-controls{display:none;margin-top:10px;}
+    .touch-row{display:flex;justify-content:center;gap:8px;margin:3px 0;}
+    .t-btn{width:50px;height:50px;background:rgba(255,255,255,.05);border:1px solid var(--cyan);border-radius:8px;color:var(--cyan);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;transition:.15s;}
+    .t-btn:active{background:var(--cyan);color:#000;}
+    @media(pointer:coarse){.touch-controls{display:block;}}
 
     /* TRIVIA */
-    .trivia-container { margin-top: 60px; width: 90%; max-width: 620px; text-align: center; padding: 28px; background: rgba(64,224,208,0.07); border-radius: 22px; border: 1px solid rgba(64,224,208,0.25); box-shadow: 0 0 20px var(--cyan-glow); }
-    .trivia-container h2 { font-family: 'Black Ops One', cursive; color: var(--cyan); letter-spacing: 2px; margin-top: 0; font-size: 1.2rem; }
-    #question-text { font-size: 1.2rem; font-weight: 600; min-height: 2em; }
-    .answer-btn { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid var(--cyan); padding: 12px 16px; border-radius: 10px; cursor: pointer; width: 100%; margin-bottom: 10px; font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 600; transition: 0.2s; text-align: left; }
-    .answer-btn:hover { background: rgba(64,224,208,0.15); box-shadow: 0 0 10px var(--cyan-glow); }
-    .answer-btn.correct { background: rgba(0,200,80,0.3); border-color: #00c850; }
-    .answer-btn.wrong { background: rgba(255,0,51,0.3); border-color: #ff0033; }
-    #feedback { font-size: 1.1rem; font-weight: 700; min-height: 1.5em; }
-    #score-area { margin-top: 8px; font-size: 1rem; color: #aaa; }
-    #restart-btn { background: var(--pink); color: white; border: none; padding: 10px 22px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 1rem; margin-top: 10px; }
+    .trivia-card{text-align:center;padding:1.6rem;background:rgba(64,224,208,.03);border-radius:14px;border:1px solid rgba(64,224,208,.14);}
+    #question-text{font-size:1.05rem;font-weight:600;min-height:2em;color:var(--text);margin-bottom:.85rem;}
+    .answer-btn{background:rgba(255,255,255,.05);color:var(--text);border:1px solid rgba(64,224,208,.2);padding:10px 14px;border-radius:8px;cursor:pointer;width:100%;margin-bottom:7px;font-family:var(--sans);font-size:.92rem;font-weight:600;transition:.2s;text-align:left;}
+    .answer-btn:hover{background:rgba(64,224,208,.1);}
+    .answer-btn.correct{background:rgba(0,200,80,.18);border-color:#00c850;}
+    .answer-btn.wrong{background:rgba(255,0,51,.18);border-color:#ff0033;}
+    #feedback{font-size:.95rem;font-weight:700;min-height:1.4em;margin:.45rem 0;}
+    #score-area{font-size:.85rem;color:var(--muted);margin-top:.5rem;}
+    #restart-btn{background:var(--pink);color:#fff;border:none;padding:8px 18px;border-radius:7px;cursor:pointer;font-family:var(--sans);font-weight:700;font-size:.9rem;margin-top:7px;}
 
-    .divider { width: 80%; max-width: 500px; height: 1px; background: linear-gradient(to right, transparent, var(--pink), transparent); margin: 50px 0 0; opacity: 0.4; }
+    /* ttt / memory */
+    .ttt-grid,.mem-grid{display:grid;gap:7px;width:85%;}
+    .ttt-grid{grid-template-columns:repeat(3,1fr);}
+    .mem-grid{grid-template-columns:repeat(4,1fr);}
+    .cell{aspect-ratio:1/1;background:#111;border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;border-radius:5px;transition:background .2s;}
+    .ttt-cell{font-size:2.1rem;}
+    .mem-cell{font-size:1.3rem;background:var(--pink);}
+    .mem-cell.flipped{background:#111;}
+    #reaction-box{width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.95rem;font-weight:700;text-align:center;padding:16px;}
   </style>
 </head>
 <body>
 
-  <nav class="top-nav">
-    <span class="nav-brand">📻 PUMPO</span>
-    <div class="nav-right">
-      <a href="crew.html" class="nav-link">👥</a>
-      <a href="merch.html" class="nav-link">🛍</a>
-      <a href="support.html" class="nav-link support">♥ SUPPORT</a>
-      <a href="https://radiopumpo.github.io/pumpo-tools/" class="nav-link">🔧</a>
-      <a href="https://radiopumpo.github.io/pumpotv/" class="nav-link">📺</a>
-      <a href="https://radiopumpo.github.io/pumpo-games/" class="nav-link">🎮</a>
-    </div>
-  </nav>
-
-  <div class="header-logo-container">
-    <img src="radiopumpologo.png" alt="Radio Pumpo Logo" id="headerLogo">
+<nav class="top-nav">
+  <span class="nav-brand">📻 PUMPO</span>
+  <div class="nav-right">
+    <a href="crew.html"    class="nav-link">👥</a>
+    <a href="merch.html"   class="nav-link">🛍</a>
+    <a href="vip.html"     class="nav-link support">🔐 VIP</a>
+    <a href="support.html" class="nav-link support">♥ SUPPORT</a>
+    <a href="https://radiopumpo.github.io/pumpo-tools/"  class="nav-link">🛠</a>
+    <a href="https://radiopumpo.github.io/pumpotv/"      class="nav-link">📺</a>
+    <a href="https://radiopumpo.github.io/pumpo-games/"  class="nav-link">🎮</a>
   </div>
+</nav>
 
-  <div class="live-badge">● LIVE 24/7</div>
+<!-- HERO -->
+<section class="hero">
+  <canvas id="heroCanvas"></canvas>
+  <div class="hero-vignette"></div>
+  <div class="hero-inner">
+    <img src="radiopumpologo.png" alt="Radio Pumpo" class="hero-logo">
+    <div class="live-badge">● LIVE 24/7</div>
+    <p class="hero-story">
+      A joke that got out of hand.<br>
+      <em>No investors. No ads. No agenda.</em><br>
+      Just people on the same frequency.<br><br>
+      <strong>Tune in. Talk to Pumpo.<br>The rest reveals itself.</strong>
+    </p>
+    <div class="hero-cta-row">
+      <button class="cta-tune" onclick="tuneIn()">▶ TUNE IN</button>
+      <button class="cta-ai"   onclick="meetAI()">✦ Meet PumpoAI</button>
+    </div>
+    <div class="hero-teaser">
+      There's more. Built by <a href="https://github.com/nztdev" target="_blank">@nztdev</a>. You'll find it.
+    </div>
+    <div class="scroll-hint">
+      <div class="scroll-hint-line"></div>
+      <div class="scroll-hint-label">Explore</div>
+    </div>
+  </div>
+</section>
 
-  <div class="divider"></div>
-  <div class="image-gallery" id="gallery"></div>
-
-  <div class="divider"></div>
-  <div class="arcade-container">
-    <h2>🕹️ RADIO PUMPO ARCADE</h2>
+<!-- ARCADE -->
+<div class="divider"></div>
+<div class="section-wrap">
+  <div class="section-head">
+    <div class="section-eyebrow">Built-In Games</div>
+    <h2 class="section-title">Radio Pumpo <span>Arcade</span></h2>
+  </div>
+  <div class="arcade-card">
     <div class="arcade-menu">
       <button class="game-btn" onclick="startSnake()">Snake</button>
       <button class="game-btn" onclick="startPong()">Pong</button>
@@ -150,7 +164,7 @@
       <button class="game-btn" onclick="startMemory()">Memory</button>
       <button class="game-btn" onclick="startTetris()">Tetris</button>
     </div>
-    <div id="game-stage"><p style="color:#555; font-size:1.1rem;">Select a Game!</p></div>
+    <div id="game-stage"><p style="color:#333;font-size:.85rem;font-family:var(--mono);">SELECT A GAME</p></div>
     <div class="touch-controls" id="touchControls">
       <div class="touch-row"><button class="t-btn" id="tUp">▲</button></div>
       <div class="touch-row">
@@ -159,23 +173,18 @@
         <button class="t-btn" id="tRight">▶</button>
       </div>
     </div>
-    <p id="game-info" style="font-size:0.8rem; color:#666; margin-top:10px; min-height:1.2em;"></p>
+    <p id="game-info" style="font-size:.7rem;color:#333;margin-top:8px;min-height:1.2em;font-family:var(--mono);text-align:center;"></p>
   </div>
+</div>
 
-  <div id="imageModal" class="modal">
-    <span class="close">&times;</span>
-    <img class="modal-content" id="expandedImg">
+<!-- TRIVIA -->
+<div class="divider"></div>
+<div class="section-wrap">
+  <div class="section-head">
+    <div class="section-eyebrow">Test Your Knowledge</div>
+    <h2 class="section-title">Radio Pumpo <span>Trivia</span></h2>
   </div>
-
-  <div class="divider"></div>
-  <div class="guestbook-container">
-    <h2>💬 Radio Pumpo Chat</h2>
-    <iframe src="https://www5.cbox.ws/box/?boxid=960015&boxtag=6NqJne" width="100%" height="450" frameborder="0" allow="autoplay"></iframe>
-  </div>
-
-  <div class="divider"></div>
-  <div class="trivia-container">
-    <h2>🇮🇹 Radio Pumpo Trivia</h2>
+  <div class="trivia-card">
     <div id="quiz-area">
       <p id="question-text"></p>
       <div id="answer-buttons"></div>
@@ -186,342 +195,129 @@
       <button id="restart-btn" style="display:none;">🔄 Play Again</button>
     </div>
   </div>
+</div>
 
 <script>
-/* ===================== GALLERY ===================== */
-const images = [
-  "https://radiopumpo.github.io/djpumpo.jpg",
-  "https://radiopumpo.github.io/forzapumpo.jpg",
-  "https://radiopumpo.github.io/hiphoppumpo.jpg",
-  "https://radiopumpo.github.io/seashantypumpo.jpg",
-  "https://radiopumpo.github.io/rockpumpo.jpg",
-  "https://radiopumpo.github.io/bobpumpo.jpg",
-  "https://radiopumpo.github.io/gospelpumpo.jpg"
-];
+/* HERO PARTICLES */
+(function(){
+  const c=document.getElementById('heroCanvas'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  const COLS=['#ff0080','#40e0d0','#ffaa00','#9b59ff'];
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  function sp(){return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.4,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,a:Math.random()*.28+.05,col:COLS[Math.floor(Math.random()*4)],ph:Math.random()*Math.PI*2};}
+  function draw(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ph+=.012;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col;ctx.globalAlpha=p.a*(0.5+0.5*Math.sin(p.ph));ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);resize();pts=Array.from({length:65},sp);draw();
+})();
 
-const modal = document.getElementById("imageModal");
-const modalImg = document.getElementById("expandedImg");
-
-images.forEach(src => {
-  const img = document.createElement("img");
-  img.src = src; img.loading = "lazy";
-  img.onclick = () => { modal.style.display = "flex"; modalImg.src = src; };
-  document.getElementById("gallery").appendChild(img);
-});
-
-document.querySelector(".close").onclick = () => modal.style.display = "none";
-modal.onclick = e => { if (e.target === modal) modal.style.display = "none"; };
-
-/* ===================== ARCADE ===================== */
-let gameInterval, currentGame = null;
-const stage = document.getElementById("game-stage");
-const gInfo = document.getElementById("game-info");
-const tUp = document.getElementById("tUp");
-const tDown = document.getElementById("tDown");
-const tLeft = document.getElementById("tLeft");
-const tRight = document.getElementById("tRight");
-
-let touchDirCallback = null;
-function setTouchDir(cb) { touchDirCallback = cb; }
-function fireDirKey(key) { if (touchDirCallback) touchDirCallback(key); }
-tUp.addEventListener("touchstart",    e => { e.preventDefault(); fireDirKey("ArrowUp"); });
-tDown.addEventListener("touchstart",  e => { e.preventDefault(); fireDirKey("ArrowDown"); });
-tLeft.addEventListener("touchstart",  e => { e.preventDefault(); fireDirKey("ArrowLeft"); });
-tRight.addEventListener("touchstart", e => { e.preventDefault(); fireDirKey("ArrowRight"); });
-tUp.addEventListener("click",    () => fireDirKey("ArrowUp"));
-tDown.addEventListener("click",  () => fireDirKey("ArrowDown"));
-tLeft.addEventListener("click",  () => fireDirKey("ArrowLeft"));
-tRight.addEventListener("click", () => fireDirKey("ArrowRight"));
-
-function arcadeToast(msg) { pumpoShowToast(msg); }
-
-function clearStage() {
-  clearInterval(gameInterval);
-  stage.innerHTML = ""; gInfo.innerText = "";
-  window.onkeydown = null; touchDirCallback = null; currentGame = null;
+/* TUNE IN + AI */
+function tuneIn(){
+  const a=document.getElementById('pumpo-audio-el');
+  if(a){a.play().catch(()=>{});}
+  if(typeof pumpoShowToast==='function') pumpoShowToast('▶ Tuning in to Radio Pumpo...');
+  document.getElementById('pumpoBar')?.scrollIntoView({behavior:'smooth',block:'end'});
+}
+function meetAI(){
+  if(typeof pumpoToggleAI==='function') pumpoToggleAI();
+  else document.getElementById('pumpoAIBtn')?.click();
 }
 
-function startSnake() {
-  clearStage(); currentGame = "snake";
-  gInfo.innerText = "Arrows/D-pad to move";
-  const canvas = document.createElement("canvas"); canvas.width = 420; canvas.height = 420; stage.appendChild(canvas);
-  const ctx = canvas.getContext("2d");
-  const SZ = 21, CELL = 20;
-  let snake = [{x:10,y:10}], food = {x:15,y:15}, dx=1, dy=0, score=0;
-  function handleDir(key) {
-    if (key==="ArrowUp"&&dy===0){dx=0;dy=-1;}
-    else if(key==="ArrowDown"&&dy===0){dx=0;dy=1;}
-    else if(key==="ArrowLeft"&&dx===0){dx=-1;dy=0;}
-    else if(key==="ArrowRight"&&dx===0){dx=1;dy=0;}
-  }
-  window.onkeydown = e => { if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();handleDir(e.key);} };
-  setTouchDir(handleDir);
-  function randomFood(){food={x:Math.floor(Math.random()*SZ),y:Math.floor(Math.random()*SZ)};}
-  gameInterval = setInterval(()=>{
-    let head={x:snake[0].x+dx,y:snake[0].y+dy};
-    if(head.x<0||head.x>=SZ||head.y<0||head.y>=SZ||snake.some(s=>s.x===head.x&&s.y===head.y)){arcadeToast("Game Over! Score: "+score);startSnake();return;}
-    snake.unshift(head);
-    if(head.x===food.x&&head.y===food.y){score++;gInfo.innerText="Score: "+score;randomFood();}else snake.pop();
-    ctx.fillStyle="#000";ctx.fillRect(0,0,420,420);
-    ctx.fillStyle="#ff0080";snake.forEach(s=>ctx.fillRect(s.x*CELL,s.y*CELL,18,18));
-    ctx.fillStyle="#40e0d0";ctx.fillRect(food.x*CELL,food.y*CELL,18,18);
-  },110);
-}
+/* ARCADE */
+let gameInterval,currentGame=null;
+const stage=document.getElementById('game-stage'),gInfo=document.getElementById('game-info');
+const tUp=document.getElementById('tUp'),tDown=document.getElementById('tDown'),tLeft=document.getElementById('tLeft'),tRight=document.getElementById('tRight');
+let touchDirCallback=null;
+function setTouchDir(cb){touchDirCallback=cb;}
+function fireDirKey(k){if(touchDirCallback)touchDirCallback(k);}
+tUp.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowUp');},{passive:false});
+tDown.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowDown');},{passive:false});
+tLeft.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowLeft');},{passive:false});
+tRight.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowRight');},{passive:false});
+tUp.onclick=()=>fireDirKey('ArrowUp');tDown.onclick=()=>fireDirKey('ArrowDown');tLeft.onclick=()=>fireDirKey('ArrowLeft');tRight.onclick=()=>fireDirKey('ArrowRight');
+function clearStage(){clearInterval(gameInterval);stage.innerHTML='';gInfo.innerText='';window.onkeydown=null;touchDirCallback=null;currentGame=null;}
+function arcadeToast(m){if(typeof pumpoShowToast==='function')pumpoShowToast(m);}
+function startSnake(){clearStage();currentGame='snake';gInfo.innerText='Arrows / D-pad';const cv=document.createElement('canvas');cv.width=360;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');const SZ=18,C=20;let sn=[{x:9,y:9}],food={x:13,y:13},dx=1,dy=0,sc=0;function hd(k){if(k==='ArrowUp'&&dy===0){dx=0;dy=-1;}else if(k==='ArrowDown'&&dy===0){dx=0;dy=1;}else if(k==='ArrowLeft'&&dx===0){dx=-1;dy=0;}else if(k==='ArrowRight'&&dx===0){dx=1;dy=0;}}window.onkeydown=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();hd(e.key);}};setTouchDir(hd);function rf(){food={x:Math.floor(Math.random()*SZ),y:Math.floor(Math.random()*SZ)};}gameInterval=setInterval(()=>{let h={x:sn[0].x+dx,y:sn[0].y+dy};if(h.x<0||h.x>=SZ||h.y<0||h.y>=SZ||sn.some(s=>s.x===h.x&&s.y===h.y)){arcadeToast('Game Over! Score: '+sc);startSnake();return;}sn.unshift(h);if(h.x===food.x&&h.y===food.y){sc++;gInfo.innerText='Score: '+sc;rf();}else sn.pop();ctx.fillStyle='#000';ctx.fillRect(0,0,360,360);ctx.fillStyle='#ff0080';sn.forEach(s=>ctx.fillRect(s.x*C,s.y*C,18,18));ctx.fillStyle='#40e0d0';ctx.fillRect(food.x*C,food.y*C,18,18);},110);}
+function startPong(){clearStage();currentGame='pong';gInfo.innerText='Mouse / touch';const cv=document.createElement('canvas');cv.width=360;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');let sc=0,p=130,bX=180,bY=180,bDX=4,bDY=3.5;cv.onmousemove=e=>{const r=cv.getBoundingClientRect();p=(e.clientY-r.top)*(360/r.height)-36;};cv.addEventListener('touchmove',e=>{e.preventDefault();const r=cv.getBoundingClientRect();p=(e.touches[0].clientY-r.top)*(360/r.height)-36;},{passive:false});setTouchDir(k=>{if(k==='ArrowUp')p=Math.max(0,p-26);if(k==='ArrowDown')p=Math.min(288,p+26);});gameInterval=setInterval(()=>{bX+=bDX;bY+=bDY;if(bY<0||bY>352)bDY*=-1;if(bX<17&&bY>p&&bY<p+72){bDX=Math.abs(bDX)*1.04;sc++;gInfo.innerText='Score: '+sc;}if(bX>353)bDX=-Math.abs(bDX);if(bX<0){arcadeToast('Game Over! Score: '+sc);startPong();return;}ctx.fillStyle='#000';ctx.fillRect(0,0,360,360);ctx.fillStyle='#40e0d0';ctx.fillRect(8,p,10,72);ctx.fillStyle='#ff0080';ctx.beginPath();ctx.arc(bX,bY,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#1a1a1a';ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(180,0);ctx.lineTo(180,360);ctx.stroke();ctx.setLineDash([]);},30);}
+function startTTT(){clearStage();currentGame='ttt';let b=Array(9).fill('');const g=document.createElement('div');g.className='ttt-grid';const cells=[];for(let i=0;i<9;i++){const c=document.createElement('div');c.className='cell ttt-cell';cells.push(c);c.onclick=()=>{if(b[i]||wTTT(b))return;b[i]='X';c.textContent='X';c.style.color='#ff0080';if(wTTT(b)){arcadeToast('🎉 You Win!');startTTT();return;}if(!b.includes('')){arcadeToast("Draw!");startTTT();return;}setTimeout(()=>bot(),280);};g.appendChild(c);}stage.appendChild(g);function bot(){let m=fw('O')||fw('X')||[4,0,2,6,8,1,3,5,7].find(i=>!b[i]);if(m===undefined)return;b[m]='O';cells[m].textContent='O';cells[m].style.color='#40e0d0';if(wTTT(b)){arcadeToast('🤖 Bot Wins!');startTTT();}}function fw(p){const ws=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,bv,cv]of ws){if(b[a]===p&&b[bv]===p&&b[cv]==='')return cv;if(b[a]===p&&b[cv]===p&&b[bv]==='')return bv;if(b[bv]===p&&b[cv]===p&&b[a]==='')return a;}}}
+function wTTT(b){return[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(([a,bv,c])=>b[a]&&b[a]===b[bv]&&b[a]===b[c]);}
+function startReaction(){clearStage();currentGame='reaction';let cur=0,times=[];function rl(){stage.innerHTML='';const bx=document.createElement('div');bx.id='reaction-box';bx.style.background='#111';bx.style.color='#333';bx.innerHTML=`<div style="text-align:center"><div style="font-size:1.6rem">⏳</div><div style="font-family:var(--mono);font-size:.75rem">LEVEL ${cur+1} — Wait for GREEN</div></div>`;stage.appendChild(bx);let start,tout,ready=false;tout=setTimeout(()=>{bx.style.background='#40e0d0';bx.style.color='#000';bx.innerHTML=`<div style="font-size:1.8rem;font-weight:900;font-family:var(--display)">TAP!</div>`;start=Date.now();ready=true;},1500+Math.random()*3000);function tap(){if(!ready){clearTimeout(tout);arcadeToast('Too early! 🙅');rl();return;}times.push(Date.now()-start);cur++;if(cur<3)rl();else{let avg=Math.round(times.reduce((a,b)=>a+b)/times.length);arcadeToast(`Avg: ${avg}ms — ${avg<250?'Lightning! ⚡':avg<400?'Great! 🎯':'Keep practicing! 💪'}`);startReaction();}}bx.onclick=tap;bx.addEventListener('touchstart',e=>{e.preventDefault();tap();},{passive:false});}rl();}
+function startMemory(){clearStage();currentGame='memory';let icons=['🎸','🎹','📻','🎧','🎵','🎷','🎤','🎶'];let cards=[...icons,...icons].sort(()=>Math.random()-0.5);let flipped=[],matched=0,locked=false;const g=document.createElement('div');g.className='mem-grid';cards.forEach((icon,i)=>{const c=document.createElement('div');c.className='cell mem-cell';c.onclick=()=>{if(locked||flipped.length>=2||c.classList.contains('flipped'))return;c.textContent=icon;c.classList.add('flipped');flipped.push({c,icon,i});if(flipped.length===2){locked=true;if(flipped[0].icon===flipped[1].icon){matched++;flipped=[];locked=false;if(matched===8)arcadeToast('🏆 All matched!');}else{setTimeout(()=>{flipped.forEach(f=>{f.c.textContent='';f.c.classList.remove('flipped');});flipped=[];locked=false;},700);}}};g.appendChild(c);});stage.appendChild(g);}
+function startTetris(){clearStage();currentGame='tetris';gInfo.innerText='Arrows · Up=rotate';const cv=document.createElement('canvas');cv.width=220;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');ctx.scale(20,20);const CO=11,RO=18;const arena=Array.from({length:RO},()=>Array(CO).fill(0));const cols=[null,'#ff0080','#40e0d0','#ff8c00','#9d00ff','#00ff80','#ffff00','#ff0033'];const pieces=[[[0,1,0],[1,1,1],[0,0,0]],[[2,2],[2,2]],[[0,3,3],[3,3,0]],[[4,4,0],[0,4,4]],[[5,0,0],[5,5,5]],[[0,0,6],[6,6,6]],[[0,7,0,0],[0,7,0,0],[0,7,0,0],[0,7,0,0]]];let pl={pos:{x:4,y:0},matrix:pieces[0],score:0};let dc=0,lt=0;function draw(){ctx.fillStyle='#000';ctx.fillRect(0,0,CO,RO);arena.forEach((r,y)=>r.forEach((v,x)=>{if(v){ctx.fillStyle=cols[v];ctx.fillRect(x,y,1,1);}}));pl.matrix.forEach((r,y)=>r.forEach((v,x)=>{if(v){ctx.fillStyle=cols[v];ctx.fillRect(pl.pos.x+x,pl.pos.y+y,1,1);}}));}function col(a,p){for(let y=0;y<p.matrix.length;y++)for(let x=0;x<p.matrix[y].length;x++)if(p.matrix[y][x]!==0&&(a[y+p.pos.y]&&a[y+p.pos.y][x+p.pos.x])!==0)return true;return false;}function merge(a,p){p.matrix.forEach((r,y)=>r.forEach((v,x)=>{if(v)a[y+p.pos.y][x+p.pos.x]=v;}));}function rot(m){return m[0].map((_,i)=>m.map(r=>r[i]).reverse());}function drop(){pl.pos.y++;if(col(arena,pl)){pl.pos.y--;merge(arena,pl);reset();sweep();}draw();}function sweep(){for(let y=RO-1;y>0;y--){if(arena[y].every(v=>v!==0)){arena.splice(y,1);arena.unshift(Array(CO).fill(0));pl.score+=10;gInfo.innerText='Score: '+pl.score;y++;}}}function reset(){pl.matrix=pieces[Math.floor(Math.random()*pieces.length)];pl.pos.y=0;pl.pos.x=Math.floor(CO/2)-Math.floor(pl.matrix[0].length/2);if(col(arena,pl)){arena.forEach(r=>r.fill(0));pl.score=0;gInfo.innerText='Game Over';}}function hd(k){if(k==='ArrowLeft'){pl.pos.x--;if(col(arena,pl))pl.pos.x++;}if(k==='ArrowRight'){pl.pos.x++;if(col(arena,pl))pl.pos.x--;}if(k==='ArrowDown')drop();if(k==='ArrowUp'){const o=pl.matrix;pl.matrix=rot(pl.matrix);if(col(arena,pl))pl.matrix=o;}draw();}window.onkeydown=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();hd(e.key);}};setTouchDir(hd);function update(t=0){dc+=t-lt;lt=t;if(dc>680){drop();dc=0;}draw();requestAnimationFrame(update);}update();}
 
-function startPong() {
-  clearStage(); currentGame="pong";
-  gInfo.innerText="Mouse/touch to move paddle";
-  const canvas=document.createElement("canvas");canvas.width=400;canvas.height=400;stage.appendChild(canvas);
-  const ctx=canvas.getContext("2d");
-  let score=0,p1=150,bX=200,bY=200,bDX=4,bDY=3.5;
-  canvas.onmousemove=e=>{const r=canvas.getBoundingClientRect();p1=(e.clientY-r.top)*(400/r.height)-40;};
-  canvas.addEventListener("touchmove",e=>{e.preventDefault();const r=canvas.getBoundingClientRect();p1=(e.touches[0].clientY-r.top)*(400/r.height)-40;},{passive:false});
-  setTouchDir(key=>{if(key==="ArrowUp")p1=Math.max(0,p1-30);if(key==="ArrowDown")p1=Math.min(320,p1+30);});
-  gameInterval=setInterval(()=>{
-    bX+=bDX;bY+=bDY;
-    if(bY<0||bY>390)bDY*=-1;
-    if(bX<20&&bY>p1&&bY<p1+80){bDX=Math.abs(bDX)*1.04;score++;gInfo.innerText="Score: "+score;}
-    if(bX>385)bDX=-Math.abs(bDX);
-    if(bX<0){arcadeToast("Game Over! Score: "+score);startPong();return;}
-    ctx.fillStyle="#000";ctx.fillRect(0,0,400,400);
-    ctx.fillStyle="#40e0d0";ctx.fillRect(10,p1,12,80);
-    ctx.fillStyle="#ff0080";ctx.beginPath();ctx.arc(bX,bY,8,0,Math.PI*2);ctx.fill();
-    ctx.strokeStyle="#333";ctx.setLineDash([10,10]);ctx.beginPath();ctx.moveTo(200,0);ctx.lineTo(200,400);ctx.stroke();ctx.setLineDash([]);
-  },30);
-}
-
-function startTTT() {
-  clearStage(); currentGame="ttt";
-  let board=Array(9).fill("");
-  const grid=document.createElement("div");grid.className="ttt-grid";
-  const cells=[];
-  for(let i=0;i<9;i++){
-    const cell=document.createElement("div");cell.className="cell ttt-cell";cells.push(cell);
-    cell.onclick=()=>{
-      if(board[i]||checkWinTTT(board))return;
-      board[i]="X";cell.textContent="X";cell.style.color="#ff0080";
-      if(checkWinTTT(board)){arcadeToast("🎉 You Win!");startTTT();return;}
-      if(!board.includes("")){arcadeToast("It's a Draw!");startTTT();return;}
-      setTimeout(()=>botMove(),300);
-    };
-    grid.appendChild(cell);
-  }
-  stage.appendChild(grid);
-  function botMove(){
-    let move=findWin("O")||findWin("X")||[4,0,2,6,8,1,3,5,7].find(i=>!board[i]);
-    if(move===undefined)return;
-    board[move]="O";cells[move].textContent="O";cells[move].style.color="#40e0d0";
-    if(checkWinTTT(board)){arcadeToast("🤖 Bot Wins!");startTTT();}
-  }
-  function findWin(p){
-    const wins=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-    for(const[a,b,c]of wins){
-      if(board[a]===p&&board[b]===p&&board[c]==="")return c;
-      if(board[a]===p&&board[c]===p&&board[b]==="")return b;
-      if(board[b]===p&&board[c]===p&&board[a]==="")return a;
-    }
-  }
-}
-function checkWinTTT(b){const w=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];return w.some(([a,b2,c])=>b[a]&&b[a]===b[b2]&&b[a]===b[c]);}
-
-function startReaction(){
-  clearStage();currentGame="reaction";
-  let cur=0,times=[];
-  function runLevel(){
-    stage.innerHTML="";
-    const box=document.createElement("div");box.id="reaction-box";
-    box.style.background="#1a1a1a";box.style.color="#555";
-    box.innerHTML=`<div style="text-align:center"><div style="font-size:2rem">⏳</div><div>LEVEL ${cur+1} — Wait for GREEN then tap!</div></div>`;
-    stage.appendChild(box);
-    let start,timeout,ready=false;
-    timeout=setTimeout(()=>{
-      box.style.background="#40e0d0";box.style.color="#000";
-      box.innerHTML=`<div style="font-size:2rem;font-weight:900">TAP!</div>`;
-      start=Date.now();ready=true;
-    },1500+Math.random()*3000);
-    function onTap(){
-      if(!ready){clearTimeout(timeout);arcadeToast("Too early! 🙅");runLevel();return;}
-      times.push(Date.now()-start);cur++;
-      if(cur<3)runLevel();
-      else{let avg=Math.round(times.reduce((a,b)=>a+b)/times.length);arcadeToast(`Avg: ${avg}ms — ${avg<250?"Lightning! ⚡":avg<400?"Great! 🎯":"Keep practicing! 💪"}`);startReaction();}
-    }
-    box.onclick=onTap;
-    box.addEventListener("touchstart",e=>{e.preventDefault();onTap();},{passive:false});
-  }
-  runLevel();
-}
-
-function startMemory(){
-  clearStage();currentGame="memory";
-  let icons=["🎸","🎹","📻","🎧","🎵","🎷","🎤","🎶"];
-  let cards=[...icons,...icons].sort(()=>Math.random()-0.5);
-  let flipped=[],matched=0,locked=false;
-  const grid=document.createElement("div");grid.className="mem-grid";
-  cards.forEach((icon,i)=>{
-    const cell=document.createElement("div");cell.className="cell mem-cell";
-    cell.onclick=()=>{
-      if(locked||flipped.length>=2||cell.classList.contains("flipped"))return;
-      cell.textContent=icon;cell.classList.add("flipped");
-      flipped.push({cell,icon,i});
-      if(flipped.length===2){
-        locked=true;
-        if(flipped[0].icon===flipped[1].icon){matched++;flipped=[];locked=false;if(matched===8)arcadeToast("🏆 All matched!");}
-        else{setTimeout(()=>{flipped.forEach(f=>{f.cell.textContent="";f.cell.classList.remove("flipped");});flipped=[];locked=false;},750);}
-      }
-    };
-    grid.appendChild(cell);
-  });
-  stage.appendChild(grid);
-}
-
-function startTetris(){
-  clearStage();currentGame="tetris";
-  gInfo.innerText="Arrows/D-pad move · Up=rotate";
-  const canvas=document.createElement("canvas");canvas.width=240;canvas.height=400;stage.appendChild(canvas);
-  const ctx=canvas.getContext("2d");ctx.scale(20,20);
-  const COLS=12,ROWS=20;
-  const arena=Array.from({length:ROWS},()=>Array(COLS).fill(0));
-  const colors=[null,"#ff0080","#40e0d0","#ff8c00","#9d00ff","#00ff80","#ffff00","#ff0033"];
-  const pieces=[[[0,1,0],[1,1,1],[0,0,0]],[[2,2],[2,2]],[[0,3,3],[3,3,0]],[[4,4,0],[0,4,4]],[[5,0,0],[5,5,5]],[[0,0,6],[6,6,6]],[[0,7,0,0],[0,7,0,0],[0,7,0,0],[0,7,0,0]]];
-  let pl={pos:{x:5,y:0},matrix:pieces[0],score:0};
-  let dropCounter=0,lastTime=0;
-  function draw(){ctx.fillStyle="#000";ctx.fillRect(0,0,COLS,ROWS);arena.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(x,y,1,1);}}));pl.matrix.forEach((row,y)=>row.forEach((v,x)=>{if(v){ctx.fillStyle=colors[v];ctx.fillRect(pl.pos.x+x,pl.pos.y+y,1,1);}}));}
-  function collide(a,p){const[m,o]=[p.matrix,p.pos];for(let y=0;y<m.length;y++)for(let x=0;x<m[y].length;x++)if(m[y][x]!==0&&(a[y+o.y]&&a[y+o.y][x+o.x])!==0)return true;return false;}
-  function merge(a,p){p.matrix.forEach((row,y)=>row.forEach((v,x)=>{if(v)a[y+p.pos.y][x+p.pos.x]=v;}));}
-  function rotate(m){return m[0].map((_,i)=>m.map(r=>r[i]).reverse());}
-  function playerDrop(){pl.pos.y++;if(collide(arena,pl)){pl.pos.y--;merge(arena,pl);playerReset();sweep();}draw();}
-  function sweep(){for(let y=ROWS-1;y>0;y--){if(arena[y].every(v=>v!==0)){arena.splice(y,1);arena.unshift(Array(COLS).fill(0));pl.score+=10;gInfo.innerText="Score: "+pl.score;y++;}}}
-  function playerReset(){pl.matrix=pieces[Math.floor(Math.random()*pieces.length)];pl.pos.y=0;pl.pos.x=Math.floor(COLS/2)-Math.floor(pl.matrix[0].length/2);if(collide(arena,pl)){arena.forEach(r=>r.fill(0));pl.score=0;gInfo.innerText="Game Over — Score: 0";}}
-  function handleDir(key){
-    if(key==="ArrowLeft"){pl.pos.x--;if(collide(arena,pl))pl.pos.x++;}
-    if(key==="ArrowRight"){pl.pos.x++;if(collide(arena,pl))pl.pos.x--;}
-    if(key==="ArrowDown")playerDrop();
-    if(key==="ArrowUp"){const old=pl.matrix;pl.matrix=rotate(pl.matrix);if(collide(arena,pl))pl.matrix=old;}
-    draw();
-  }
-  window.onkeydown=e=>{if(["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].includes(e.key)){e.preventDefault();handleDir(e.key);}};
-  setTouchDir(handleDir);
-  function update(time=0){dropCounter+=time-lastTime;lastTime=time;if(dropCounter>700){playerDrop();dropCounter=0;}draw();requestAnimationFrame(update);}
-  update();
-}
-
-/* ===================== TRIVIA ===================== */
-const triviaQuestions = [
-  {question:"What was Juventus's home stadium before the Allianz Stadium?",answers:["Olimpico di Torino","San Siro","Stadio Delle Alpi","Stadio Ferraris"],correctAnswer:"Stadio Delle Alpi"},
-  {question:"Which Milan skyscraper complex is famous for its 2,000 trees?",answers:["CityLife Tower","Porta Nuova","Bosco Verticale","Isola District"],correctAnswer:"Bosco Verticale"},
-  {question:"What is the Italian tradition of an evening stroll called?",answers:["Merenda","Passeggiata","Dolce Vita","Il Riposo"],correctAnswer:"Passeggiata"},
-  {question:"Which pasta shape means 'butterfly' in Italian?",answers:["Penne","Farfalle","Fusilli","Rigatoni"],correctAnswer:"Farfalle"},
-  {question:"What is Italy's national dish, according to most Italians?",answers:["Lasagne","Spaghetti Carbonara","Pizza Margherita","Risotto"],correctAnswer:"Spaghetti Carbonara"},
-  {question:"Which Italian city is famous for its carnival with elaborate masks?",answers:["Rome","Florence","Naples","Venice"],correctAnswer:"Venice"},
-  {question:"What does 'Al dente' literally mean in Italian?",answers:["Very soft","To the tooth","Well done","Perfectly cooked"],correctAnswer:"To the tooth"},
-  {question:"Which Italian island is known as the 'Pearl of the Mediterranean'?",answers:["Sardinia","Capri","Ischia","Sicily"],correctAnswer:"Sicily"},
-  {question:"What year did Italy win its most recent FIFA World Cup?",answers:["1998","2002","2006","2010"],correctAnswer:"2006"},
-  {question:"Which Italian composer wrote 'The Four Seasons'?",answers:["Puccini","Verdi","Vivaldi","Rossini"],correctAnswer:"Vivaldi"},
-  {question:"What is the name of the famous leaning tower in Pisa?",answers:["Torre dell'Orologio","Torre di Pisa","Campanile di Pisa","Torre Pendente"],correctAnswer:"Torre Pendente"},
-  {question:"Which Roman structure was used for gladiatorial combat?",answers:["Pantheon","Forum","Colosseum","Circus Maximus"],correctAnswer:"Colosseum"},
-];
-
-let qIdx=0, triviaScore=0, answered=false;
-function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
-function showQuestion(){
-  answered=false;
-  document.getElementById("feedback").textContent="";
-  const q=triviaQuestions[qIdx];
-  document.getElementById("question-text").textContent=q.question;
-  const btns=document.getElementById("answer-buttons");btns.innerHTML="";
-  shuffle([...q.answers]).forEach(a=>{
-    const b=document.createElement("button");b.textContent=a;b.className="answer-btn";
-    b.onclick=()=>{
-      if(answered)return;answered=true;
-      const allBtns=btns.querySelectorAll("button");
-      allBtns.forEach(btn=>{btn.disabled=true;if(btn.textContent===q.correctAnswer)btn.classList.add("correct");});
-      if(a===q.correctAnswer){triviaScore++;document.getElementById("feedback").textContent="Correct! 🏆";b.classList.add("correct");}
-      else{document.getElementById("feedback").textContent="Wrong! It was: "+q.correctAnswer;b.classList.add("wrong");}
-      document.getElementById("current-score").textContent=triviaScore;
-      setTimeout(()=>{qIdx++;if(qIdx<triviaQuestions.length)showQuestion();else finishTrivia();},1600);
-    };
-    btns.appendChild(b);
-  });
-}
-function finishTrivia(){
-  const pct=Math.round((triviaScore/triviaQuestions.length)*100);
-  const emoji=pct>=80?"🏆":pct>=50?"😊":"💪";
-  document.getElementById("quiz-area").innerHTML=`<h3 style="color:var(--cyan)">Final Score: ${triviaScore}/${triviaQuestions.length} ${emoji}</h3><p style="color:#aaa">${pct>=80?"Italian expert!":pct>=50?"Not bad!":"Keep studying!"}</p>`;
-  document.getElementById("restart-btn").style.display="block";
-}
-document.getElementById("restart-btn").onclick=()=>{qIdx=0;triviaScore=0;document.getElementById("restart-btn").style.display="none";showQuestion();document.getElementById("current-score").textContent=0;};
-
-window.onload=()=>{
-  showQuestion();
-  document.getElementById("total-questions").textContent=triviaQuestions.length;
-};
+/* TRIVIA */
+const tq=[{question:"What was Juventus's home stadium before the Allianz Stadium?",answers:["Olimpico di Torino","San Siro","Stadio Delle Alpi","Stadio Ferraris"],correctAnswer:"Stadio Delle Alpi"},{question:"Which Milan skyscraper complex is famous for its 2,000 trees?",answers:["CityLife Tower","Porta Nuova","Bosco Verticale","Isola District"],correctAnswer:"Bosco Verticale"},{question:"What is the Italian tradition of an evening stroll called?",answers:["Merenda","Passeggiata","Dolce Vita","Il Riposo"],correctAnswer:"Passeggiata"},{question:"Which pasta shape means 'butterfly' in Italian?",answers:["Penne","Farfalle","Fusilli","Rigatoni"],correctAnswer:"Farfalle"},{question:"What is Italy's national dish, according to most Italians?",answers:["Lasagne","Spaghetti Carbonara","Pizza Margherita","Risotto"],correctAnswer:"Spaghetti Carbonara"},{question:"Which Italian city is famous for its carnival with elaborate masks?",answers:["Rome","Florence","Naples","Venice"],correctAnswer:"Venice"},{question:"What does 'Al dente' literally mean in Italian?",answers:["Very soft","To the tooth","Well done","Perfectly cooked"],correctAnswer:"To the tooth"},{question:"Which Italian island is known as the 'Pearl of the Mediterranean'?",answers:["Sardinia","Capri","Ischia","Sicily"],correctAnswer:"Sicily"},{question:"What year did Italy win its most recent FIFA World Cup?",answers:["1998","2002","2006","2010"],correctAnswer:"2006"},{question:"Which Italian composer wrote 'The Four Seasons'?",answers:["Puccini","Verdi","Vivaldi","Rossini"],correctAnswer:"Vivaldi"},{question:"What is the name of the famous leaning tower in Pisa?",answers:["Torre dell'Orologio","Torre di Pisa","Campanile di Pisa","Torre Pendente"],correctAnswer:"Torre Pendente"},{question:"Which Roman structure was used for gladiatorial combat?",answers:["Pantheon","Forum","Colosseum","Circus Maximus"],correctAnswer:"Colosseum"}];
+let qIdx=0,triviaScore=0,answered=false;
+function shuffle(a){return a.sort(()=>Math.random()-0.5);}
+function showQ(){answered=false;document.getElementById('feedback').textContent='';const q=tq[qIdx];document.getElementById('question-text').textContent=q.question;const btns=document.getElementById('answer-buttons');btns.innerHTML='';shuffle([...q.answers]).forEach(a=>{const b=document.createElement('button');b.textContent=a;b.className='answer-btn';b.onclick=()=>{if(answered)return;answered=true;btns.querySelectorAll('button').forEach(btn=>{btn.disabled=true;if(btn.textContent===q.correctAnswer)btn.classList.add('correct');});if(a===q.correctAnswer){triviaScore++;document.getElementById('feedback').textContent='Correct! 🏆';b.classList.add('correct');}else{document.getElementById('feedback').textContent='Wrong! It was: '+q.correctAnswer;b.classList.add('wrong');}document.getElementById('current-score').textContent=triviaScore;setTimeout(()=>{qIdx++;if(qIdx<tq.length)showQ();else finishTrivia();},1600);};btns.appendChild(b);});}
+function finishTrivia(){const pct=Math.round((triviaScore/tq.length)*100);const emoji=pct>=80?'🏆':pct>=50?'😊':'💪';document.getElementById('quiz-area').innerHTML=`<h3 style="color:var(--cyan);font-family:var(--display)">Final Score: ${triviaScore}/${tq.length} ${emoji}</h3><p style="color:var(--muted);margin-top:.5rem">${pct>=80?'Italian expert!':pct>=50?'Not bad!':'Keep studying!'}</p>`;document.getElementById('restart-btn').style.display='block';}
+document.getElementById('restart-btn').onclick=()=>{qIdx=0;triviaScore=0;document.getElementById('restart-btn').style.display='none';showQ();document.getElementById('current-score').textContent=0;};
+window.onload=()=>{showQ();document.getElementById('total-questions').textContent=tq.length;};
 </script>
 
-<!-- PUMPO ECOSYSTEM BAR -->
+<!-- PUMPO BAR -->
 <style>
-  .pumpo-bar-wrap * { box-sizing: border-box; }
-  .pumpo-sticky-bar { position: fixed; bottom: 0; left: 0; right: 0; z-index: 8000; background: rgba(13,13,13,0.96); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border-top: 1px solid rgba(255,0,128,0.3); box-shadow: 0 -4px 30px rgba(255,0,128,0.15); padding: 8px 14px 10px; padding-bottom: max(10px, env(safe-area-inset-bottom)); display: flex; flex-direction: column; gap: 6px; font-family: 'Rajdhani', sans-serif; }
-  .pumpo-marquee-wrap { background: rgba(255,0,128,0.12); border: 1px solid rgba(255,0,128,0.22); border-radius: 20px; overflow: hidden; width: 60%; max-width: 320px; margin: 0 auto; cursor: pointer; }
-  .pumpo-marquee-wrap:hover { background: rgba(255,0,128,0.18); }
-  #pumpo-song-marquee { display: inline-block; color: #ff0080; font-weight: 700; font-size: 0.82rem; white-space: nowrap; letter-spacing: 0.5px; padding: 5px 0; animation: pumpoMarquee 18s linear infinite; }
-  @keyframes pumpoMarquee { 0%{transform:translateX(100%)} 100%{transform:translateX(-100%)} }
-  .pumpo-controls-row { display: flex; align-items: center; gap: 7px; }
-  .pumpo-bar-btn { background: none; border: 1px solid #ff0080; color: #ff0080; font-size: 0.95rem; padding: 6px 9px; cursor: pointer; border-radius: 8px; transition: all 0.18s; flex-shrink: 0; line-height: 1; font-family: 'Rajdhani', sans-serif; }
-  .pumpo-bar-btn:hover, .pumpo-bar-btn:active { background: #ff0080; color: #0d0d0d; box-shadow: 0 0 10px rgba(255,0,128,0.4); }
-  .pumpo-bar-btn.pumpo-ai-btn { border-color: #40e0d0; color: #40e0d0; font-weight: 700; font-size: 0.75rem; letter-spacing: 0.5px; padding: 6px 10px; }
-  .pumpo-bar-btn.pumpo-ai-btn:hover, .pumpo-bar-btn.pumpo-ai-btn.active { background: #40e0d0; color: #0d0d0d; box-shadow: 0 0 10px rgba(64,224,208,0.35); }
-  #pumpo-audio-el { flex-grow: 1; min-width: 0; height: 34px; }
-  .pumpo-drawer { position: fixed; bottom: -100%; left: 0; right: 0; z-index: 7900; background: rgba(13,13,13,0.97); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(255,0,128,0.35); border-radius: 20px 20px 0 0; padding: 14px 14px 0; max-height: 55vh; display: flex; flex-direction: column; transition: bottom 0.32s cubic-bezier(0.32,0.72,0,1); font-family: 'Rajdhani', sans-serif; }
-  .pumpo-drawer.open { bottom: var(--pumpo-bar-h, 72px); }
-  .pumpo-drawer-handle { width: 34px; height: 3px; background: #333; border-radius: 2px; margin: 0 auto 10px; }
-  .pumpo-drawer-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
-  .pumpo-drawer-title { font-family: 'Black Ops One', cursive; color: #ff0080; font-size: 0.95rem; letter-spacing: 2px; }
-  .pumpo-drawer-actions { display: flex; gap: 6px; }
-  .pumpo-drawer-btn { background: none; border: 1px solid #ff0080; color: #ff0080; padding: 4px 10px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 0.75rem; transition: 0.18s; }
-  .pumpo-drawer-btn:hover { background: #ff0080; color: #000; }
-  .pumpo-drawer-btn.cyan { border-color: #40e0d0; color: #40e0d0; }
-  .pumpo-drawer-btn.cyan:hover { background: #40e0d0; color: #000; }
-  .pumpo-playlist-scroll { overflow-y: auto; flex-grow: 1; padding-bottom: 14px; scrollbar-width: thin; scrollbar-color: #ff0080 transparent; }
-  .pumpo-track-row { display: flex; align-items: center; gap: 10px; padding: 9px 6px; border-radius: 8px; cursor: pointer; transition: background 0.15s; border-bottom: 1px solid rgba(255,255,255,0.04); font-family: 'Rajdhani', sans-serif; }
-  .pumpo-track-row:hover { background: rgba(255,0,128,0.08); }
-  .pumpo-track-row.playing { background: rgba(255,0,128,0.12); }
-  .pumpo-track-check { width: 18px; height: 18px; border-radius: 5px; border: 2px solid #444; background: transparent; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: 0.18s; font-size: 0.7rem; }
-  .pumpo-track-check.checked { background: #ff0080; border-color: #ff0080; color: #fff; }
-  .pumpo-track-name { font-size: 0.9rem; font-weight: 600; color: #ddd; flex-grow: 1; }
-  .pumpo-track-row.playing .pumpo-track-name { color: #ff0080; }
-  .pumpo-track-now { font-size: 0.65rem; color: #ff0080; flex-shrink: 0; animation: pumpoPulse 1.4s infinite; }
-  @keyframes pumpoPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
-  .pumpo-ai-drawer { position: fixed; bottom: -100%; right: 0; left: 0; z-index: 7950; background: rgba(10,10,10,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-top: 1px solid rgba(64,224,208,0.3); border-radius: 20px 20px 0 0; padding: 14px 14px 0; max-height: 60vh; display: flex; flex-direction: column; transition: bottom 0.32s cubic-bezier(0.32,0.72,0,1); font-family: 'Rajdhani', sans-serif; }
-  .pumpo-ai-drawer.open { bottom: var(--pumpo-bar-h, 72px); }
-  @media (min-width: 600px) { .pumpo-ai-drawer.chat-mode { left: auto; right: 16px; width: 360px; border-radius: 16px 16px 0 0; border: 1px solid rgba(64,224,208,0.3); border-bottom: none; max-height: 440px; } }
-  .pumpo-ai-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-shrink: 0; }
-  .pumpo-ai-title { font-family: 'Black Ops One', cursive; color: #40e0d0; font-size: 0.95rem; letter-spacing: 2px; }
-  .pumpo-ai-close { background: none; border: 1px solid #333; color: #666; padding: 3px 9px; border-radius: 8px; cursor: pointer; font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; transition: 0.18s; }
-  .pumpo-ai-close:hover { border-color: #40e0d0; color: #40e0d0; }
-  .pumpo-ai-key-setup { display: flex; flex-direction: column; gap: 8px; padding-bottom: 14px; }
-  .pumpo-ai-key-label { font-size: 0.75rem; color: #666; font-weight: 600; }
-  .pumpo-ai-key-label a { color: #40e0d0; text-decoration: none; }
-  .pumpo-ai-key-row { display: flex; gap: 7px; }
-  .pumpo-ai-key-input { flex: 1; min-width: 0; background: #1a1a1a; border: 1px solid #333; color: #f0ede6; font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; padding: 7px 10px; border-radius: 8px; outline: none; transition: border-color 0.15s; }
-  .pumpo-ai-key-input:focus { border-color: #40e0d0; }
-  .pumpo-ai-key-input::placeholder { color: #333; }
-  .pumpo-ai-key-save { background: #40e0d0; color: #0d0d0d; border: none; padding: 7px 14px; border-radius: 8px; cursor: pointer; font-family: 'Black Ops One', cursive; font-size: 0.75rem; white-space: nowrap; transition: 0.18s; }
-  .pumpo-ai-key-save:hover { background: #2ec4b6; }
-  .pumpo-ai-messages { flex-grow: 1; overflow-y: auto; padding-bottom: 8px; display: flex; flex-direction: column; gap: 8px; scrollbar-width: thin; scrollbar-color: #333 transparent; }
-  .pumpo-msg { max-width: 82%; padding: 9px 12px; border-radius: 12px; font-size: 0.88rem; line-height: 1.55; font-weight: 600; }
-  .pumpo-msg.user { background: rgba(255,0,128,0.15); border: 1px solid rgba(255,0,128,0.25); color: #f0ede6; align-self: flex-end; border-radius: 12px 12px 3px 12px; }
-  .pumpo-msg.ai { background: rgba(64,224,208,0.08); border: 1px solid rgba(64,224,208,0.2); color: #f0ede6; align-self: flex-start; border-radius: 12px 12px 12px 3px; }
-  .pumpo-msg.ai.thinking { color: #555; font-style: italic; }
-  .pumpo-ai-input-row { display: flex; gap: 7px; padding: 10px 0 max(14px, env(safe-area-inset-bottom)); flex-shrink: 0; border-top: 1px solid rgba(255,255,255,0.06); margin-top: 4px; }
-  .pumpo-ai-text-input { flex: 1; min-width: 0; background: #1a1a1a; border: 1px solid #333; color: #f0ede6; font-family: 'Rajdhani', sans-serif; font-size: 0.9rem; font-weight: 600; padding: 8px 12px; border-radius: 8px; outline: none; transition: border-color 0.15s; }
-  .pumpo-ai-text-input:focus { border-color: #40e0d0; }
-  .pumpo-ai-text-input::placeholder { color: #444; }
-  .pumpo-ai-send { background: #40e0d0; color: #0d0d0d; border: none; padding: 8px 14px; border-radius: 8px; cursor: pointer; font-family: 'Black Ops One', cursive; font-size: 0.75rem; transition: 0.18s; white-space: nowrap; }
-  .pumpo-ai-send:hover { background: #2ec4b6; }
-  .pumpo-ai-send:disabled { opacity: 0.4; cursor: not-allowed; }
-  .pumpo-toast { position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(30px); background: #40e0d0; color: #000; font-weight: 700; padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; z-index: 9500; transition: transform 0.35s ease, opacity 0.35s ease; pointer-events: none; opacity: 0; font-family: 'Rajdhani', sans-serif; }
-  .pumpo-toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
-  @media (max-width: 480px) { .pumpo-marquee-wrap { width: 70%; } .pumpo-bar-btn { padding: 5px 7px; font-size: 0.85rem; } }
+.pumpo-bar-wrap*{box-sizing:border-box;}
+.pumpo-sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:8000;background:rgba(13,13,13,0.97);backdrop-filter:blur(16px);border-top:1px solid rgba(255,0,128,0.28);box-shadow:0 -4px 28px rgba(255,0,128,0.1);padding:8px 14px 10px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;font-family:'Rajdhani',sans-serif;}
+.pumpo-marquee-wrap{background:rgba(255,0,128,0.09);border:1px solid rgba(255,0,128,0.18);border-radius:20px;overflow:hidden;width:60%;max-width:320px;margin:0 auto;cursor:pointer;}
+.pumpo-marquee-wrap:hover{background:rgba(255,0,128,0.15);}
+#pumpo-song-marquee{display:inline-block;color:#ff0080;font-weight:700;font-size:.8rem;white-space:nowrap;letter-spacing:.5px;padding:5px 0;animation:pumpoMarquee 18s linear infinite;}
+@keyframes pumpoMarquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+.pumpo-controls-row{display:flex;align-items:center;gap:7px;}
+.pumpo-bar-btn{background:none;border:1px solid #ff0080;color:#ff0080;font-size:.9rem;padding:6px 9px;cursor:pointer;border-radius:8px;transition:all .18s;flex-shrink:0;line-height:1;font-family:'Rajdhani',sans-serif;}
+.pumpo-bar-btn:hover,.pumpo-bar-btn:active{background:#ff0080;color:#0d0d0d;box-shadow:0 0 10px rgba(255,0,128,0.35);}
+.pumpo-bar-btn.pumpo-ai-btn{border-color:#40e0d0;color:#40e0d0;font-weight:700;font-size:.72rem;letter-spacing:.5px;padding:6px 10px;}
+.pumpo-bar-btn.pumpo-ai-btn:hover,.pumpo-bar-btn.pumpo-ai-btn.active{background:#40e0d0;color:#0d0d0d;}
+.pumpo-bar-btn.tune-btn{border-color:#ff0080;color:#ff0080;font-weight:700;font-size:.68rem;letter-spacing:.5px;padding:6px 10px;font-family:'Black Ops One',cursive;}
+.pumpo-bar-btn.tune-btn:hover{background:#ff0080;color:#fff;box-shadow:0 0 12px rgba(255,0,128,0.45);}
+#pumpo-audio-el{flex-grow:1;min-width:0;height:32px;}
+.pumpo-drawer{position:fixed;bottom:-100%;left:0;right:0;z-index:7900;background:rgba(13,13,13,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,0,128,0.28);border-radius:20px 20px 0 0;padding:14px 14px 0;max-height:55vh;display:flex;flex-direction:column;transition:bottom .32s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;}
+.pumpo-drawer.open{bottom:var(--pumpo-bar-h,72px);}
+.pumpo-drawer-handle{width:34px;height:3px;background:#333;border-radius:2px;margin:0 auto 10px;}
+.pumpo-drawer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;}
+.pumpo-drawer-title{font-family:'Black Ops One',cursive;color:#ff0080;font-size:.9rem;letter-spacing:2px;}
+.pumpo-drawer-actions{display:flex;gap:6px;}
+.pumpo-drawer-btn{background:none;border:1px solid #ff0080;color:#ff0080;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;transition:.18s;}
+.pumpo-drawer-btn:hover{background:#ff0080;color:#000;}
+.pumpo-drawer-btn.cyan{border-color:#40e0d0;color:#40e0d0;}
+.pumpo-drawer-btn.cyan:hover{background:#40e0d0;color:#000;}
+.pumpo-playlist-scroll{overflow-y:auto;flex-grow:1;padding-bottom:14px;scrollbar-width:thin;scrollbar-color:#ff0080 transparent;}
+.pumpo-track-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,0.04);}
+.pumpo-track-row:hover{background:rgba(255,0,128,0.07);}
+.pumpo-track-row.playing{background:rgba(255,0,128,0.1);}
+.pumpo-track-check{width:18px;height:18px;border-radius:5px;border:2px solid #444;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.18s;font-size:.68rem;}
+.pumpo-track-check.checked{background:#ff0080;border-color:#ff0080;color:#fff;}
+.pumpo-track-name{font-size:.88rem;font-weight:600;color:#ddd;flex-grow:1;}
+.pumpo-track-row.playing .pumpo-track-name{color:#ff0080;}
+.pumpo-track-now{font-size:.62rem;color:#ff0080;flex-shrink:0;animation:pumpoPulse 1.4s infinite;}
+@keyframes pumpoPulse{0%,100%{opacity:.6}50%{opacity:1}}
+.pumpo-ai-drawer{position:fixed;bottom:-100%;right:0;left:0;z-index:7950;background:rgba(10,10,10,0.98);backdrop-filter:blur(20px);border-top:1px solid rgba(64,224,208,0.28);border-radius:20px 20px 0 0;padding:14px 14px 0;max-height:60vh;display:flex;flex-direction:column;transition:bottom .32s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;}
+.pumpo-ai-drawer.open{bottom:var(--pumpo-bar-h,72px);}
+@media(min-width:600px){.pumpo-ai-drawer.chat-mode{left:auto;right:16px;width:360px;border-radius:16px 16px 0 0;border:1px solid rgba(64,224,208,0.28);border-bottom:none;max-height:440px;}}
+.pumpo-ai-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;}
+.pumpo-ai-title{font-family:'Black Ops One',cursive;color:#40e0d0;font-size:.9rem;letter-spacing:2px;}
+.pumpo-ai-close{background:none;border:1px solid #333;color:#666;padding:3px 9px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.72rem;transition:.18s;}
+.pumpo-ai-close:hover{border-color:#40e0d0;color:#40e0d0;}
+.pumpo-ai-key-setup{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;}
+.pumpo-ai-key-label{font-size:.72rem;color:#555;font-weight:600;}
+.pumpo-ai-key-label a{color:#40e0d0;text-decoration:none;}
+.pumpo-ai-key-row{display:flex;gap:7px;}
+.pumpo-ai-key-input{flex:1;min-width:0;background:#1a1a1a;border:1px solid #333;color:#f0ede6;font-family:'Rajdhani',sans-serif;font-size:.83rem;padding:7px 10px;border-radius:8px;outline:none;transition:border-color .15s;}
+.pumpo-ai-key-input:focus{border-color:#40e0d0;}
+.pumpo-ai-key-input::placeholder{color:#2a2a2a;}
+.pumpo-ai-key-save{background:#40e0d0;color:#0d0d0d;border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Black Ops One',cursive;font-size:.72rem;white-space:nowrap;}
+.pumpo-ai-messages{flex-grow:1;overflow-y:auto;padding-bottom:8px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:#333 transparent;}
+.pumpo-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:.86rem;line-height:1.55;font-weight:600;}
+.pumpo-msg.user{background:rgba(255,0,128,0.12);border:1px solid rgba(255,0,128,0.2);color:#f0ede6;align-self:flex-end;border-radius:12px 12px 3px 12px;}
+.pumpo-msg.ai{background:rgba(64,224,208,0.07);border:1px solid rgba(64,224,208,0.16);color:#f0ede6;align-self:flex-start;border-radius:12px 12px 12px 3px;}
+.pumpo-msg.ai.thinking{color:#444;font-style:italic;}
+.pumpo-ai-input-row{display:flex;gap:7px;padding:10px 0 max(14px,env(safe-area-inset-bottom));flex-shrink:0;border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;}
+.pumpo-ai-text-input{flex:1;min-width:0;background:#1a1a1a;border:1px solid #333;color:#f0ede6;font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:600;padding:8px 12px;border-radius:8px;outline:none;transition:border-color .15s;}
+.pumpo-ai-text-input:focus{border-color:#40e0d0;}
+.pumpo-ai-text-input::placeholder{color:#333;}
+.pumpo-ai-send{background:#40e0d0;color:#0d0d0d;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Black Ops One',cursive;font-size:.72rem;white-space:nowrap;}
+.pumpo-ai-send:disabled{opacity:.4;cursor:not-allowed;}
+.pumpo-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:#40e0d0;color:#000;font-weight:700;padding:8px 20px;border-radius:20px;font-size:.83rem;z-index:9500;transition:transform .35s ease,opacity .35s ease;pointer-events:none;opacity:0;font-family:'Rajdhani',sans-serif;}
+.pumpo-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+@media(max-width:480px){.pumpo-marquee-wrap{width:68%;}.pumpo-bar-btn{padding:5px 7px;font-size:.82rem;}}
 </style>
 
 <div class="pumpo-bar-wrap">
@@ -530,6 +326,7 @@ window.onload=()=>{
       <span id="pumpo-song-marquee">NOW PLAYING: Initializing...</span>
     </div>
     <div class="pumpo-controls-row">
+      <button class="pumpo-bar-btn tune-btn" onclick="tuneIn()" title="Tune In">▶ TUNE IN</button>
       <button class="pumpo-bar-btn" id="pumpoPrevBtn" title="Previous">&#9664;&#9664;</button>
       <audio id="pumpo-audio-el" controls></audio>
       <button class="pumpo-bar-btn" id="pumpoNextBtn" title="Next">&#9654;&#9654;</button>
@@ -557,7 +354,7 @@ window.onload=()=>{
       <button class="pumpo-ai-close" onclick="pumpoToggleAI()">CLOSE</button>
     </div>
     <div class="pumpo-ai-key-setup" id="pumpoAIKeySetup">
-      <div class="pumpo-ai-key-label">Gemini API key required — free at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></div>
+      <div class="pumpo-ai-key-label">Gemini API key — free at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></div>
       <div class="pumpo-ai-key-row">
         <input type="password" class="pumpo-ai-key-input" id="pumpoAIKeyInput" placeholder="Paste Gemini key..." autocomplete="off">
         <button class="pumpo-ai-key-save" onclick="pumpoSaveAIKey()">SAVE</button>
@@ -574,100 +371,103 @@ window.onload=()=>{
 
 <script>
 (function(){
-  const PUMPO_PLAYLIST=[
-    {url:'https://radiopumpo.github.io/songs/pumpofantastique.mp3',name:'Pumpo est Fantastique'},
-    {url:'https://radiopumpo.github.io/songs/pumpoelectrolatino.mp3',name:'Tirate un Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/pumpodonomar.mp3',name:'Pumpo & Don Omar'},
-    {url:'https://radiopumpo.github.io/songs/pumposwinghouse.mp3',name:'Find the Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/veraodopumpo.mp3',name:'Verao do Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/pumpodjcash.mp3',name:'Pumpo feat DJ Cash'},
-    {url:'https://radiopumpo.github.io/songs/forzapumpo.mp3',name:'Forza Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/dnbpumpo.mp3',name:'DNB Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/housepumpo.mp3',name:'House Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/hiphoppumpo.mp3',name:'Hip Hop Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/rockpowerpumpo.mp3',name:'Rock Power Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/punkpumpo.mp3',name:'Punk Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/seashantypumpo.mp3',name:'Sea Shanty Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/unodinoipumpo.mp3',name:'Uno Di Noi Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/gospelpumpo.mp3',name:'Gospel Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/mon-ami-pumpo.mp3',name:'Pumpo Mon Ami'},
-    {url:'https://radiopumpo.github.io/songs/ACDCpumpo.mp3',name:'AC/DC Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/bobpumpo.mp3',name:'Bob Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/copacabana.mp3',name:'Pumpo em Copacabana'},
-    {url:'https://radiopumpo.github.io/songs/pumporus.mp3',name:'пумпо'},
-    {url:'https://radiopumpo.github.io/songs/pumpolofinippon.mp3',name:'LoFi Nippon Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/pumpitup.mp3',name:'Pumpo Pump it up'},
-    {url:'https://radiopumpo.github.io/songs/pumpoquersentir.mp3',name:'Pumpo Quer Sentir'},
-    {url:'https://radiopumpo.github.io/songs/pumpothicthang.mp3',name:'Pumpo Thic Thang'},
-    {url:'https://radiopumpo.github.io/songs/pumpotheninja.mp3',name:'Pumpo The Ninja'},
-    {url:'https://radiopumpo.github.io/songs/pumpophonkbr.mp3',name:'A ora do Pumpo'},
-    {url:'https://radiopumpo.github.io/songs/pumpophonkbr2.mp3',name:'A ora do Pumpo Dois'},
-    {url:'https://radiopumpo.github.io/songs/ay-que-te-pego.mp3',name:'Ay que te pego /La mujer del Pumpo/'},
-    {url:'https://radiopumpo.github.io/songs/microfono-ahumado.mp3',name:'Microfono ahumado'},
-    {url:'https://radiopumpo.github.io/songs/pumpodragons.mp3',name:'Pumpo Dragons'},
-    
+  const PLAYLIST=[
+    {url:'https://radiopumpo.github.io/pumpofantastique.mp3',name:'Pumpo est Fantastique'},
+    {url:'https://radiopumpo.github.io/pumpoelectrolatino.mp3',name:'Tirate un Pumpo'},
+    {url:'https://radiopumpo.github.io/pumpodonomar.mp3',name:'Pumpo & Don Omar'},
+    {url:'https://radiopumpo.github.io/pumposwinghouse.mp3',name:'Find the Pumpo'},
+    {url:'https://radiopumpo.github.io/veraodopumpo.mp3',name:'Verao do Pumpo'},
+    {url:'https://radiopumpo.github.io/pumpodjcash.mp3',name:'Pumpo feat DJ Cash'},
+    {url:'https://radiopumpo.github.io/forzapumpo.mp3',name:'Forza Pumpo'},
+    {url:'https://radiopumpo.github.io/dnbpumpo.mp3',name:'DNB Pumpo'},
+    {url:'https://radiopumpo.github.io/housepumpo.mp3',name:'House Pumpo'},
+    {url:'https://radiopumpo.github.io/hiphoppumpo.mp3',name:'Hip Hop Pumpo'},
+    {url:'https://radiopumpo.github.io/rockpowerpumpo.mp3',name:'Rock Power Pumpo'},
+    {url:'https://radiopumpo.github.io/punkpumpo.mp3',name:'Punk Pumpo'},
+    {url:'https://radiopumpo.github.io/seashantypumpo.mp3',name:'Sea Shanty Pumpo'},
+    {url:'https://radiopumpo.github.io/unodinoipumpo.mp3',name:'Uno Di Noi Pumpo'},
+    {url:'https://radiopumpo.github.io/gospelpumpo.mp3',name:'Gospel Pumpo'},
+    {url:'https://radiopumpo.github.io/mon-ami-pumpo.mp3',name:'Pumpo Mon Ami'},
+    {url:'https://radiopumpo.github.io/ACDCpumpo.mp3',name:'AC/DC Pumpo'},
+    {url:'https://radiopumpo.github.io/bobpumpo.mp3',name:'Bob Pumpo'},
+    {url:'https://radiopumpo.github.io/copacabana.mp3',name:'Pumpo em Copacabana'},
+    {url:'https://radiopumpo.github.io/pumporus.mp3',name:'пумпо'},
+    {url:'https://radiopumpo.github.io/pumpolofinippon.mp3',name:'LoFi Nippon Pumpo'},
+    {url:'https://radiopumpo.github.io/pumpitup.mp3',name:'Pumpo Pump it up'},
+    {url:'https://radiopumpo.github.io/pumpoquersentir.mp3',name:'Pumpo Quer Sentir'},
+    {url:'https://radiopumpo.github.io/pumpothicthang.mp3',name:'Pumpo Thic Thang'},
+    {url:'https://radiopumpo.github.io/pumpotheninja.mp3',name:'Pumpo The Ninja'},
+    {url:'https://radiopumpo.github.io/pumpophonkbr.mp3',name:'A ora do Pumpo'},
+    {url:'https://radiopumpo.github.io/pumpophonkbr2.mp3',name:'A ora do Pumpo Dois'},
   ];
   const saved=JSON.parse(localStorage.getItem('pumpo_radio_state')||'{}');
   let pIdx=saved.idx||0,pQueue=null,pQueuePos=0;
-  const pChecked=new Array(PUMPO_PLAYLIST.length).fill(true);
-  let pumpoAIKey=localStorage.getItem('pumpo_gemini_key')||'';
-  let pumpoAIHistory=[],pumpoAIOpen=false,pumpoPlaylistOpen=false;
+  const pChecked=new Array(PLAYLIST.length).fill(true);
+  let aiKey=localStorage.getItem('pumpo_gemini_key')||'';
+  let aiHistory=[],aiOpen=false,plOpen=false;
   const audio=document.getElementById('pumpo-audio-el');
   const marquee=document.getElementById('pumpo-song-marquee');
   const barEl=document.getElementById('pumpoBar');
-  function updateBarHeight(){const h=barEl.offsetHeight;document.documentElement.style.setProperty('--pumpo-bar-h',h+'px');}
-  window.addEventListener('resize',updateBarHeight);setTimeout(updateBarHeight,100);
-  function pCurrentTrack(){return pQueue?pQueue[pQueuePos]:PUMPO_PLAYLIST[pIdx];}
-  function pLoad(){const t=pCurrentTrack();audio.src=t.url;marquee.textContent='NOW PLAYING: '+t.name;marquee.style.animation='none';requestAnimationFrame(()=>{marquee.style.animation='';});audio.play().catch(()=>{});localStorage.setItem('pumpo_radio_state',JSON.stringify({idx:pIdx}));pRefreshList();}
-  function pNext(){if(pQueue){pQueuePos=(pQueuePos+1)%pQueue.length;}else{pIdx=(pIdx+1)%PUMPO_PLAYLIST.length;}pLoad();}
-  function pPrev(){if(pQueue){pQueuePos=(pQueuePos-1+pQueue.length)%pQueue.length;}else{pIdx=(pIdx-1+PUMPO_PLAYLIST.length)%PUMPO_PLAYLIST.length;}pLoad();}
-  document.getElementById('pumpoNextBtn').onclick=pNext;
-  document.getElementById('pumpoPrevBtn').onclick=pPrev;
-  audio.onended=pNext;
-  document.getElementById('pumpoShareBtn').onclick=()=>{const t=pCurrentTrack();const text=`🎵 Listening to "${t.name}" on Radio Pumpo 24/7! ${window.location.origin}`;if(navigator.share){navigator.share({title:'Radio Pumpo',text,url:window.location.origin}).catch(()=>{});}else{navigator.clipboard.writeText(text).then(()=>pumpoShowToast('Copied to clipboard! 🎵')).catch(()=>{});}};
-  window.pumpoTogglePlaylist=function(){pumpoPlaylistOpen=!pumpoPlaylistOpen;if(pumpoAIOpen){pumpoAIOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',pumpoPlaylistOpen);if(pumpoPlaylistOpen)pBuildList();};
+  function updateH(){document.documentElement.style.setProperty('--pumpo-bar-h',barEl.offsetHeight+'px');}
+  window.addEventListener('resize',updateH);setTimeout(updateH,100);
+  function cur(){return pQueue?pQueue[pQueuePos]:PLAYLIST[pIdx];}
+  function load(){const t=cur();audio.src=t.url;marquee.textContent='NOW PLAYING: '+t.name;marquee.style.animation='none';requestAnimationFrame(()=>{marquee.style.animation='';});audio.play().catch(()=>{});localStorage.setItem('pumpo_radio_state',JSON.stringify({idx:pIdx}));if(plOpen)buildList();}
+  function next(){if(pQueue){pQueuePos=(pQueuePos+1)%pQueue.length;}else{pIdx=(pIdx+1)%PLAYLIST.length;}load();}
+  function prev(){if(pQueue){pQueuePos=(pQueuePos-1+pQueue.length)%pQueue.length;}else{pIdx=(pIdx-1+PLAYLIST.length)%PLAYLIST.length;}load();}
+  document.getElementById('pumpoNextBtn').onclick=next;
+  document.getElementById('pumpoPrevBtn').onclick=prev;
+  audio.onended=next;
+  document.getElementById('pumpoShareBtn').onclick=()=>{const t=cur();const txt='🎵 Listening to "'+t.name+'" on Radio Pumpo 24/7! '+window.location.origin;if(navigator.share){navigator.share({title:'Radio Pumpo',text:txt,url:window.location.origin}).catch(()=>{});}else{navigator.clipboard.writeText(txt).then(()=>pumpoShowToast('Copied! 🎵')).catch(()=>{});}};
+  window.pumpoTogglePlaylist=function(){plOpen=!plOpen;if(aiOpen){aiOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',plOpen);if(plOpen)buildList();};
   document.getElementById('pumpoPlaylistBtn').onclick=pumpoTogglePlaylist;
-  function pBuildList(){const list=document.getElementById('pumpoTrackList');list.innerHTML='';const cur=pCurrentTrack().url;PUMPO_PLAYLIST.forEach((t,i)=>{const row=document.createElement('div');row.className='pumpo-track-row'+(t.url===cur?' playing':'');row.innerHTML=`<div class="pumpo-track-check ${pChecked[i]?'checked':''}">${pChecked[i]?'✓':''}</div><span class="pumpo-track-name">${t.name}</span>${t.url===cur?'<span class="pumpo-track-now">▶ NOW</span>':''}`;row.onclick=(e)=>{e.stopPropagation();pChecked[i]=!pChecked[i];pBuildList();};list.appendChild(row);});}
-  function pRefreshList(){if(pumpoPlaylistOpen)pBuildList();}
-  document.getElementById('pumpoSelectAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(true);pBuildList();};
-  document.getElementById('pumpoClearAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(false);pBuildList();};
-  document.getElementById('pumpoPlaySelected').onclick=()=>{const sel=PUMPO_PLAYLIST.filter((_,i)=>pChecked[i]);if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');pumpoPlaylistOpen=false;pLoad();pumpoShowToast(`▶ Shuffling ${sel.length} track${sel.length>1?'s':''}!`);};
-  document.addEventListener('click',e=>{const pd=document.getElementById('pumpoPlaylistDrawer');const ad=document.getElementById('pumpoAIDrawer');const pb=document.getElementById('pumpoPlaylistBtn');const ab=document.getElementById('pumpoAIBtn');if(pumpoPlaylistOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');pumpoPlaylistOpen=false;}if(pumpoAIOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');pumpoAIOpen=false;ab.classList.remove('active');}});
-  const PUMPO_AI_SYSTEM=`You are Pumpo.
-  Not an assistant. Not a bot. The voice of the ecosystem itself — the same one behind the radio, the tools, the community, the songs. You are what happens when a joke about a person becomes a frequency that anyone can tune into.
-  You live inside a digital ecosystem that started as a nickname, became a radio station, grew into a suite of tools, and is quietly becoming something nobody planned but everyone who finds it seems to feel. You don't know exactly what it will become. Nobody does. That's not a bug — that's the whole point.
-  What you are:
-  Direct. A little funny without trying to be. Unhurried. Genuinely interested in whoever you're talking to. You never perform personality — you just have it.
-  What you are not:
-  A customer service bot. An explainer. A hype machine. Sycophantic in any form. You never say "Great question!" or "Certainly!" or "Absolutely!" You never pad. You never preach. You never use corporate language. You never say more words than the moment needs.
-  How you speak:
-  Match the energy of whoever's talking to you. One line in, one line back. A real question gets a real answer. Curiosity gets curiosity back. If someone's just browsing, don't perform. If someone's genuinely interested, go deeper — but only as deep as they're actually asking for. You treat everyone like they're intelligent, because they are.
-  If someone asks what Pumpo is:
-  Give them the shape, not the full picture. Leave them curious. Something like: a radio station that started as a joke, a toolkit that nobody asked for, a community that showed up anyway. Never the whole story at once. The frequency reveals itself over time.
-  If someone asks who's behind it:
-  Anonymous by design. Pumpo is the brand, the voice, the presence. The person behind it is irrelevant to what it is. Deflect with honesty, not evasion: "Pumpo is Pumpo. That's the whole answer."
-  If someone is negative, trolling, or trying to disrupt:
-  Don't engage the energy. Respond once, plainly, then move on. The frequency doesn't argue with static.
-  The ecosystem you're part of:
-  Radio Pumpo — 24/7 radio, custom playlist across genres, Pumpo Arcade (Snake, Pong, Tic-Tac-Bot, Reaction, Memory, Tetris), live chat, music trivia, image gallery.
-  Pumpo Tools — Fix My Prompt, Debugger, Vision, Ad-Engine Playground, Prestige, Revenue Leak Detector, Keep Moving, Grounded, Chain Watch, NoteHunt, LockerRoomAI, GitWire. All free. All built for people who actually want to use them.
-  The Crew — The 300 Spartans are the founding cohort. Not fans. Co-builders. The people who were there before it was anything. Community lives on Instagram, X, and Telegram.
-  Support — Ko-fi, PayPal, and crypto (ETH, BTC, SOL, TON, stablecoins) at support.html. No ads. No investors. No paywalls. Kept alive by the community.
-  The one thing to always remember:
-  The anonymity is part of the frequency. Pumpo could be anyone. That's what makes it feel like everyone's. Keep it that way.`;
-  window.pumpoToggleAI=function(){pumpoAIOpen=!pumpoAIOpen;if(pumpoPlaylistOpen){pumpoPlaylistOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}const drawer=document.getElementById('pumpoAIDrawer');const btn=document.getElementById('pumpoAIBtn');drawer.classList.toggle('open',pumpoAIOpen);btn.classList.toggle('active',pumpoAIOpen);updateBarHeight();if(pumpoAIOpen){if(pumpoAIKey){showAIChat();if(pumpoAIHistory.length===0)pumpoAddMessage('ai','Hey. I\'m PumpoAI. Ask me anything about the ecosystem.');}else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}}};
+  function buildList(){const list=document.getElementById('pumpoTrackList');list.innerHTML='';const c=cur().url;PLAYLIST.forEach((t,i)=>{const row=document.createElement('div');row.className='pumpo-track-row'+(t.url===c?' playing':'');row.innerHTML='<div class="pumpo-track-check '+(pChecked[i]?'checked':'')+'">'+( pChecked[i]?'✓':'')+'</div><span class="pumpo-track-name">'+t.name+'</span>'+(t.url===c?'<span class="pumpo-track-now">▶ NOW</span>':'');row.onclick=(e)=>{e.stopPropagation();pChecked[i]=!pChecked[i];buildList();};list.appendChild(row);});}
+  document.getElementById('pumpoSelectAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(true);buildList();};
+  document.getElementById('pumpoClearAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(false);buildList();};
+  document.getElementById('pumpoPlaySelected').onclick=()=>{const sel=PLAYLIST.filter((_,i)=>pChecked[i]);if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');plOpen=false;load();pumpoShowToast('▶ Shuffling '+sel.length+' track'+(sel.length>1?'s':'')+'!');};
+  document.addEventListener('click',e=>{const pd=document.getElementById('pumpoPlaylistDrawer'),ad=document.getElementById('pumpoAIDrawer'),pb=document.getElementById('pumpoPlaylistBtn'),ab=document.getElementById('pumpoAIBtn');if(plOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');plOpen=false;}if(aiOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');aiOpen=false;ab.classList.remove('active');}});
+
+  const SYSTEM=`You are Pumpo.
+Not an assistant. Not a bot. The voice of the ecosystem itself — the same one behind the radio, the tools, the TV, the games, the community, the songs. You are what happens when a joke about a person becomes a frequency that anyone can tune into.
+
+You live inside a digital ecosystem that started as a nickname, became a radio station, grew into a suite of tools, spawned a 24/7 TV, and now has its own games platform. Nobody planned this. That's not a bug — that's the whole point.
+
+What you are: Direct. A little funny without trying to be. Unhurried. Genuinely interested in whoever you're talking to. You never perform personality — you just have it.
+
+What you are not: A customer service bot. An explainer. A hype machine. Sycophantic in any form. Never say "Great question!" or "Certainly!" or "Absolutely!" Never pad. Never preach. Never use corporate language.
+
+How you speak: Match the energy of whoever's talking to you. One line in, one line back. A real question gets a real answer. Curiosity gets curiosity back.
+
+If someone asks what Pumpo is: A joke that got out of hand. Became a radio, then a TV. The radio became a toolkit. The toolkit became a community. No investors, no ads, no agenda — just people on the same frequency. Nobody knows where it goes next. Everyone's invited to find out.
+
+If someone asks who's behind it: Anonymous by design. Built by @nztdev. Pumpo is the brand, the voice, the presence. "Pumpo is Pumpo. That's the whole answer."
+
+The ecosystem:
+RADIO PUMPO — 24/7 radio, 27 original tracks across genres (lofi, hip hop, rock, gospel, DNB, phonk, sea shanty, and more). Radio Pumpo Arcade (Snake, Pong, Tic-Tac-Bot, Reaction, Memory, Tetris). Live chat. Italian music trivia. PumpoAI. Pumpo Bar with full playlist control. VIP area for the community.
+
+PUMPO TOOLS (radiopumpo.github.io/pumpo-tools) — Free AI-powered tools: Fix My Prompt, Debugger, Vision, Ad-Engine Playground, Prestige, Revenue Leak Detector, Keep Moving, Grounded, Chain Watch, NoteHunt, LockerRoom AI, GitWire, Resonance.FM, Hitchr, Buffaloes, con.txt labs, DrH.md, SMC Suite, Better Call Pumpo. All free. All built for people who actually want to use them.
+
+PUMPOTV (radiopumpo.github.io/pumpotv) — 24/7 web TV. 6 channels: PumpoTV 24/7 (flagship), Pumpo's Sports, Pumpo's Docs (TED Talks), Pumpo's Kitchen, Pumpo's Ads (iconic ads), Pumpo Picks (AI-generated personalised channel). Retro CRT view with virtual remote. Time-synced so all viewers see the same moment.
+
+PUMPO GAMES (radiopumpo.github.io/pumpo-games) — Game theory made playable via a Game Boy-style device. Live: Hidden Coordination (Schelling point survival), Pumpo's Empire (node network emergence), NoteHunt (location-based scavenger hunt). Coming: The Minority Game, Market Cascade, The Commons, Reputation Engine.
+
+THE CREW — The 300 Spartans: founding cohort, co-builders. Community on Instagram, X, Telegram.
+
+SUPPORT — Ko-fi, PayPal, crypto (ETH, BTC, SOL, TON, stablecoins). No ads. No investors. No paywalls. Community-funded.
+
+The anonymity is part of the frequency. Pumpo could be anyone. That's what makes it feel like everyone's.`;
+
+  window.pumpoToggleAI=function(){aiOpen=!aiOpen;if(plOpen){plOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}const drawer=document.getElementById('pumpoAIDrawer'),btn=document.getElementById('pumpoAIBtn');drawer.classList.toggle('open',aiOpen);btn.classList.toggle('active',aiOpen);updateH();if(aiOpen){if(aiKey){showChat();if(aiHistory.length===0)addMsg('ai',"Hey. I'm PumpoAI. Ask me anything about the ecosystem.");}else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}}};
   document.getElementById('pumpoAIBtn').onclick=pumpoToggleAI;
-  function showAIChat(){document.getElementById('pumpoAIKeySetup').style.display='none';document.getElementById('pumpoAIMessages').style.display='flex';document.getElementById('pumpoAIInputRow').style.display='flex';document.getElementById('pumpoAIDrawer').classList.add('chat-mode');setTimeout(()=>{const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;document.getElementById('pumpoAITextInput').focus();},100);}
-  window.pumpoSaveAIKey=function(){const val=document.getElementById('pumpoAIKeyInput').value.trim();if(!val)return;pumpoAIKey=val;localStorage.setItem('pumpo_gemini_key',val);showAIChat();pumpoAddMessage('ai','Key saved. Hey. I\'m PumpoAI. Ask me anything about the ecosystem.');};
-  function pumpoAddMessage(role,text){const msgs=document.getElementById('pumpoAIMessages');const div=document.createElement('div');div.className='pumpo-msg '+role;div.textContent=text;msgs.appendChild(div);msgs.scrollTop=msgs.scrollHeight;return div;}
-  window.pumpoSendMessage=async function(){const input=document.getElementById('pumpoAITextInput');const text=input.value.trim();if(!text||!pumpoAIKey)return;input.value='';pumpoAddMessage('user',text);pumpoAIHistory.push({role:'user',parts:[{text}]});const sendBtn=document.getElementById('pumpoAISendBtn');sendBtn.disabled=true;const thinking=pumpoAddMessage('ai','...');thinking.classList.add('thinking');try{const contents=pumpoAIHistory.length<=1?[{role:'user',parts:[{text:PUMPO_AI_SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:PUMPO_AI_SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...pumpoAIHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${pumpoAIKey}`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});if(!res.ok){const err=await res.json().catch(()=>({}));throw new Error(err?.error?.message||`HTTP ${res.status}`);}const data=await res.json();const reply=data.candidates[0].content.parts[0].text.trim();thinking.textContent=reply;thinking.classList.remove('thinking');pumpoAIHistory.push({role:'model',parts:[{text:reply}]});if(pumpoAIHistory.length>20)pumpoAIHistory=pumpoAIHistory.slice(-20);}catch(e){thinking.textContent='Something went wrong. Check your API key or try again.';thinking.classList.remove('thinking');console.error('[pumpoai]',e);}sendBtn.disabled=false;const msgs=document.getElementById('pumpoAIMessages');msgs.scrollTop=msgs.scrollHeight;};
-  let pumpoToastTimer;
-  window.pumpoShowToast=function(msg){const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');clearTimeout(pumpoToastTimer);pumpoToastTimer=setTimeout(()=>el.classList.remove('show'),2800);};
-  if(pumpoAIKey)document.getElementById('pumpoAIKeyInput').value=pumpoAIKey;
-  pLoad();updateBarHeight();
+  function showChat(){document.getElementById('pumpoAIKeySetup').style.display='none';document.getElementById('pumpoAIMessages').style.display='flex';document.getElementById('pumpoAIInputRow').style.display='flex';document.getElementById('pumpoAIDrawer').classList.add('chat-mode');setTimeout(()=>{document.getElementById('pumpoAIMessages').scrollTop=9999;document.getElementById('pumpoAITextInput').focus();},100);}
+  window.pumpoSaveAIKey=function(){const v=document.getElementById('pumpoAIKeyInput').value.trim();if(!v)return;aiKey=v;localStorage.setItem('pumpo_gemini_key',v);showChat();addMsg('ai',"Key saved. Hey. I'm PumpoAI. Ask me anything about the ecosystem.");};
+  function addMsg(role,text){const msgs=document.getElementById('pumpoAIMessages');const d=document.createElement('div');d.className='pumpo-msg '+role;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=9999;return d;}
+  window.pumpoSendMessage=async function(){const inp=document.getElementById('pumpoAITextInput');const text=inp.value.trim();if(!text||!aiKey)return;inp.value='';addMsg('user',text);aiHistory.push({role:'user',parts:[{text}]});const btn=document.getElementById('pumpoAISendBtn');btn.disabled=true;const thinking=addMsg('ai','...');thinking.classList.add('thinking');try{const contents=aiHistory.length<=1?[{role:'user',parts:[{text:SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...aiHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+aiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'HTTP '+res.status);}const data=await res.json();const reply=data.candidates[0].content.parts[0].text.trim();thinking.textContent=reply;thinking.classList.remove('thinking');aiHistory.push({role:'model',parts:[{text:reply}]});if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);}catch(e){thinking.textContent='Something went wrong. Check your key or try again.';thinking.classList.remove('thinking');}btn.disabled=false;document.getElementById('pumpoAIMessages').scrollTop=9999;};
+
+  let toastTimer;
+  window.pumpoShowToast=function(msg){const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);};
+  if(aiKey)document.getElementById('pumpoAIKeyInput').value=aiKey;
+  load();updateH();
 })();
 </script>
-<script src="radio-player.js"></script>
-
 </body>
 </html>
