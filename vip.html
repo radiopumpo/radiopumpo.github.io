@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <title>Pumpo VIP — The 300 Spartans</title>
+  <link rel="icon" type="image/png" href="radiopumpologo.png">
+  <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --pink:#ff0080;--cyan:#40e0d0;--amber:#ffaa00;--violet:#9b59ff;
+      --bg:#0d0d0d;--bg2:#111;--bg3:#181818;
+      --text:#f0ede6;--muted:#555;
+      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+      --pink-glow:rgba(255,0,128,0.4);--cyan-glow:rgba(64,224,208,0.3);
+      --mono:'Space Mono',monospace;--sans:'Rajdhani',sans-serif;--display:'Black Ops One',cursive;
+    }
+    *{box-sizing:border-box;margin:0;padding:0;}
+    html{scroll-behavior:smooth;}
+    body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;padding-bottom:2rem;}
+    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
+
+    /* NAV */
+    .top-nav{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:rgba(13,13,13,0.95);backdrop-filter:blur(12px);z-index:500;border-bottom:1px solid rgba(255,0,128,0.15);}
+    .nav-brand{font-family:var(--display);font-size:.95rem;color:var(--pink);letter-spacing:2px;text-decoration:none;}
+    .nav-link{color:var(--cyan);text-decoration:none;font-weight:700;font-size:.62rem;border:1px solid rgba(64,224,208,0.25);padding:5px 10px;border-radius:20px;transition:.2s;letter-spacing:.5px;font-family:var(--mono);}
+    .nav-link:hover{background:var(--cyan);color:#0d0d0d;}
+
+    /* GATE */
+    #gateScreen{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem 1.5rem;text-align:center;position:relative;overflow:hidden;}
+    #gateCanvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+    .gate-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 45%,rgba(13,13,13,0.82) 100%);}
+    .gate-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.1rem;max-width:360px;width:100%;}
+    .gate-icon{font-size:52px;animation:lockPulse 2.5s ease-in-out infinite;}
+    @keyframes lockPulse{0%,100%{filter:drop-shadow(0 0 8px var(--pink-glow))}50%{filter:drop-shadow(0 0 24px var(--pink-glow))}}
+    .gate-title{font-family:var(--display);font-size:clamp(24px,5vw,36px);color:var(--pink);letter-spacing:2px;text-shadow:0 0 20px var(--pink-glow);}
+    .gate-sub{font-family:var(--mono);font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);line-height:1.9;}
+    .gate-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,0,128,0.15);border-radius:14px;padding:1.5rem;width:100%;}
+    .gate-label{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:.65rem;display:block;}
+    .gate-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);color:var(--text);font-family:var(--mono);font-size:1rem;padding:.75rem 1rem;border-radius:8px;outline:none;transition:border-color .2s;text-align:center;letter-spacing:.2em;}
+    .gate-input:focus{border-color:var(--pink);}
+    .gate-input::placeholder{color:#222;letter-spacing:.05em;}
+    .gate-btn{width:100%;margin-top:.85rem;padding:.82rem;font-family:var(--display);font-size:.95rem;letter-spacing:1px;background:var(--pink);color:#fff;border:none;border-radius:8px;cursor:pointer;transition:all .2s;box-shadow:0 4px 18px rgba(255,0,128,.22);position:relative;overflow:hidden;}
+    .gate-btn::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transition:left .4s;}
+    .gate-btn:hover::before{left:100%;}
+    .gate-btn:hover{transform:translateY(-1px);box-shadow:0 6px 26px rgba(255,0,128,.4);}
+    .gate-error{font-family:var(--mono);font-size:.56rem;letter-spacing:.1em;color:var(--pink);margin-top:.5rem;opacity:0;transition:opacity .2s;text-transform:uppercase;}
+    .gate-error.show{opacity:1;}
+    .gate-hint{font-family:var(--mono);font-size:.5rem;color:#1a1a1a;letter-spacing:.08em;margin-top:.4rem;}
+
+    /* VIP */
+    #vipScreen{display:none;padding-top:62px;}
+    #vipScreen.visible{display:block;}
+
+    /* VIP HERO */
+    .vip-hero{min-height:52vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1.5rem 2rem;text-align:center;position:relative;overflow:hidden;}
+    #vipHeroCanvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
+    .vip-hero-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 50%,rgba(13,13,13,0.75) 100%);}
+    .vip-hero-inner{position:relative;z-index:2;max-width:500px;display:flex;flex-direction:column;align-items:center;gap:.9rem;}
+    .vip-badge{font-family:var(--mono);font-size:.56rem;letter-spacing:.2em;padding:4px 14px;border-radius:20px;border:1px solid rgba(255,170,0,.32);color:var(--amber);background:rgba(255,170,0,.06);text-transform:uppercase;animation:ambPulse 2s infinite;}
+    @keyframes ambPulse{0%,100%{opacity:.7}50%{opacity:1}}
+    .vip-title{font-family:var(--display);font-size:clamp(26px,5vw,42px);color:var(--text);letter-spacing:1px;line-height:1.05;}
+    .vip-title span{color:var(--pink);text-shadow:0 0 16px var(--pink-glow);}
+    .vip-story{font-size:clamp(13px,1.8vw,15px);color:rgba(240,237,230,0.6);font-weight:600;line-height:1.9;max-width:380px;}
+    .vip-story em{color:var(--cyan);font-style:normal;}
+    .vip-lockout{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;text-transform:uppercase;padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:#2a2a2a;cursor:pointer;transition:.2s;margin-top:.4rem;}
+    .vip-lockout:hover{border-color:var(--pink);color:var(--pink);}
+
+    /* SECTIONS */
+    .section-wrap{max-width:780px;margin:0 auto;padding:2.5rem 1.5rem;}
+    .divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,0,128,.2),transparent);opacity:.45;}
+    .section-eyebrow{font-family:var(--mono);font-size:.56rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:.4rem;}
+    .section-title{font-family:var(--display);font-size:clamp(16px,2.8vw,24px);color:var(--text);margin-bottom:1.25rem;}
+    .section-title span{color:var(--cyan);}
+
+    /* ACTION CARDS */
+    .action-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;}
+    .action-card{background:var(--bg2);border:1px solid var(--border2);border-radius:12px;padding:1.3rem;display:flex;flex-direction:column;gap:.65rem;transition:all .2s;}
+    .action-card:hover{transform:translateY(-2px);}
+    .action-icon{font-size:28px;}
+    .action-title{font-family:var(--display);font-size:.9rem;letter-spacing:.5px;}
+    .action-desc{font-size:12px;color:var(--muted);font-weight:600;line-height:1.6;flex:1;}
+    .action-btn{font-family:var(--display);font-size:.7rem;letter-spacing:.5px;padding:.55rem 1rem;border-radius:6px;border:none;cursor:pointer;transition:.2s;text-align:center;display:inline-block;text-decoration:none;width:fit-content;}
+    .btn-pink{background:var(--pink);color:#fff;}
+    .btn-pink:hover{background:#cc0066;}
+    .btn-cyan{background:transparent;border:1px solid var(--cyan);color:var(--cyan);}
+    .btn-cyan:hover{background:rgba(64,224,208,.08);}
+
+    /* GALLERY */
+    .gallery-note{font-family:var(--mono);font-size:.58rem;letter-spacing:.12em;color:var(--muted);line-height:1.8;padding:.75rem 1rem;background:rgba(255,170,0,.04);border:1px solid rgba(255,170,0,.12);border-radius:8px;margin-bottom:1rem;}
+    .gallery-grid{display:flex;gap:12px;overflow-x:auto;padding-bottom:10px;scrollbar-width:thin;scrollbar-color:var(--pink) transparent;}
+    .gallery-grid::-webkit-scrollbar{height:3px;}
+    .gallery-grid::-webkit-scrollbar-thumb{background:var(--pink);}
+    /* Images loaded from private R2 URLs — placeholders shown until configured */
+    .gallery-img{height:160px;width:auto;border-radius:10px;flex-shrink:0;cursor:pointer;transition:all .25s;object-fit:cover;background:var(--bg3);border:1px solid var(--border);}
+    .gallery-img:hover{transform:scale(1.04);box-shadow:0 0 18px var(--pink-glow);}
+    .gallery-placeholder{height:160px;width:160px;border-radius:10px;flex-shrink:0;background:var(--bg3);border:1px dashed rgba(255,0,128,.2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;}
+    .gallery-placeholder-icon{font-size:24px;opacity:.3;}
+    .gallery-placeholder-label{font-family:var(--mono);font-size:.48rem;letter-spacing:.1em;color:#2a2a2a;text-transform:uppercase;text-align:center;line-height:1.6;}
+
+    /* SONG REQUEST */
+    .req-card{background:var(--bg2);border:1px solid rgba(155,89,255,.18);border-radius:12px;padding:1.4rem;}
+    .req-label{font-family:var(--mono);font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.45rem;display:block;}
+    .req-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:.75rem;}
+    @media(max-width:500px){.req-row{grid-template-columns:1fr;}}
+    .req-input{width:100%;background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--sans);font-weight:600;font-size:14px;padding:.6rem .85rem;border-radius:8px;outline:none;transition:border-color .15s;}
+    .req-input:focus{border-color:var(--violet);}
+    .req-input::placeholder{color:#2a2a2a;}
+    .req-textarea{min-height:75px;resize:vertical;font-size:13px;line-height:1.6;margin-bottom:.75rem;}
+    .req-btn{width:100%;padding:.78rem;font-family:var(--display);font-size:.88rem;letter-spacing:1px;background:var(--violet);color:#fff;border:none;border-radius:8px;cursor:pointer;transition:.2s;box-shadow:0 4px 14px rgba(155,89,255,.18);}
+    .req-btn:hover{background:#7d3dcc;}
+    .req-success{display:none;text-align:center;padding:1rem;font-family:var(--mono);font-size:.62rem;letter-spacing:.12em;color:var(--cyan);line-height:1.9;text-transform:uppercase;}
+    .req-success.show{display:block;}
+
+    /* IMAGE MODAL */
+    .img-modal{display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.92);backdrop-filter:blur(10px);align-items:center;justify-content:center;}
+    .img-modal.open{display:flex;}
+    .img-modal-img{max-width:90vw;max-height:80vh;border-radius:10px;object-fit:contain;box-shadow:0 0 40px var(--pink-glow);}
+    .img-modal-close{position:absolute;top:16px;right:22px;font-size:32px;color:#fff;cursor:pointer;background:none;border:none;transition:.2s;}
+    .img-modal-close:hover{color:var(--pink);}
+
+    /* TOAST */
+    .toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%) translateY(30px);background:var(--cyan);color:#000;font-weight:700;padding:8px 20px;border-radius:20px;font-size:.82rem;z-index:9500;transition:transform .35s ease,opacity .35s ease;pointer-events:none;opacity:0;font-family:var(--sans);}
+    .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+  </style>
+</head>
+<body>
+
+<nav class="top-nav">
+  <a href="index.html" class="nav-brand">📻 PUMPO</a>
+  <a href="index.html" class="nav-link">← Back to Radio</a>
+</nav>
+
+<!-- GATE -->
+<div id="gateScreen">
+  <canvas id="gateCanvas"></canvas>
+  <div class="gate-vignette"></div>
+  <div class="gate-inner">
+    <div class="gate-icon">🏛️</div>
+    <div class="gate-title">PUMPO VIP</div>
+    <div class="gate-sub">For the 300 Spartans.<br>The ones who were there<br>before it was anything.</div>
+    <div class="gate-card">
+      <span class="gate-label">Enter the frequency</span>
+      <input type="password" class="gate-input" id="pwdInput"
+        placeholder="••••••••" maxlength="40"
+        onkeydown="if(event.key==='Enter') checkPwd()">
+      <button class="gate-btn" onclick="checkPwd()">ENTER ▶</button>
+      <div class="gate-error" id="gateError">Wrong frequency. Try again.</div>
+      <div class="gate-hint">Password shared via community channels.</div>
+    </div>
+  </div>
+</div>
+
+<!-- VIP CONTENT -->
+<div id="vipScreen">
+
+  <!-- HERO -->
+  <div class="vip-hero">
+    <canvas id="vipHeroCanvas"></canvas>
+    <div class="vip-hero-vignette"></div>
+    <div class="vip-hero-inner">
+      <span class="vip-badge">🏛️ The 300 Spartans</span>
+      <h1 class="vip-title">You're on the <span>frequency.</span></h1>
+      <p class="vip-story">
+        You were here before it was anything.<br>
+        <em>That means something.</em><br><br>
+        Tune in. Talk to Pumpo.<br>
+        Request the next sound. Shape the station.
+      </p>
+      <button class="vip-lockout" onclick="lockOut()">🔒 Lock out</button>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="divider"></div>
+  <div class="section-wrap">
+    <div class="section-eyebrow">Members only</div>
+    <div class="section-title">Your <span>access</span></div>
+    <div class="action-grid">
+
+      <div class="action-card" style="border-color:rgba(255,0,128,.2);">
+        <div class="action-icon">📻</div>
+        <div class="action-title" style="color:var(--pink);">Tune In</div>
+        <div class="action-desc">27 original Pumpo tracks. Every genre. Live 24/7. Time-synced — everyone on the frequency hears the same thing at the same moment.</div>
+        <button class="action-btn btn-pink" onclick="tuneIn()">▶ TUNE IN</button>
+      </div>
+
+      <div class="action-card" style="border-color:rgba(64,224,208,.15);">
+        <div class="action-icon">✦</div>
+        <div class="action-title" style="color:var(--cyan);">PumpoAI</div>
+        <div class="action-desc">Talk to Pumpo. The voice of the ecosystem. Powered by Gemini. Bring your own key. Ask anything. The frequency talks back.</div>
+        <button class="action-btn btn-cyan" onclick="meetAI()">OPEN AI</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- GALLERY -->
+  <div class="divider"></div>
+  <div class="section-wrap">
+    <div class="section-eyebrow">Private archive</div>
+    <div class="section-title">Pumpo <span>Gallery</span></div>
+    <div class="gallery-note">
+      ⚡ Images hosted on Cloudflare R2 — private storage, not in the public repo.<br>
+      Replace the R2_IMAGE_URLS array in the source with your actual R2 signed URLs once configured.<br>
+      Setup guide: Cloudflare R2 → create bucket → upload images → set Custom Domain → paste URLs below.
+    </div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <!-- SONG REQUEST -->
+  <div class="divider"></div>
+  <div class="section-wrap">
+    <div class="section-eyebrow">Shape the sound</div>
+    <div class="section-title">Request a <span>Pumpo</span></div>
+    <div class="req-card">
+      <div id="reqForm">
+        <div class="req-row">
+          <div>
+            <span class="req-label">Genre / Vibe</span>
+            <input class="req-input" id="reqGenre" placeholder="e.g. Reggaeton, Afrobeat, Metal...">
+          </div>
+          <div>
+            <span class="req-label">Mood / Energy</span>
+            <input class="req-input" id="reqMood" placeholder="e.g. Melancholic, Hype, Chill...">
+          </div>
+        </div>
+        <span class="req-label">Anything else</span>
+        <textarea class="req-input req-textarea" id="reqNotes"
+          placeholder="Themes, references, a feeling, a moment — anything Pumpo should know."></textarea>
+        <button class="req-btn" onclick="submitRequest()">✦ SEND REQUEST</button>
+      </div>
+      <div class="req-success" id="reqSuccess">
+        ✦ Request received.<br>Pumpo heard you.<br><br>
+        <span style="color:var(--muted);font-size:.55rem;">
+          Copied to clipboard — share via Telegram or Instagram to amplify it.
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-wrap" style="text-align:center;padding-bottom:3rem;">
+    <div style="font-family:var(--mono);font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:#1a1a1a;line-height:2.2;">
+      Radio · Tools · TV · Games<br>There's always more. You know where to look.
+    </div>
+  </div>
+
+</div><!-- /vipScreen -->
+
+<!-- IMAGE MODAL -->
+<div class="img-modal" id="imgModal">
+  <button class="img-modal-close" onclick="closeModal()">×</button>
+  <img class="img-modal-img" id="imgModalSrc">
+</div>
+
+<div class="toast" id="toastEl"></div>
+
+<script>
+// ════════════════════════════════════════════════
+// PRIVATE IMAGE URLS — Cloudflare R2
+// ════════════════════════════════════════════════
+// Replace these with your actual R2 URLs once configured.
+// Format: https://your-r2-custom-domain.com/gallery/filename.jpg
+// Keep this array empty until R2 is set up — placeholders shown instead.
+// These URLs are only visible to users who have already passed the password gate.
+const R2_IMAGE_URLS = [
+  // { url: 'https://assets.radiopumpo.com/gallery/djpumpo.jpg',        label: 'DJ Pumpo' },
+  // { url: 'https://assets.radiopumpo.com/gallery/forzapumpo.jpg',    label: 'Forza Pumpo' },
+  // { url: 'https://assets.radiopumpo.com/gallery/hiphoppumpo.jpg',   label: 'Hip Hop Pumpo' },
+  // { url: 'https://assets.radiopumpo.com/gallery/seashantypumpo.jpg',label: 'Sea Shanty Pumpo' },
+  // { url: 'https://assets.radiopumpo.com/gallery/rockpumpo.jpg',     label: 'Rock Pumpo' },
+  // { url: 'https://assets.radiopumpo.com/gallery/bobpumpo.jpg',      label: 'Bob Pumpo' },
+  // { url: 'https://assets.radiopumpo.com/gallery/gospelpumpo.jpg',   label: 'Gospel Pumpo' },
+];
+
+// ════════════════════════════════════════════════
+// PASSWORD GATE — SHA-256 hash
+// ════════════════════════════════════════════════
+// Hash below = SHA-256 of "pumpo300" (demo password)
+// To change: node -e "const c=require('crypto');console.log(c.createHash('sha256').update('YOURPASSWORD').digest('hex'));"
+// Replace the hash string and share the plain password out-of-band only.
+const PWD_HASH = '6b41b952c706fc1f89123fa04a02a64d789b4436c5426fbdaa9abaa911876585';
+const SESSION_KEY = 'pumpo_vip_v1';
+
+async function sha256(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function checkPwd(){
+  const val = document.getElementById('pwdInput').value.trim();
+  if(!val) return;
+  const hash = await sha256(val);
+  if(hash === PWD_HASH){
+    sessionStorage.setItem(SESSION_KEY,'1');
+    showVIP();
+  } else {
+    const err = document.getElementById('gateError');
+    err.classList.add('show');
+    document.getElementById('pwdInput').value='';
+    document.getElementById('pwdInput').focus();
+    setTimeout(()=>err.classList.remove('show'),2500);
+  }
+}
+
+function showVIP(){
+  document.getElementById('gateScreen').style.display='none';
+  document.getElementById('vipScreen').classList.add('visible');
+  buildGallery();
+  startVipCanvas();
+}
+
+function lockOut(){
+  sessionStorage.removeItem(SESSION_KEY);
+  location.reload();
+}
+
+if(sessionStorage.getItem(SESSION_KEY)==='1'){
+  document.addEventListener('DOMContentLoaded', showVIP);
+}
+
+// ════════════════════════════════════════════════
+// GALLERY — loads from R2 URLs
+// ════════════════════════════════════════════════
+function buildGallery(){
+  const grid = document.getElementById('galleryGrid');
+  grid.innerHTML = '';
+  if(!R2_IMAGE_URLS.length){
+    // Show setup placeholder
+    for(let i=0;i<4;i++){
+      const p=document.createElement('div');
+      p.className='gallery-placeholder';
+      p.innerHTML='<div class="gallery-placeholder-icon">🖼️</div><div class="gallery-placeholder-label">R2 not<br>configured<br>yet</div>';
+      grid.appendChild(p);
+    }
+    return;
+  }
+  R2_IMAGE_URLS.forEach(item=>{
+    const img=document.createElement('img');
+    img.className='gallery-img';
+    img.src=item.url;
+    img.alt=item.label||'';
+    img.loading='lazy';
+    img.onclick=()=>openModal(item.url);
+    grid.appendChild(img);
+  });
+}
+
+function openModal(src){
+  document.getElementById('imgModal').classList.add('open');
+  document.getElementById('imgModalSrc').src=src;
+}
+function closeModal(){
+  document.getElementById('imgModal').classList.remove('open');
+}
+document.addEventListener('click',e=>{
+  if(e.target===document.getElementById('imgModal')) closeModal();
+});
+
+// ════════════════════════════════════════════════
+// ACTIONS
+// ════════════════════════════════════════════════
+function tuneIn(){
+  if(window.PumpoRadio){ window.PumpoRadio.toggle(); showToast('▶ Tuning in...'); return; }
+  window.open('index.html','_blank');
+}
+function meetAI(){
+  if(typeof pumpoToggleAI==='function') pumpoToggleAI();
+  else showToast('Open Radio Pumpo and tap AI to talk to Pumpo.');
+}
+
+// ════════════════════════════════════════════════
+// SONG REQUEST
+// ════════════════════════════════════════════════
+function submitRequest(){
+  const genre=document.getElementById('reqGenre').value.trim();
+  const mood=document.getElementById('reqMood').value.trim();
+  const notes=document.getElementById('reqNotes').value.trim();
+  if(!genre&&!mood&&!notes){ showToast('Tell Pumpo something first.'); return; }
+  const lines=['✦ PUMPO SONG REQUEST'];
+  if(genre) lines.push('Genre: '+genre);
+  if(mood)  lines.push('Mood: '+mood);
+  if(notes) lines.push('Notes: '+notes);
+  lines.push('— via Pumpo VIP · The 300 Spartans');
+  navigator.clipboard.writeText(lines.join('\n')).catch(()=>{});
+  const reqs=JSON.parse(localStorage.getItem('pumpo_requests')||'[]');
+  reqs.unshift({genre,mood,notes,ts:Date.now()});
+  localStorage.setItem('pumpo_requests',JSON.stringify(reqs.slice(0,20)));
+  document.getElementById('reqForm').style.display='none';
+  document.getElementById('reqSuccess').classList.add('show');
+  showToast('Request copied to clipboard ✦');
+}
+
+// ════════════════════════════════════════════════
+// PARTICLES
+// ════════════════════════════════════════════════
+(function initGateParticles(){
+  const c=document.getElementById('gateCanvas'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  const COLS=['#ff0080','#40e0d0','#ffaa00'];
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  function sp(){return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.2+.4,vx:(Math.random()-.5)*.25,vy:(Math.random()-.5)*.25,a:Math.random()*.2+.05,col:COLS[Math.floor(Math.random()*3)],ph:Math.random()*Math.PI*2};}
+  function draw(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ph+=.012;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col;ctx.globalAlpha=p.a*(0.5+0.5*Math.sin(p.ph));ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);resize();pts=Array.from({length:55},sp);draw();
+})();
+
+function startVipCanvas(){
+  const c=document.getElementById('vipHeroCanvas'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  const COLS=['#ff0080','#40e0d0','#ffaa00','#9b59ff'];
+  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
+  function sp(){return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.5,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,a:Math.random()*.24+.06,col:COLS[Math.floor(Math.random()*4)],ph:Math.random()*Math.PI*2};}
+  function draw(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ph+=.012;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col;ctx.globalAlpha=p.a*(0.5+0.5*Math.sin(p.ph));ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
+  window.addEventListener('resize',resize);resize();pts=Array.from({length:60},sp);draw();
+}
+
+// ════════════════════════════════════════════════
+// TOAST
+// ════════════════════════════════════════════════
+let toastTimer;
+function showToast(msg){
+  const el=document.getElementById('toastEl');
+  el.textContent=msg;el.classList.add('show');
+  clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);
+}
+</script>
+
+<!-- Radio player if available -->
+<script src="radio-player.js" onerror="void(0)"></script>
+</body>
+</html>
