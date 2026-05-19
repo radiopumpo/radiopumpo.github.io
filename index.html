@@ -136,7 +136,6 @@
     </p>
     <div class="hero-cta-row">
       <button class="cta-tune" onclick="tuneIn()">▶ TUNE IN</button>
-      <button class="cta-ai"   onclick="window.pumpoToggleAI()">✦ Meet PumpoAI</button>
     </div>
     <div class="hero-teaser">
       There's more. Built by <a href="https://github.com/nztdev" target="_blank">@nztdev</a>. You'll find it.
@@ -223,6 +222,17 @@ function tuneIn(){
   const a=document.getElementById('pumpo-audio-el');
   if(a) a.play().catch(()=>{});
   if(typeof pumpoShowToast==='function') pumpoShowToast('▶ Tuning in...');
+}
+function meetAI(){
+  // pumpoToggleAI is set as window.pumpoToggleAI inside the bar IIFE
+  if(typeof window.pumpoToggleAI==='function'){
+    window.pumpoToggleAI();
+    return;
+  }
+  // Fallback: click the AI button directly
+  const btn=document.getElementById('pumpoAIBtn');
+  if(btn){ btn.click(); return; }
+  if(typeof pumpoShowToast==='function') pumpoShowToast('AI drawer not loaded yet.');
 }
 
 /* ARCADE */
@@ -361,13 +371,13 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
       <div class="pumpo-ai-key-label">Gemini API key — free at <a href="https://aistudio.google.com/app/apikey" target="_blank">aistudio.google.com</a></div>
       <div class="pumpo-ai-key-row">
         <input type="password" class="pumpo-ai-key-input" id="pumpoAIKeyInput" placeholder="Paste Gemini key..." autocomplete="off">
-        <button class="pumpo-ai-key-save" onclick="window.pumpoSaveAIKey()">SAVE</button>
+        <button class="pumpo-ai-key-save" onclick="pumpoSaveAIKey()">SAVE</button>
       </div>
     </div>
     <div class="pumpo-ai-messages" id="pumpoAIMessages" style="display:none"></div>
     <div class="pumpo-ai-input-row" id="pumpoAIInputRow" style="display:none">
       <input type="text" class="pumpo-ai-text-input" id="pumpoAITextInput" placeholder="Ask anything about Pumpo..." maxlength="400" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();pumpoSendMessage();}">
-      <button class="pumpo-ai-send" id="pumpoAISendBtn" onclick="window.pumpoSendMessage()">SEND</button>
+      <button class="pumpo-ai-send" id="pumpoAISendBtn" onclick="pumpoSendMessage()">SEND</button>
     </div>
   </div>
   <div class="pumpo-toast" id="pumpoToast"></div>
@@ -464,131 +474,17 @@ SUPPORT — Ko-fi, PayPal, crypto (ETH, BTC, SOL, TON, stablecoins). No ads. No 
 
 The anonymity is part of the frequency. Pumpo could be anyone. That's what makes it feel like everyone's.`;
 
-window.pumpoToggleAI = function() {
-    aiOpen = !aiOpen;
-    if (plOpen) {
-      plOpen = false;
-      document.getElementById('pumpoPlaylistDrawer').classList.remove('open');
-    }
-    const drawer = document.getElementById('pumpoAIDrawer');
-    const btn = document.getElementById('pumpoAIBtn');
-    
-    if (drawer) drawer.classList.toggle('open', aiOpen);
-    if (btn) btn.classList.toggle('active', aiOpen);
-    updateH();
-    
-    if (aiOpen) {
-      if (aiKey) {
-        window.pumpoShowChat();
-        if (aiHistory.length === 0) window.pumpoAddMsg('ai', "Hey. I'm PumpoAI. Ask me anything about the ecosystem.");
-      } else {
-        document.getElementById('pumpoAIKeySetup').style.display = 'flex';
-        document.getElementById('pumpoAIMessages').style.display = 'none';
-        document.getElementById('pumpoAIInputRow').style.display = 'none';
-      }
-    }
-  };
-  document.getElementById('pumpoAIBtn').onclick = window.pumpoToggleAI;
-
-  window.pumpoShowChat = function() {
-    document.getElementById('pumpoAIKeySetup').style.display = 'none';
-    document.getElementById('pumpoAIMessages').style.display = 'flex';
-    document.getElementById('pumpoAIInputRow').style.display = 'flex';
-    document.getElementById('pumpoAIDrawer').classList.add('chat-mode');
-    setTimeout(() => {
-      const msgs = document.getElementById('pumpoAIMessages');
-      if (msgs) msgs.scrollTop = 9999;
-      const inputEl = document.getElementById('pumpoAITextInput');
-      if (inputEl) inputEl.focus();
-    }, 50);
-  };
-
-  window.pumpoSaveAIKey = function() {
-    const v = document.getElementById('pumpoAIKeyInput').value.trim();
-    if (!v) return;
-    aiKey = v;
-    localStorage.setItem('pumpo_gemini_key', v);
-    window.pumpoShowChat();
-    window.pumpoAddMsg('ai', "Key saved. Hey. I'm PumpoAI. Ask me anything about the ecosystem.");
-  };
-
-  window.pumpoAddMsg = function(role, text) {
-    const msgs = document.getElementById('pumpoAIMessages');
-    if (!msgs) return null;
-    const d = document.createElement('div');
-    d.className = 'pumpo-msg ' + role;
-    d.textContent = text;
-    msgs.appendChild(d);
-    msgs.scrollTop = 9999;
-    return d;
-  };
-
-  window.pumpoSendMessage = async function() {
-    const inp = document.getElementById('pumpoAITextInput');
-    if (!inp) return;
-    const text = inp.value.trim();
-    if (!text || !aiKey) return;
-    inp.value = '';
-    window.pumpoAddMsg('user', text);
-    aiHistory.push({ role: 'user', parts: [{ text }] });
-    
-    const btn = document.getElementById('pumpoAISendBtn');
-    if (btn) btn.disabled = true;
-    
-    const thinking = window.pumpoAddMsg('ai', '...');
-    if (thinking) thinking.classList.add('thinking');
-    
-    try {
-      const contents = aiHistory.length <= 1 ? 
-        [{ role: 'user', parts: [{ text: SYSTEM + '\n\nUser message: ' + text }] }] : 
-        [{ role: 'user', parts: [{ text: SYSTEM }] }, { role: 'model', parts: [{ text: 'Understood. I am PumpoAI.' }] }, ...aiHistory.map(m => ({ role: m.role === 'user' ? 'user' : 'model', parts: m.parts }))];
-      
-      const res = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=' + aiKey, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ contents })
-      });
-      
-      if (!res.ok) {
-        const e = await res.json().catch(() => ({}));
-        throw new Error(e?.error?.message || 'HTTP ' + res.status);
-      }
-      
-      const data = await res.json();
-      const reply = data.candidates[0].content.parts[0].text.trim();
-      if (thinking) {
-        thinking.textContent = reply;
-        thinking.classList.remove('thinking');
-      }
-      aiHistory.push({ role: 'model', parts: [{ text: reply }] });
-      if (aiHistory.length > 20) aiHistory = aiHistory.slice(-20);
-    } catch (e) {
-      if (thinking) {
-        thinking.textContent = 'Something went wrong. Check your key or try again.';
-        thinking.classList.remove('thinking');
-      }
-    }
-    if (btn) btn.disabled = false;
-    const msgs = document.getElementById('pumpoAIMessages');
-    if (msgs) msgs.scrollTop = 9999;
-  };
+  window.pumpoToggleAI=function(){aiOpen=!aiOpen;if(plOpen){plOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}const drawer=document.getElementById('pumpoAIDrawer'),btn=document.getElementById('pumpoAIBtn');drawer.classList.toggle('open',aiOpen);btn.classList.toggle('active',aiOpen);updateH();if(aiOpen){if(aiKey){showChat();if(aiHistory.length===0)addMsg('ai',"Hey. I'm PumpoAI. Ask me anything about the ecosystem.");}else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}}};
+  document.getElementById('pumpoAIBtn').onclick=pumpoToggleAI;
+  function showChat(){document.getElementById('pumpoAIKeySetup').style.display='none';document.getElementById('pumpoAIMessages').style.display='flex';document.getElementById('pumpoAIInputRow').style.display='flex';document.getElementById('pumpoAIDrawer').classList.add('chat-mode');setTimeout(()=>{document.getElementById('pumpoAIMessages').scrollTop=9999;document.getElementById('pumpoAITextInput').focus();},100);}
+  window.pumpoSaveAIKey=function(){const v=document.getElementById('pumpoAIKeyInput').value.trim();if(!v)return;aiKey=v;localStorage.setItem('pumpo_gemini_key',v);showChat();addMsg('ai',"Key saved. Hey. I'm PumpoAI. Ask me anything about the ecosystem.");};
+  function addMsg(role,text){const msgs=document.getElementById('pumpoAIMessages');const d=document.createElement('div');d.className='pumpo-msg '+role;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=9999;return d;}
+  window.pumpoSendMessage=async function(){const inp=document.getElementById('pumpoAITextInput');const text=inp.value.trim();if(!text||!aiKey)return;inp.value='';addMsg('user',text);aiHistory.push({role:'user',parts:[{text}]});const btn=document.getElementById('pumpoAISendBtn');btn.disabled=true;const thinking=addMsg('ai','...');thinking.classList.add('thinking');try{const contents=aiHistory.length<=1?[{role:'user',parts:[{text:SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...aiHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+aiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'HTTP '+res.status);}const data=await res.json();const reply=data.candidates[0].content.parts[0].text.trim();thinking.textContent=reply;thinking.classList.remove('thinking');aiHistory.push({role:'model',parts:[{text:reply}]});if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);}catch(e){thinking.textContent='Something went wrong. Check your key or try again.';thinking.classList.remove('thinking');}btn.disabled=false;document.getElementById('pumpoAIMessages').scrollTop=9999;};
 
   let toastTimer;
-  window.pumpoShowToast = function(msg) {
-    const el = document.getElementById('pumpoToast');
-    if (!el) return;
-    el.textContent = msg;
-    el.classList.add('show');
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => el.classList.remove('show'), 2800);
-  };
-
-  if (aiKey) {
-    const keyInput = document.getElementById('pumpoAIKeyInput');
-    if (keyInput) keyInput.value = aiKey;
-  }
-  load();
-  updateH();
+  window.pumpoShowToast=function(msg){const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);};
+  if(aiKey)document.getElementById('pumpoAIKeyInput').value=aiKey;
+  load();updateH();
 })();
 </script>
 <script src="radio-player.js"></script>
