@@ -464,7 +464,8 @@ SUPPORT — Ko-fi, PayPal, crypto (ETH, BTC, SOL, TON, stablecoins). No ads. No 
 
 The anonymity is part of the frequency. Pumpo could be anyone. That's what makes it feel like everyone's.`;
 
-window.pumpoToggleAI = function() {
+// 1. Expose pumpoToggleAI globally so inline HTML can always find it
+  window.pumpoToggleAI = function() {
     aiOpen = !aiOpen;
     if (plOpen) {
       plOpen = false;
@@ -481,9 +482,9 @@ window.pumpoToggleAI = function() {
     
     if (aiOpen) {
       if (aiKey) {
-        showChat();
+        window.pumpoShowChat(); // Updated to global call
         if (aiHistory.length === 0) {
-          addMsg('ai', "Hey. I'm PumpoAI. Ask me anything about the ecosystem.");
+          window.pumpoAddMsg('ai', "Hey. I'm PumpoAI. Ask me anything about the ecosystem."); // Updated to global call
         }
       } else {
         document.getElementById('pumpoAIKeySetup').style.display = 'flex';
@@ -492,32 +493,34 @@ window.pumpoToggleAI = function() {
       }
     }
   };
-
+  
+  // Attach the same function to your bar button
   document.getElementById('pumpoAIBtn').onclick = window.pumpoToggleAI;
 
-  function showChat(){
+  // 2. Expose showChat globally so it can be called from outside/inside safely
+  window.pumpoShowChat = function(){
     document.getElementById('pumpoAIKeySetup').style.display='none';
     document.getElementById('pumpoAIMessages').style.display='flex';
     document.getElementById('pumpoAIInputRow').style.display='flex';
     document.getElementById('pumpoAIDrawer').classList.add('chat-mode');
     setTimeout(()=>{
       document.getElementById('pumpoAIMessages').scrollTop=9999;
-      // Wrapping focus in an extra check so it safely waits for the UI to be ready
       const inputEl = document.getElementById('pumpoAITextInput');
       if (inputEl) inputEl.focus();
     }, 50); // A tiny 50ms delay keeps the animation from breaking
-  }
+  };
 
   window.pumpoSaveAIKey=function(){
     const v=document.getElementById('pumpoAIKeyInput').value.trim();
     if(!v)return;
     aiKey=v;
     localStorage.setItem('pumpo_gemini_key',v);
-    showChat();
-    addMsg('ai',"Key saved. Hey. I'm PumpoAI. Ask me anything about the ecosystem.");
+    window.pumpoShowChat(); // Updated to global call
+    window.pumpoAddMsg('ai',"Key saved. Hey. I'm PumpoAI. Ask me anything about the ecosystem."); // Updated to global call
   };
 
-  function addMsg(role,text){
+  // 3. Expose addMsg globally so it can append text nodes cleanly
+  window.pumpoAddMsg = function(role,text){
     const msgs=document.getElementById('pumpoAIMessages');
     const d=document.createElement('div');
     d.className='pumpo-msg '+role;
@@ -525,18 +528,18 @@ window.pumpoToggleAI = function() {
     msgs.appendChild(d);
     msgs.scrollTop=9999;
     return d;
-  }
+  };
 
   window.pumpoSendMessage=async function(){
     const inp=document.getElementById('pumpoAITextInput');
     const text=inp.value.trim();
     if(!text||!aiKey)return;
     inp.value='';
-    addMsg('user',text);
+    window.pumpoAddMsg('user',text); // Updated to global call
     aiHistory.push({role:'user',parts:[{text}]});
     const btn=document.getElementById('pumpoAISendBtn');
     btn.disabled=true;
-    const thinking=addMsg('ai','...');
+    const thinking=window.pumpoAddMsg('ai','...'); // Updated to global call
     thinking.classList.add('thinking');
     try{
       const contents=aiHistory.length<=1?[{role:'user',parts:[{text:SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...aiHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];
