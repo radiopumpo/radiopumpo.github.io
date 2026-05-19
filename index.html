@@ -211,14 +211,29 @@
 
 /* TUNE IN + AI */
 function tuneIn(){
+  // Use the shared-clock radio player if available (radio-player.js)
+  if(window.PumpoRadio && typeof window.PumpoRadio.toggle==='function'){
+    window.PumpoRadio.toggle();
+    return;
+  }
+  // Fallback: try the injected TUNE IN button from radio-player.js
+  const radioBtn=document.getElementById('pumpo-radio-toggle');
+  if(radioBtn){ radioBtn.click(); return; }
+  // Last resort: just play the audio element
   const a=document.getElementById('pumpo-audio-el');
-  if(a){a.play().catch(()=>{});}
-  if(typeof pumpoShowToast==='function') pumpoShowToast('▶ Tuning in to Radio Pumpo...');
-  document.getElementById('pumpoBar')?.scrollIntoView({behavior:'smooth',block:'end'});
+  if(a) a.play().catch(()=>{});
+  if(typeof pumpoShowToast==='function') pumpoShowToast('▶ Tuning in...');
 }
 function meetAI(){
-  if(typeof pumpoToggleAI==='function') pumpoToggleAI();
-  else document.getElementById('pumpoAIBtn')?.click();
+  // pumpoToggleAI is set as window.pumpoToggleAI inside the bar IIFE
+  if(typeof window.pumpoToggleAI==='function'){
+    window.pumpoToggleAI();
+    return;
+  }
+  // Fallback: click the AI button directly
+  const btn=document.getElementById('pumpoAIBtn');
+  if(btn){ btn.click(); return; }
+  if(typeof pumpoShowToast==='function') pumpoShowToast('AI drawer not loaded yet.');
 }
 
 /* ARCADE */
@@ -399,9 +414,10 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     {url:'https://radiopumpo.github.io/songs/pumpotheninja.mp3',name:'Pumpo The Ninja'},
     {url:'https://radiopumpo.github.io/songs/pumpophonkbr.mp3',name:'A ora do Pumpo'},
     {url:'https://radiopumpo.github.io/songs/pumpophonkbr2.mp3',name:'A ora do Pumpo Dois'},
-    {url:'https://radiopumpo.github.io/songs/ay-que-te-pego.mp3',name:'Ay que te pego /La mujer del Pumpo/'},
-    {url:'https://radiopumpo.github.io/songs/microfono-ahumado.mp3',name:'Microfono ahumado'},
+    {url:'https://radiopumpo.github.io/songs/ay-que-te-pego-la-mujer-del-pumpo.mp3',name:'Ay que te pego /La mujer del Pumpo/'},
+    {url:'https://radiopumpo.github.io/songs/microfono-ahumado-pumpo.mp3',name:'Microfono ahumado'},
     {url:'https://radiopumpo.github.io/songs/pumpodragons.mp3',name:'Pumpo Dragons'},
+    {url:'https://radiopumpo.github.io/songs/pumponostalgiaphonk.mp3',name:'Pumpo Nostalgia Phonk'},
   ];
   const saved=JSON.parse(localStorage.getItem('pumpo_radio_state')||'{}');
   let pIdx=saved.idx||0,pQueue=null,pQueuePos=0;
