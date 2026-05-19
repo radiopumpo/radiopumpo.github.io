@@ -185,13 +185,6 @@
         <button class="action-btn btn-pink" onclick="tuneIn()">▶ TUNE IN</button>
       </div>
 
-      <div class="action-card" style="border-color:rgba(64,224,208,.15);">
-        <div class="action-icon">✦</div>
-        <div class="action-title" style="color:var(--cyan);">PumpoAI</div>
-        <div class="action-desc">Talk to Pumpo. The voice of the ecosystem. Powered by Gemini. Bring your own key. Ask anything. The frequency talks back.</div>
-        <button class="action-btn btn-cyan" onclick="meetAI()">OPEN AI</button>
-      </div>
-
     </div>
   </div>
 
@@ -311,7 +304,6 @@ async function checkPwd(){
 function showVIP(){
   document.getElementById('gateScreen').style.display='none';
   document.getElementById('vipScreen').classList.add('visible');
-  buildGallery();
   startVipCanvas();
 }
 
