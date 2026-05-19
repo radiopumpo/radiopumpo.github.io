@@ -29,7 +29,7 @@
     { "id": "t10", "file": "https://radiopumpo.github.io/songs/hiphoppumpo.mp3",        "title": "Hip Hop Pumpo",           "duration": 74,  "dayparts": ["breakfast","afternoons","latenight"] },
     { "id": "t11", "file": "https://radiopumpo.github.io/songs/rockpowerpumpo.mp3",     "title": "Rock Power Pumpo",        "duration": 141, "dayparts": ["breakfast","afternoons"] },
     { "id": "t12", "file": "https://radiopumpo.github.io/songs/punkpumpo.mp3",          "title": "Punk Pumpo",              "duration": 182, "dayparts": ["breakfast","afternoons"] },
-    { "id": "t13", "file": "https://radiopumpo.github.io/songs/seashantypumpo.mp3",     "title": "Sea Shanty Pumpo",        "duration": 79,  "dayparts": ["breakfast","afternoons"] },
+    { "id": "t13", "file": "https://radiopumpo.github.io/songs/seashantypumpo.mp3",     "title": "Sea Shanty Pumpo",        "duration": 79,  "dayparts": ["latenight"] },
     { "id": "t14", "file": "https://radiopumpo.github.io/songs/unodinoipumpo.mp3",      "title": "Uno Di Noi Pumpo",        "duration": 142, "dayparts": ["breakfast","afternoons","latenight"] },
     { "id": "t15", "file": "https://radiopumpo.github.io/songs/gospelpumpo.mp3",        "title": "Gospel Pumpo",            "duration": 184, "dayparts": ["breakfast","afternoons"] },
     { "id": "t16", "file": "https://radiopumpo.github.io/songs/mon-ami-pumpo.mp3",      "title": "Pumpo Mon Ami",           "duration": 151, "dayparts": ["breakfast","afternoons","latenight"] },
@@ -46,7 +46,8 @@
     { "id": "t27", "file": "https://radiopumpo.github.io/songs/pumpophonkbr2.mp3",      "title": "A ora do Pumpo Dois",     "duration": 133, "dayparts": ["latenight"] },
     { "id": "t28", "file": "https://radiopumpo.github.io/songs/ay-que-te-pego.mp3",     "title": "Ay que te pego",          "duration": 176, "dayparts": ["breakfast","afternoons","latenight"] },
     { "id": "t29", "file": "https://radiopumpo.github.io/songs/microfono-ahumado.mp3",  "title": "Microfono Ahumado",       "duration": 193, "dayparts": ["afternoons","latenight"] },
-    { "id": "t30", "file": "https://radiopumpo.github.io/songs/pumpodragons.mp3",       "title": "Pumpo Dragons",           "duration": 204, "dayparts": ["afternoons","latenight"] }
+    { "id": "t30", "file": "https://radiopumpo.github.io/songs/pumpodragons.mp3",       "title": "Pumpo Dragons",           "duration": 204, "dayparts": ["afternoons","latenight"] },
+    { "id": "t30", "file": "https://radiopumpo.github.io/songs/pumponostalgiaphonk.mp3","title": "Pumpo Nostalgia Phonk",   "duration": 151, "dayparts": ["afternoons","latenight"] }
   ],
 
   "segments": {
