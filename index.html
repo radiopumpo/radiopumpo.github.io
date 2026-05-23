@@ -207,6 +207,22 @@
 </div>
 
 <script>
+/* NAV TOGGLE */
+function toggleNav(){
+  const toggle=document.getElementById('navToggle');
+  const dropdown=document.getElementById('navDropdown');
+  const open=dropdown.classList.toggle('open');
+  toggle.classList.toggle('open',open);
+}
+document.addEventListener('click',function(e){
+  const toggle=document.getElementById('navToggle');
+  const dropdown=document.getElementById('navDropdown');
+  if(toggle&&dropdown&&!toggle.contains(e.target)&&!dropdown.contains(e.target)){
+    dropdown.classList.remove('open');
+    toggle.classList.remove('open');
+  }
+});
+  
 /* HERO PARTICLES */
 (function(){
   const c=document.getElementById('heroCanvas'),ctx=c.getContext('2d');
