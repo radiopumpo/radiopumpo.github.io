@@ -517,18 +517,18 @@ function update(dt) {
     // rate proportional to current depth (perspective acceleration)
     o.depth += speed * dt * 0.0035 * (0.2 + o.depth * 2.8);
 
-    // Near miss window: depth 0.78..0.92, different lane
-    if (!o.missed && !o.hit && o.depth > 0.78 && o.depth < 0.92) {
+    // Near miss window: depth 0.75..0.88 — must be different lane
+    if (!o.missed && !o.hit && o.depth > 0.75 && o.depth < 0.88) {
       if (o.lane !== car.lane) {
-        o.missed = true;
+        o.missed = true; // safe — won't collide even if depths overlap
         if (Math.abs(o.lane - car.lane) === 1) {
           triggerNearMiss(o);
         }
       }
     }
 
-    // Collision: depth 0.88..0.97, same lane
-    if (!o.hit && o.depth > 0.88 && o.depth < 0.97 && o.lane === car.lane) {
+    // Collision: depth 0.80..0.94, same lane, and not already near-missed
+    if (!o.hit && !o.missed && o.depth > 0.80 && o.depth < 0.94 && o.lane === car.lane) {
       o.hit = true;
       triggerCrash();
     }
@@ -592,10 +592,10 @@ function triggerNearMiss(o) {
 
 function triggerCrash() {
   if (crashLock > 0) return;
-  crashLock = 55;
+  crashLock = 35;
   combo = 0;
   shake(gameMode === 'rush' ? 12 : 6);
-  car.crashFlash = 28;
+  car.crashFlash = 20; // short blink only
   const ov = document.getElementById('crash-overlay');
   ov.style.opacity = '1';
   setTimeout(() => { ov.style.opacity = '0'; }, 220);
@@ -848,7 +848,8 @@ function drawCar(hy) {
   const baseX = W / 2 + car.laneX * laneSlotW * 0.5;
 
   // Flash on crash (blink)
-  if (car.crashFlash > 0 && Math.floor(car.crashFlash / 4) % 2 === 1) return;
+  // Blink: only hide during brief flashes (every 5 frames of the 20-frame window)
+  if (car.crashFlash > 0 && Math.floor(car.crashFlash / 5) % 3 === 1) return;
 
   ctx.save();
 
