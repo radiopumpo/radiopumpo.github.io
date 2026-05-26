@@ -1,541 +1,303 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
 <meta charset="UTF-8">
-
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-<title>Radio Pumpo Drive — Visual Upgrade</title>
+<title>Radio Pumpo Drive — Deep Cinematic</title>
 
 <style>
-
-@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap');
-
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root{
-
-  --neon-pink:#ff2d78;
-
-  --neon-cyan:#00ffe7;
-
-  --neon-purple:#b24bff;
-
-}
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
 
 html,body{
-
-  width:100%;
-
-  height:100%;
-
+  margin:0;
+  padding:0;
   overflow:hidden;
-
   background:#000;
-
-  font-family:'Rajdhani',sans-serif;
-
-  user-select:none;
-
+  font-family:Rajdhani,sans-serif;
   touch-action:none;
-
 }
 
 canvas{
-
   position:fixed;
-
   inset:0;
-
   width:100%;
-
   height:100%;
-
 }
 
-/* ───────── HUD ───────── */
-
-#hud{position:fixed;inset:0;pointer-events:none;z-index:10}
-
-#mode-badge{
-
-  position:absolute;
-
-  top:18px;left:18px;
-
-  color:var(--neon-cyan);
-
-  font-weight:700;
-
-  letter-spacing:2px;
-
-  text-shadow:0 0 10px var(--neon-cyan);
-
-}
-
-#hud-top{
-
-  position:absolute;
-
-  top:18px;right:18px;
-
-  text-align:right;
-
-}
-
-#hud-distance{
-
-  color:var(--neon-cyan);
-
-  font-family:'Share Tech Mono';
-
-  text-shadow:0 0 10px var(--neon-cyan);
-
-}
-
-#hud-combo{
-
-  color:var(--neon-pink);
-
-  font-size:32px;
-
-  text-shadow:0 0 15px var(--neon-pink);
-
-}
-
-.hidden{opacity:0}
-
-/* ───────── RADIO ───────── */
-
-#radio-hud{
-
-  position:absolute;
-
-  bottom:18px;
-
-  left:14px;
-
-}
-
-#radio-bar{
-
-  display:flex;
-
-  gap:10px;
-
-  padding:10px 12px;
-
-  background:rgba(0,0,0,0.55);
-
-  border:1px solid rgba(255,45,120,0.4);
-
-  backdrop-filter:blur(10px);
-
-  border-radius:10px;
-
-}
-
-#radio-dot{
-
-  width:8px;height:8px;border-radius:50%;
-
-  background:#444;
-
-}
-
-#radio-dot.live{
-
-  background:var(--neon-pink);
-
-  box-shadow:0 0 10px var(--neon-pink);
-
-}
-
-#pumpo-song-marquee{
-
-  color:#fff;
-
-  font-size:12px;
-
-  white-space:nowrap;
-
-}
-
-/* ───────── OVERLAYS ───────── */
-
-#scanlines{
-
-  position:fixed;inset:0;
-
-  pointer-events:none;
-
-  background:repeating-linear-gradient(
-
-    0deg,
-
-    transparent,
-
-    transparent 3px,
-
-    rgba(0,0,0,0.08) 4px
-
-  );
-
-  z-index:9;
-
-}
-
-#vignette{
-
-  position:fixed;inset:0;
-
-  pointer-events:none;
-
-  background:radial-gradient(circle at center, transparent 40%, rgba(0,0,0,0.6));
-
-  z-index:9;
-
-}
-
-/* MENU (unchanged visually simplified) */
-
-#menu-screen{
-
-  position:fixed;inset:0;
-
-  display:flex;
-
-  flex-direction:column;
-
-  justify-content:center;
-
-  align-items:center;
-
-  background:linear-gradient(180deg,#050008,#120020,#000);
-
-  z-index:100;
-
-}
-
-.menu-logo{
-
-  font-size:54px;
-
-  color:white;
-
-  text-shadow:0 0 30px var(--neon-pink);
-
-}
-
-/* TOUCH */
-
-#touch-left,#touch-right{
-
+/* minimal HUD */
+#hud{
   position:fixed;
-
-  top:0;bottom:0;
-
-  width:50%;
-
-  z-index:5;
-
+  inset:0;
+  pointer-events:none;
+  z-index:10;
+  color:#00ffe7;
+  font-weight:700;
+  letter-spacing:2px;
+  padding:20px;
 }
 
-#touch-left{left:0}
+#menu{
+  position:fixed;
+  inset:0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  background:radial-gradient(circle at center,#120018,#000);
+  z-index:100;
+}
 
-#touch-right{right:0}
-
+button{
+  margin:10px;
+  padding:14px 20px;
+  border:1px solid #ff2d78;
+  background:transparent;
+  color:#ff2d78;
+  font-weight:700;
+}
 </style>
-
 </head>
 
 <body>
 
-<canvas id="gameCanvas"></canvas>
+<canvas id="c"></canvas>
 
-<div id="scanlines"></div>
+<div id="hud">RADIO PUMPO DRIVE</div>
 
-<div id="vignette"></div>
-
-<div id="hud">
-
-  <div id="mode-badge">CRUISE</div>
-
-  <div id="hud-top">
-
-    <div id="hud-distance">0 km</div>
-
-    <div id="hud-combo" class="hidden">x1</div>
-
-  </div>
-
-  <div id="radio-hud">
-
-    <div id="radio-bar">
-
-      <div id="radio-dot"></div>
-
-      <div id="pumpo-song-marquee">Radio Pumpo</div>
-
-    </div>
-
-  </div>
-
-</div>
-
-<div id="touch-left"></div>
-
-<div id="touch-right"></div>
-
-<div id="menu-screen">
-
-  <div class="menu-logo">RADIO PUMPO</div>
-
+<div id="menu">
+  <button id="c1">CRUISE</button>
+  <button id="c2">RUSH</button>
 </div>
 
 <script>
-
 'use strict';
 
-/* ===================== GAME CORE (UNCHANGED LOGIC) ===================== */
+/* ================= CANVAS ================= */
 
-const canvas = document.getElementById("gameCanvas");
+const c=document.getElementById('c');
+const x=c.getContext('2d');
 
-const ctx = canvas.getContext("2d");
-
-let W=0,H=0;
-
-function resize(){
-
-  W=canvas.width=innerWidth*devicePixelRatio;
-
-  H=canvas.height=innerHeight*devicePixelRatio;
-
+let W,H;
+function rs(){
+  W=c.width=innerWidth*devicePixelRatio;
+  H=c.height=innerHeight*devicePixelRatio;
 }
+addEventListener('resize',rs);
+rs();
 
-addEventListener("resize",resize);
-
-resize();
+/* ================= STATE ================= */
 
 let mode="cruise";
-
+let run=false;
 let speed=1;
+let carX=0;
 
-let distance=0;
+/* ================= MENU FIX ================= */
 
-let combo=0;
+document.getElementById('c1').onclick=()=>start('cruise');
+document.getElementById('c2').onclick=()=>start('rush');
 
-const car={lane:1,x:0};
-
-const lanes=3;
-
-const keys={left:false,right:false};
-
-addEventListener("keydown",e=>{
-
-  if(e.key==="ArrowLeft")keys.left=true;
-
-  if(e.key==="ArrowRight")keys.right=true;
-
-});
-
-addEventListener("keyup",e=>{
-
-  if(e.key==="ArrowLeft")keys.left=false;
-
-  if(e.key==="ArrowRight")keys.right=false;
-
-});
-
-function laneToX(l){return (l-1)*0.6}
-
-/* ===================== ROAD ===================== */
-
-function drawSky(){
-
-  const g=ctx.createLinearGradient(0,0,0,H*0.5);
-
-  g.addColorStop(0,"#050010");
-
-  g.addColorStop(1,"#ff2d78");
-
-  ctx.fillStyle=g;
-
-  ctx.fillRect(0,0,W,H);
-
+function start(m){
+  mode=m;
+  run=true;
+  document.getElementById('menu').style.display='none';
 }
 
-/* cinematic haze */
+/* ================= INPUT ================= */
 
-function drawHaze(){
+const k={l:false,r:false};
 
-  const g=ctx.createRadialGradient(W/2,H*0.4,50,W/2,H*0.4,H*0.8);
+addEventListener('keydown',e=>{
+  if(e.key==='ArrowLeft')k.l=true;
+  if(e.key==='ArrowRight')k.r=true;
+});
+addEventListener('keyup',e=>{
+  if(e.key==='ArrowLeft')k.l=false;
+  if(e.key==='ArrowRight')k.r=false;
+});
 
-  g.addColorStop(0,"rgba(255,50,120,0.2)");
+/* ================= ATMOSPHERE SYSTEM ================= */
 
-  g.addColorStop(1,"transparent");
+function sky(){
+  const g=x.createLinearGradient(0,0,0,H*0.6);
 
-  ctx.fillStyle=g;
+  const t=performance.now()*0.0001;
+  const pulse=Math.sin(t)*0.5+0.5;
 
-  ctx.fillRect(0,0,W,H);
-
-}
-
-/* pseudo road */
-
-function drawRoad(){
-
-  const horizon=H*0.4;
-
-  for(let i=0;i<120;i++){
-
-    const t=i/120;
-
-    const y=horizon+t*(H-horizon);
-
-    const w=200*(1-t);
-
-    const curve=Math.sin(i*0.05+performance.now()*0.001)*60;
-
-    const left=W/2-w+curve;
-
-    const right=W/2+w+curve;
-
-    ctx.fillStyle=i%2?"#111":"#0a0a0a";
-
-    ctx.beginPath();
-
-    ctx.moveTo(left,y);
-
-    ctx.lineTo(right,y);
-
-    ctx.lineTo(right,y+10);
-
-    ctx.lineTo(left,y+10);
-
-    ctx.fill();
-
-    /* neon edges */
-
-    ctx.strokeStyle="rgba(255,45,120,0.4)";
-
-    ctx.beginPath();
-
-    ctx.moveTo(left,y);
-
-    ctx.lineTo(left,y+10);
-
-    ctx.stroke();
-
+  if(mode==='rush'){
+    g.addColorStop(0,'#050010');
+    g.addColorStop(0.5,`rgb(${80+pulse*100},0,40)`);
+    g.addColorStop(1,'#ff2d78');
+  }else{
+    g.addColorStop(0,'#020018');
+    g.addColorStop(1,'#001020');
   }
 
+  x.fillStyle=g;
+  x.fillRect(0,0,W,H);
+
+  /* horizon fog */
+  const fog=x.createRadialGradient(W/2,H*0.4,50,W/2,H*0.4,H*0.9);
+  fog.addColorStop(0,'rgba(255,60,120,0.18)');
+  fog.addColorStop(1,'transparent');
+  x.fillStyle=fog;
+  x.fillRect(0,0,W,H);
 }
 
-/* ===================== CAR (UPGRADED VISUAL ONLY) ===================== */
+/* ================= CITY LAYERS ================= */
 
-function drawCar(){
+function city(){
+  const baseY=H*0.5;
 
-  const baseX=W/2+car.x*150;
+  for(let layer=0;layer<3;layer++){
+    const depth=(layer+1)/3;
+    const offset=Math.sin(performance.now()*0.0003*(layer+1))*20;
 
-  const baseY=H*0.75;
+    x.fillStyle=`rgba(0,0,0,${0.6-depth*0.2})`;
 
-  const bob=Math.sin(performance.now()*0.01)*3;
+    for(let i=0;i<25;i++){
+      const bx=(i/25)*W + offset*(layer+1);
+      const bw=30+layer*10;
+      const bh=(0.1+Math.random()*0.2)*H*(1-depth);
+
+      x.fillRect(bx,baseY-bh,bw,bh);
+
+      /* flicker windows */
+      x.fillStyle='rgba(0,255,231,0.15)';
+      if(Math.random()>0.7){
+        x.fillRect(bx+5,baseY-bh+10,3,3);
+      }
+      x.fillStyle=`rgba(0,0,0,${0.6-depth*0.2})`;
+    }
+  }
+}
+
+/* ================= ROAD ================= */
+
+function road(){
+  const h=H*0.42;
+
+  for(let i=0;i<140;i++){
+    const t=i/140;
+    const y=h+t*(H-h);
+
+    const wave=Math.sin(i*0.06+performance.now()*0.001)*90*speed;
+
+    const w=280*(1-t);
+
+    const l=W/2-w+wave;
+    const r=W/2+w+wave;
+
+    x.fillStyle=i%2?'#0a0a12':'#11111e';
+
+    x.beginPath();
+    x.moveTo(l,y);
+    x.lineTo(r,y);
+    x.lineTo(r,y+10);
+    x.lineTo(l,y+10);
+    x.fill();
+
+    /* neon edge persistence */
+    x.strokeStyle='rgba(255,45,120,0.3)';
+    x.beginPath();
+    x.moveTo(l,y);
+    x.lineTo(l,y+10);
+    x.stroke();
+  }
+}
+
+/* ================= CAR ================= */
+
+function car(){
+  const cx=W/2+carX*200;
+  const cy=H*0.75;
+
+  const bob=Math.sin(performance.now()*0.01)*5;
+  const tilt=carX*2;
 
   /* underglow */
+  const g=x.createRadialGradient(cx,cy,10,cx,cy,140);
+  g.addColorStop(0,'rgba(0,255,231,0.35)');
+  g.addColorStop(1,'transparent');
 
-  const glow=ctx.createRadialGradient(baseX,baseY,5,baseX,baseY,80);
+  x.fillStyle=g;
+  x.beginPath();
+  x.arc(cx,cy,140,0,Math.PI*2);
+  x.fill();
 
-  glow.addColorStop(0,"rgba(0,255,231,0.5)");
+  x.save();
+  x.translate(cx,cy+bob);
+  x.rotate(tilt*0.02);
 
-  glow.addColorStop(1,"transparent");
+  x.fillStyle='#ff2d78';
+  x.fillRect(-22,-18,44,18);
 
-  ctx.fillStyle=glow;
+  x.fillStyle='#990040';
+  x.fillRect(-12,-34,24,14);
 
-  ctx.beginPath();
+  x.fillStyle='#fff';
+  x.fillRect(-18,-16,6,4);
+  x.fillRect(12,-16,6,4);
 
-  ctx.arc(baseX,baseY,80,0,Math.PI*2);
-
-  ctx.fill();
-
-  /* body */
-
-  ctx.fillStyle="#ff2d78";
-
-  ctx.fillRect(baseX-20,baseY-20+bob,40,20);
-
-  /* roof */
-
-  ctx.fillStyle="#b00050";
-
-  ctx.fillRect(baseX-12,baseY-35+bob,24,15);
-
-  /* headlights */
-
-  ctx.fillStyle="#fff";
-
-  ctx.fillRect(baseX-18,baseY-18,6,4);
-
-  ctx.fillRect(baseX+12,baseY-18,6,4);
-
+  x.restore();
 }
 
-/* ===================== LOOP ===================== */
+/* ================= FX STACK ================= */
+
+function fx(){
+  /* vignette */
+  const v=x.createRadialGradient(W/2,H/2,100,W/2,H/2,W);
+  v.addColorStop(0,'transparent');
+  v.addColorStop(1,'rgba(0,0,0,0.7)');
+  x.fillStyle=v;
+  x.fillRect(0,0,W,H);
+
+  /* scanlines */
+  x.fillStyle='rgba(0,0,0,0.04)';
+  for(let i=0;i<H;i+=3){
+    x.fillRect(0,i,W,1);
+  }
+
+  /* chromatic drift */
+  x.globalAlpha=0.04;
+  x.fillStyle='#ff2d78';
+  x.fillRect(2,0,W,H);
+  x.fillStyle='#00ffe7';
+  x.fillRect(-2,0,W,H);
+  x.globalAlpha=1;
+}
+
+/* ================= LOOP ================= */
 
 function update(){
+  if(!run) return;
 
-  if(keys.left)car.x-=0.02;
+  if(k.l)carX-=0.02;
+  if(k.r)carX+=0.02;
 
-  if(keys.right)car.x+=0.02;
+  carX=Math.max(-1,Math.min(1,carX));
 
-  car.x=Math.max(-1,Math.min(1,car.x));
-
-  distance+=speed*0.01;
-
+  speed=mode==='rush'?2:1.2;
 }
 
 function render(){
+  x.clearRect(0,0,W,H);
 
-  ctx.clearRect(0,0,W,H);
-
-  drawSky();
-
-  drawHaze();
-
-  drawRoad();
-
-  drawCar();
-
-  /* vignette */
-
-  const v=ctx.createRadialGradient(W/2,H/2,100,W/2,H/2,W);
-
-  v.addColorStop(0,"transparent");
-
-  v.addColorStop(1,"rgba(0,0,0,0.6)");
-
-  ctx.fillStyle=v;
-
-  ctx.fillRect(0,0,W,H);
-
+  sky();
+  city();
+  road();
+  car();
+  fx();
 }
 
 function loop(){
-
   update();
-
   render();
-
   requestAnimationFrame(loop);
-
 }
-
 loop();
 
 </script>
 
 </body>
-
 </html>
