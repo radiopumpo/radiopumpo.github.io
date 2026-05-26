@@ -6,25 +6,14 @@
 <title>Radio Pumpo Drive</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap');
-
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --sky-top: #0a0010;
-    --sky-mid: #1a0030;
-    --sky-hor: #ff4400;
-    --road-dark: #0d0d1a;
-    --road-light: #1a1a2e;
-    --stripe: #ffcc00;
-    --neon-pink: #ff2d78;
-    --neon-cyan: #00ffe7;
+    --neon-pink:   #ff2d78;
+    --neon-cyan:   #00ffe7;
     --neon-purple: #b24bff;
-    --text-main: #fff;
-    --text-muted: rgba(255,255,255,0.5);
-    --hud-bg: rgba(0,0,0,0.55);
-    --hud-border: rgba(255,45,120,0.4);
+    --hud-bg:      rgba(0,0,0,0.6);
+    --hud-border:  rgba(255,45,120,0.45);
   }
-
   html, body {
     width: 100%; height: 100%;
     overflow: hidden;
@@ -32,323 +21,221 @@
     font-family: 'Rajdhani', sans-serif;
     user-select: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: none;
   }
-
-  /* ── CANVAS ── */
   #gameCanvas {
     display: block;
-    width: 100vw;
-    height: 100vh;
-    image-rendering: pixelated;
-  }
-
-  /* ── HUD OVERLAY ── */
-  #hud {
     position: fixed;
-    inset: 0;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+  }
+  /* ── HUD ── */
+  #hud {
+    position: fixed; inset: 0;
     pointer-events: none;
     z-index: 10;
   }
-
-  /* Top right — distance + combo */
+  #mode-badge {
+    position: absolute;
+    top: env(safe-area-inset-top, 16px);
+    top: max(16px, env(safe-area-inset-top));
+    left: 18px;
+    font-size: 11px; letter-spacing: 2px; font-weight: 700;
+    color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan);
+    text-transform: uppercase;
+  }
   #hud-top {
     position: absolute;
-    top: 18px; right: 20px;
+    top: max(16px, env(safe-area-inset-top));
+    right: 18px;
     text-align: right;
-    pointer-events: none;
   }
   #hud-distance {
     font-family: 'Share Tech Mono', monospace;
-    font-size: clamp(13px, 2.5vw, 18px);
+    font-size: clamp(14px, 4vw, 20px);
     color: var(--neon-cyan);
     letter-spacing: 2px;
     text-shadow: 0 0 12px var(--neon-cyan);
   }
   #hud-combo {
-    font-size: clamp(22px, 4vw, 36px);
+    font-size: clamp(24px, 7vw, 38px);
     font-weight: 700;
     color: var(--neon-pink);
-    letter-spacing: 1px;
-    line-height: 1;
     text-shadow: 0 0 16px var(--neon-pink);
+    line-height: 1;
     transition: opacity 0.3s;
   }
   #hud-combo.hidden { opacity: 0; }
-
-  /* Bottom left — radio */
+  /* Radio bar — bottom left, clear of safari UI */
   #radio-hud {
     position: absolute;
-    bottom: 20px; left: 20px;
+    bottom: max(18px, env(safe-area-inset-bottom));
+    left: 14px;
     pointer-events: all;
-    max-width: min(340px, 80vw);
+    max-width: min(320px, calc(100vw - 28px));
   }
   #radio-bar {
     background: var(--hud-bg);
     border: 1px solid var(--hud-border);
-    border-radius: 8px;
-    padding: 10px 14px;
+    border-radius: 10px;
+    padding: 9px 12px;
     display: flex;
     align-items: center;
     gap: 10px;
-    backdrop-filter: blur(6px);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
   }
   #radio-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    background: #444;
+  }
+  #radio-dot.live {
     background: var(--neon-pink);
-    flex-shrink: 0;
     box-shadow: 0 0 8px var(--neon-pink);
-    animation: pulse 1.4s ease-in-out infinite;
+    animation: dotpulse 1.4s ease-in-out infinite;
   }
-  #radio-dot.off { background: #444; box-shadow: none; animation: none; }
-  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-  #radio-text {
-    overflow: hidden;
-    min-width: 0;
-  }
+  @keyframes dotpulse { 0%,100%{opacity:1} 50%{opacity:0.25} }
+  #radio-text { overflow: hidden; min-width: 0; flex: 1; }
   #radio-label {
-    font-size: 9px;
-    letter-spacing: 2px;
-    color: var(--neon-pink);
-    font-weight: 700;
-    text-transform: uppercase;
-    line-height: 1;
-    margin-bottom: 2px;
+    font-size: 8px; letter-spacing: 2px; color: var(--neon-pink);
+    font-weight: 700; text-transform: uppercase; margin-bottom: 2px;
   }
   #pumpo-song-marquee {
     font-family: 'Share Tech Mono', monospace;
-    font-size: clamp(11px, 2vw, 13px);
-    color: #fff;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    line-height: 1.3;
+    font-size: clamp(11px, 3vw, 13px);
+    color: #fff; white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis;
   }
   #pumpo-song-marquee.scrolling {
-    animation: marquee 12s linear infinite;
+    animation: mq 14s linear infinite;
   }
-  @keyframes marquee {
-    0%   { transform: translateX(0); }
-    30%  { transform: translateX(0); }
-    70%  { transform: translateX(var(--scroll-dist, -60px)); }
-    100% { transform: translateX(var(--scroll-dist, -60px)); }
+  @keyframes mq {
+    0%,25% { transform: translateX(0); }
+    75%,100% { transform: translateX(var(--sd,-50px)); }
   }
-
   #pumpo-radio-toggle {
     flex-shrink: 0;
     background: transparent;
     border: 1px solid var(--neon-pink);
     color: var(--neon-pink);
     font-family: 'Rajdhani', sans-serif;
-    font-size: 10px;
-    font-weight: 700;
-    letter-spacing: 1.5px;
-    padding: 5px 9px;
-    border-radius: 4px;
-    cursor: pointer;
-    pointer-events: all;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.5px;
+    padding: 6px 10px; border-radius: 5px; cursor: pointer;
     transition: background 0.15s, color 0.15s;
     white-space: nowrap;
+    -webkit-tap-highlight-color: transparent;
   }
-  #pumpo-radio-toggle:hover {
-    background: var(--neon-pink);
-    color: #000;
+  #pumpo-radio-toggle.on {
+    background: var(--neon-pink); color: #000;
   }
-
-  /* Near miss flash */
+  /* Feedback overlays */
   #near-miss-flash {
-    position: absolute;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: clamp(20px, 5vw, 36px);
-    font-weight: 700;
+    position: absolute; top: 42%; left: 50%;
+    transform: translate(-50%,-50%);
+    font-size: clamp(18px, 5vw, 32px); font-weight: 700;
     color: var(--neon-cyan);
     text-shadow: 0 0 20px var(--neon-cyan);
-    letter-spacing: 3px;
-    opacity: 0;
+    letter-spacing: 3px; opacity: 0;
     pointer-events: none;
-    transition: opacity 0.1s;
-  }
-
-  /* Crash flash */
-  #crash-overlay {
-    position: absolute;
-    inset: 0;
-    background: rgba(255,0,60,0.35);
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.15s;
-  }
-
-  /* Mode badge */
-  #mode-badge {
-    position: absolute;
-    top: 18px; left: 20px;
-    font-size: 10px;
-    letter-spacing: 2px;
-    font-weight: 700;
-    color: var(--neon-purple);
-    text-shadow: 0 0 10px var(--neon-purple);
-    text-transform: uppercase;
-  }
-
-  /* ── MENU SCREEN ── */
-  #menu-screen {
-    position: fixed;
-    inset: 0;
-    z-index: 100;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 0;
-    background: linear-gradient(180deg, #050008 0%, #110020 50%, #2a0010 100%);
-  }
-  #menu-screen::before {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; right: 0;
-    height: 40%;
-    background: linear-gradient(180deg, transparent, rgba(255,40,0,0.08));
-    pointer-events: none;
-  }
-
-  .menu-logo {
-    font-size: clamp(28px, 7vw, 56px);
-    font-weight: 700;
-    letter-spacing: 4px;
-    color: #fff;
-    text-shadow: 0 0 30px var(--neon-pink), 0 0 60px rgba(255,45,120,0.4);
-    margin-bottom: 4px;
-  }
-  .menu-sub {
-    font-size: clamp(11px, 2vw, 14px);
-    letter-spacing: 6px;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 12px var(--neon-cyan);
-    margin-bottom: 48px;
-    text-transform: uppercase;
-  }
-  .menu-buttons {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-    align-items: center;
-    width: 100%;
-    max-width: 280px;
-  }
-  .menu-btn {
-    width: 100%;
-    background: transparent;
-    border: 1px solid rgba(255,255,255,0.25);
-    color: #fff;
-    font-family: 'Rajdhani', sans-serif;
-    font-size: clamp(14px, 3vw, 17px);
-    font-weight: 700;
-    letter-spacing: 3px;
-    padding: 14px 24px;
-    border-radius: 6px;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.15s;
-    position: relative;
-    overflow: hidden;
-  }
-  .menu-btn:hover, .menu-btn:focus { outline: none; }
-  .menu-btn.cruise {
-    border-color: var(--neon-cyan);
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan);
-    box-shadow: 0 0 20px rgba(0,255,231,0.1);
-  }
-  .menu-btn.cruise:hover {
-    background: rgba(0,255,231,0.1);
-    box-shadow: 0 0 30px rgba(0,255,231,0.25);
-  }
-  .menu-btn.rush {
-    border-color: var(--neon-pink);
-    color: var(--neon-pink);
-    text-shadow: 0 0 10px var(--neon-pink);
-    box-shadow: 0 0 20px rgba(255,45,120,0.1);
-  }
-  .menu-btn.rush:hover {
-    background: rgba(255,45,120,0.1);
-    box-shadow: 0 0 30px rgba(255,45,120,0.25);
-  }
-  .menu-mode-desc {
-    font-size: clamp(10px, 1.8vw, 12px);
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    margin-top: -6px;
+    transition: opacity 0.12s;
+    white-space: nowrap;
     text-align: center;
   }
-
-  /* ── MOBILE TOUCH AREAS ── */
+  #crash-overlay {
+    position: absolute; inset: 0;
+    background: rgba(255,0,50,0.38);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.15s;
+  }
+  #billboard-msg {
+    position: absolute; top: 35%; left: 50%;
+    transform: translateX(-50%);
+    font-size: clamp(12px, 3vw, 16px); font-style: italic;
+    color: rgba(255,210,120,0.9);
+    text-shadow: 0 0 12px rgba(255,140,0,0.6);
+    letter-spacing: 1px; opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.9s;
+    white-space: nowrap; text-align: center;
+  }
+  /* Mobile touch zones */
   #touch-left, #touch-right {
-    position: fixed;
-    top: 0; bottom: 0;
-    width: 50%;
-    z-index: 5;
+    position: fixed; top: 0; bottom: 0; width: 50%; z-index: 5;
     pointer-events: all;
   }
   #touch-left  { left: 0; }
   #touch-right { right: 0; }
-
-  /* ── SCANLINE OVERLAY ── */
+  /* Scanlines */
   #scanlines {
-    position: fixed;
-    inset: 0;
-    z-index: 8;
-    pointer-events: none;
+    position: fixed; inset: 0; z-index: 8; pointer-events: none;
     background: repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 3px,
-      rgba(0,0,0,0.06) 3px,
-      rgba(0,0,0,0.06) 4px
+      0deg, transparent, transparent 3px,
+      rgba(0,0,0,0.05) 3px, rgba(0,0,0,0.05) 4px
     );
   }
-
-  /* ── BILLBOARD ── */
-  #billboard-msg {
-    position: absolute;
-    top: 38%;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: clamp(11px, 2vw, 15px);
-    color: rgba(255,200,100,0.85);
-    font-style: italic;
-    letter-spacing: 1px;
-    text-align: center;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 0.8s;
-    text-shadow: 0 0 10px rgba(255,150,0,0.5);
-    white-space: nowrap;
+  /* ── MENU ── */
+  #menu-screen {
+    position: fixed; inset: 0; z-index: 100;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    background: linear-gradient(180deg, #050008 0%, #110020 55%, #2a0010 100%);
+  }
+  .menu-logo {
+    font-size: clamp(32px, 10vw, 58px);
+    font-weight: 700; letter-spacing: 4px; color: #fff;
+    text-shadow: 0 0 30px var(--neon-pink), 0 0 60px rgba(255,45,120,0.35);
+    margin-bottom: 6px;
+  }
+  .menu-sub {
+    font-size: clamp(11px, 3vw, 14px); letter-spacing: 7px;
+    color: var(--neon-cyan); text-shadow: 0 0 12px var(--neon-cyan);
+    margin-bottom: 52px; text-transform: uppercase;
+  }
+  .menu-buttons {
+    display: flex; flex-direction: column; gap: 16px;
+    align-items: center; width: 100%; max-width: 300px; padding: 0 20px;
+  }
+  .menu-btn {
+    width: 100%; background: transparent;
+    font-family: 'Rajdhani', sans-serif;
+    font-size: clamp(15px, 4vw, 18px); font-weight: 700; letter-spacing: 3px;
+    padding: 16px 24px; border-radius: 7px; cursor: pointer;
+    text-transform: uppercase; transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .menu-btn.cruise {
+    border: 1px solid var(--neon-cyan); color: var(--neon-cyan);
+    text-shadow: 0 0 10px var(--neon-cyan);
+    box-shadow: 0 0 18px rgba(0,255,231,0.08);
+  }
+  .menu-btn.cruise:active { background: rgba(0,255,231,0.12); }
+  .menu-btn.rush {
+    border: 1px solid var(--neon-pink); color: var(--neon-pink);
+    text-shadow: 0 0 10px var(--neon-pink);
+    box-shadow: 0 0 18px rgba(255,45,120,0.08);
+  }
+  .menu-btn.rush:active { background: rgba(255,45,120,0.12); }
+  .menu-mode-desc {
+    font-size: clamp(10px, 2.5vw, 12px); color: rgba(255,255,255,0.4);
+    letter-spacing: 1px; margin-top: -8px; text-align: center;
   }
 </style>
 </head>
 <body>
 
-<!-- Game Canvas -->
 <canvas id="gameCanvas"></canvas>
-
-<!-- Scanlines VHS effect -->
 <div id="scanlines"></div>
 
-<!-- HUD -->
 <div id="hud">
   <div id="mode-badge">CRUISE MODE</div>
   <div id="hud-top">
     <div id="hud-distance">0.0 km</div>
     <div id="hud-combo" class="hidden">x1</div>
   </div>
-
-  <!-- Radio HUD -->
   <div id="radio-hud">
     <div id="radio-bar">
-      <div id="radio-dot" class="off"></div>
+      <div id="radio-dot"></div>
       <div id="radio-text">
         <div id="radio-label">♪ now playing</div>
         <div id="pumpo-song-marquee">Radio Pumpo — Tune In</div>
@@ -356,18 +243,14 @@
       <button id="pumpo-radio-toggle">TUNE IN</button>
     </div>
   </div>
-
-  <!-- Near miss & crash feedback -->
   <div id="near-miss-flash"></div>
   <div id="crash-overlay"></div>
   <div id="billboard-msg"></div>
 </div>
 
-<!-- Mobile controls -->
 <div id="touch-left"></div>
 <div id="touch-right"></div>
 
-<!-- Menu Screen -->
 <div id="menu-screen">
   <div class="menu-logo">RADIO PUMPO</div>
   <div class="menu-sub">Drive</div>
@@ -381,32 +264,33 @@
 
 <script>
 // ═══════════════════════════════════════════════════════════
-//  RADIO PUMPO DRIVE — Phase 1 POC
-//  Single-file. Drop into repo root alongside radio-player.js
+//  RADIO PUMPO DRIVE  —  Phase 1 POC  v1.1 (mobile fix)
 // ═══════════════════════════════════════════════════════════
+'use strict';
 
-(function() {
+(function GAME() {
 
-// ── CANVAS SETUP ──────────────────────────────────────────
+// ── CANVAS ────────────────────────────────────────────────
 const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
+const ctx    = canvas.getContext('2d');
+let W = 0, H = 0;
 
-let W, H;
 function resize() {
-  W = canvas.width  = window.innerWidth;
-  H = canvas.height = window.innerHeight;
+  W = canvas.width  = window.innerWidth  * (window.devicePixelRatio || 1);
+  H = canvas.height = window.innerHeight * (window.devicePixelRatio || 1);
+  canvas.style.width  = window.innerWidth  + 'px';
+  canvas.style.height = window.innerHeight + 'px';
 }
 resize();
 window.addEventListener('resize', resize);
 
-// ── GAME STATE ────────────────────────────────────────────
-const STATE = { MENU: 0, PLAYING: 1 };
-let gameState = STATE.MENU;
-let mode      = 'cruise'; // 'cruise' | 'rush'
-let running   = false;
+// ── STATE ─────────────────────────────────────────────────
+let gameMode   = 'cruise';   // 'cruise' | 'rush'
+let inGame     = false;
 
 // ── INPUT ─────────────────────────────────────────────────
 const keys = { left: false, right: false };
+
 document.addEventListener('keydown', e => {
   if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') keys.left  = true;
   if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
@@ -416,970 +300,873 @@ document.addEventListener('keyup', e => {
   if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
 });
 
-// Mobile touch
-document.getElementById('touch-left').addEventListener('touchstart',  () => { keys.left  = true;  }, { passive: true });
-document.getElementById('touch-left').addEventListener('touchend',    () => { keys.left  = false; }, { passive: true });
-document.getElementById('touch-right').addEventListener('touchstart', () => { keys.right = true;  }, { passive: true });
-document.getElementById('touch-right').addEventListener('touchend',   () => { keys.right = false; }, { passive: true });
+const tl = document.getElementById('touch-left');
+const tr = document.getElementById('touch-right');
+tl.addEventListener('touchstart', e => { e.preventDefault(); keys.left  = true;  }, { passive: false });
+tl.addEventListener('touchend',   e => { e.preventDefault(); keys.left  = false; }, { passive: false });
+tl.addEventListener('touchcancel',e => { keys.left  = false; });
+tr.addEventListener('touchstart', e => { e.preventDefault(); keys.right = true;  }, { passive: false });
+tr.addEventListener('touchend',   e => { e.preventDefault(); keys.right = false; }, { passive: false });
+tr.addEventListener('touchcancel',e => { keys.right = false; });
 
-// ── PSEUDO-3D ROAD ────────────────────────────────────────
-// OutRun-style segment projection
-const SEG_LENGTH   = 200;
-const NUM_SEGS     = 150;
-const CAM_DEPTH    = 0.84;
-const FIELD_OF_VIEW = 100;
-const CAM_HEIGHT   = 1500;
+// ── CAR ───────────────────────────────────────────────────
+const LANES = 3;
+const car = {
+  lane: 1,
+  laneX: 0.0,        // smooth visual -1..1
+  laneXTarget: 0.0,
+  cooldown: 0,
+  crashFlash: 0,
+};
 
-let segments = [];
-let segOffset = 0; // scroll position in segment units
+function laneToNorm(lane) { return (lane - 1); } // -1, 0, 1  (scaled by road width at draw time)
+
+// ── ROAD PSEUDO-3D ────────────────────────────────────────
+// Segments define gentle curves. We project NUM_SEGS ahead.
+const ROAD_SEGS_TOTAL = 600;
+const NUM_DRAW_SEGS   = 120;
+const SEG_DUR         = 200; // world units per segment
+
+let roadSegs = [];
+let scrollPos = 0; // fractional segment offset
 
 function initRoad() {
-  segments = [];
-  for (let i = 0; i < NUM_SEGS * 4; i++) {
-    // Gentle curves encoded as dx offset per segment
+  roadSegs = [];
+  for (let i = 0; i < ROAD_SEGS_TOTAL; i++) {
     let curve = 0;
-    if (i > 60  && i < 100) curve =  0.8;
-    if (i > 180 && i < 240) curve = -1.0;
-    if (i > 310 && i < 370) curve =  1.2;
-    segments.push({
-      curve,
-      color: i % 2 === 0 ? 0 : 1,  // alternating stripe
-      zmap: null,
-    });
+    // gentle sinusoidal curves
+    const phase = (i / ROAD_SEGS_TOTAL) * Math.PI * 12;
+    curve = Math.sin(phase * 0.7) * 0.6 + Math.sin(phase * 0.3) * 0.4;
+    roadSegs.push({ curve, alt: i % 2 });
   }
 }
 
-function projectPoint(segIdx, cameraPos, cameraHeight, cameraDepth) {
-  // World Z = segment index in segment-length units
-  const worldZ = (segIdx - cameraPos) * SEG_LENGTH;
-  if (worldZ <= 0) return null;
-
-  const scale   = cameraDepth / worldZ;
-  const screenX = Math.round(W / 2);
-  const screenY = Math.round(H / 2 - scale * cameraHeight);
-  const screenW = Math.round(scale * W * 1.2);
-
-  return { scale, screenX, screenY, screenW };
-}
-
-// ── LANES ─────────────────────────────────────────────────
-const LANE_COUNT = 3;
-const LANE_WIDTH = 0.28; // fraction of road width at horizon
-
-// Car
-const car = {
-  lane: 1,          // 0=left 1=center 2=right
-  laneTarget: 1,
-  laneX: 0,         // -1 to 1 (visual horizontal position)
-  laneXTarget: 0,
-  changeCooldown: 0,
-  crashFlash: 0,
-  screenX: 0,
-  screenY: 0,
-  w: 0,
-  h: 0,
-};
-
-function laneToX(lane) {
-  return (lane - 1) * 0.38;
+// Project one segment: returns screen y, road left/right x
+function project(segFrac) {
+  // segFrac: 0 = horizon, 1 = bottom of screen
+  // Use a simple perspective: scale = 1/(1 + (1-segFrac)*depth)
+  const depth = 0.96;
+  const scale = 1 / (1 - segFrac * depth + 0.001);
+  const horizonY = H * 0.44;
+  const y = horizonY + segFrac * (H - horizonY);
+  // Road width at this depth — wider near camera
+  const roadHalfW = scale * W * 0.28;
+  return { y, roadHalfW, scale };
 }
 
 // ── OBSTACLES ─────────────────────────────────────────────
-let obstacles = [];
-let obstacleSpawnTimer = 0;
+let obstacles     = [];
+let spawnTimer    = 0;
+let spawnInterval = 200; // frames
 
 function spawnObstacle() {
-  const lane = Math.floor(Math.random() * LANE_COUNT);
-  const rushSpeed = mode === 'rush' ? 1 : 0;
+  // Don't spawn in same lane as car (too cheap at low speed)
+  let lane;
+  do { lane = Math.floor(Math.random() * LANES); }
+  while (obstacles.length < 2 && lane === car.lane && gameMode === 'cruise');
+
   obstacles.push({
     lane,
-    segPos: 55 + Math.random() * 20, // how far ahead
+    depth: 0.02,       // 0=horizon .. 1=camera. grows each frame
     hit: false,
-    nearMissed: false,
-    color: randomObstacleColor(),
+    missed: false,
+    col: ['#c0392b','#2471a3','#d4ac0d','#7d3c98','#1a7a5e'][Math.floor(Math.random()*5)],
   });
 }
 
-function randomObstacleColor() {
-  const colors = ['#c0392b', '#2980b9', '#f39c12', '#8e44ad', '#16a085'];
-  return colors[Math.floor(Math.random() * colors.length)];
-}
+// ── METRICS ───────────────────────────────────────────────
+let distance  = 0;
+let combo     = 0;
+let speed     = 0;
+let targetSpd = 0;
+let rushTime  = 0;
 
-// ── ENVIRONMENT / SKY ─────────────────────────────────────
-let skyHue     = 0;   // animated slowly
-let speedLines = [];  // parallax stars/lines
-
-function initSpeedLines() {
-  speedLines = [];
-  for (let i = 0; i < 80; i++) {
-    speedLines.push({
-      x: Math.random(),
-      y: Math.random() * 0.5,
-      speed: 0.2 + Math.random() * 0.8,
-      size: Math.random() * 1.5 + 0.3,
-      alpha: Math.random() * 0.6 + 0.2,
+// ── PARTICLES (near miss burst) ───────────────────────────
+let particles = [];
+function burst(x, y) {
+  for (let i = 0; i < 14; i++) {
+    const ang = Math.random() * Math.PI * 2;
+    const spd = 2 + Math.random() * 5;
+    particles.push({
+      x, y,
+      vx: Math.cos(ang) * spd,
+      vy: Math.sin(ang) * spd,
+      life: 1, decay: 0.04 + Math.random() * 0.04,
+      r: 2 + Math.random() * 3,
+      col: Math.random() > 0.5 ? '#00ffe7' : '#ff2d78',
     });
   }
 }
-initSpeedLines();
-
-// ── GAME METRICS ──────────────────────────────────────────
-let distance  = 0;
-let combo     = 0;
-let maxCombo  = 0;
-let nearMisses = 0;
-let speed     = 0;     // pixels per frame road scroll
-let targetSpeed = 0;
-let sessionStart = 0;
-
-// Rush difficulty ramp
-let rushTime  = 0;
-let spawnInterval = 180; // frames between spawns (decreases over time)
-
-// ── BILLBOARD MESSAGES ────────────────────────────────────
-const billboards = [
-  "You made it this far.",
-  "No destination required.",
-  "Maybe today changes everything.",
-  "Are you becoming who you imagined?",
-  "Keep driving.",
-  "Radio Pumpo. Always on.",
-  "Still here. Still moving.",
-  "The road remembers.",
-];
-let lastBillboard = -1;
-let billboardTimer = 0;
-const BILLBOARD_INTERVAL = 1800; // ~30 seconds at 60fps
 
 // ── SHAKE ─────────────────────────────────────────────────
-let shakeX = 0, shakeY = 0, shakeMag = 0;
-function triggerShake(mag) {
-  shakeMag = mag;
+let shakeMag = 0;
+let shakeX = 0, shakeY = 0;
+function shake(m) { shakeMag = Math.max(shakeMag, m); }
+
+// ── BILLBOARD ─────────────────────────────────────────────
+const SIGNS = [
+  '"You made it this far."',
+  '"No destination required."',
+  '"Maybe today changes everything."',
+  '"Are you becoming who you imagined?"',
+  '"Keep driving."',
+  '"Radio Pumpo. Always on."',
+  '"Still here. Still moving."',
+  '"The road remembers."',
+];
+let signTimer = 1800;
+let lastSign  = -1;
+function showSign() {
+  let i; do { i = Math.floor(Math.random() * SIGNS.length); } while (i === lastSign);
+  lastSign = i;
+  const el = document.getElementById('billboard-msg');
+  el.textContent = SIGNS[i];
+  el.style.opacity = '1';
+  setTimeout(() => { el.style.opacity = '0'; }, 3500);
 }
 
+// ── SPEED STARS ───────────────────────────────────────────
+const stars = Array.from({ length: 70 }, () => ({
+  x: Math.random(), y: Math.random() * 0.44,
+  s: 0.4 + Math.random() * 1.2, a: 0.2 + Math.random() * 0.55,
+  spd: 0.3 + Math.random() * 0.7,
+}));
+
 // ── GAME LOOP ─────────────────────────────────────────────
-let lastTime = 0;
-let animId   = null;
+let lastTs  = 0;
+let animId  = null;
+let crashLock = 0;
 
-function startGame(selectedMode) {
-  mode = selectedMode;
-  document.getElementById('mode-badge').textContent =
-    mode === 'rush' ? 'RUSH MODE' : 'CRUISE MODE';
-  document.getElementById('mode-badge').style.color =
-    mode === 'rush' ? 'var(--neon-pink)' : 'var(--neon-cyan)';
-  document.getElementById('mode-badge').style.textShadow =
-    mode === 'rush'
-      ? '0 0 10px var(--neon-pink)'
-      : '0 0 10px var(--neon-cyan)';
+function startGame(mode) {
+  gameMode  = mode;
+  inGame    = true;
+  distance  = 0; combo = 0; rushTime = 0;
+  scrollPos = 0; obstacles = []; particles = [];
+  spawnTimer = 0; crashLock = 0; shakeMag = 0;
+  car.lane = 1; car.laneX = 0; car.laneXTarget = 0;
+  car.cooldown = 0; car.crashFlash = 0;
+  speed = targetSpd = mode === 'rush' ? 1.8 : 1.0;
+  spawnInterval = mode === 'rush' ? 140 : 310;
+  signTimer = 1600;
 
-  // Reset state
-  distance    = 0;
-  combo       = 0;
-  nearMisses  = 0;
-  rushTime    = 0;
-  segOffset   = 0;
-  obstacles   = [];
-  obstacleSpawnTimer = 0;
-  spawnInterval = mode === 'rush' ? 150 : 300;
-  speed       = mode === 'rush' ? 5 : 3;
-  targetSpeed = speed;
-  sessionStart = Date.now();
-  billboardTimer = BILLBOARD_INTERVAL;
-
-  car.lane = 1;
-  car.laneTarget = 1;
-  car.laneX = 0;
-  car.laneXTarget = 0;
-  car.changeCooldown = 0;
+  const badge = document.getElementById('mode-badge');
+  badge.textContent = mode === 'rush' ? 'RUSH MODE' : 'CRUISE MODE';
+  badge.style.color = mode === 'rush' ? 'var(--neon-pink)' : 'var(--neon-cyan)';
+  badge.style.textShadow = mode === 'rush'
+    ? '0 0 10px var(--neon-pink)' : '0 0 10px var(--neon-cyan)';
 
   initRoad();
-  gameState = STATE.PLAYING;
-  running   = true;
-
   if (animId) cancelAnimationFrame(animId);
-  lastTime = performance.now();
+  lastTs = performance.now();
   animId = requestAnimationFrame(loop);
 }
 
 function loop(ts) {
-  if (!running) return;
-  const dt = Math.min((ts - lastTime) / 16.667, 3);
-  lastTime = ts;
-
-  update(dt);
+  const raw = Math.min((ts - lastTs) / 16.667, 3);
+  lastTs = ts;
+  update(raw);
   render();
-
   animId = requestAnimationFrame(loop);
 }
 
 // ── UPDATE ────────────────────────────────────────────────
 function update(dt) {
-  // Input: lane change
-  if (car.changeCooldown > 0) {
-    car.changeCooldown -= dt;
-  } else {
-    if (keys.left  && car.lane > 0) {
-      car.lane--;
-      car.changeCooldown = 18;
-    }
-    if (keys.right && car.lane < LANE_COUNT - 1) {
-      car.lane++;
-      car.changeCooldown = 18;
-    }
-  }
-  car.laneXTarget = laneToX(car.lane);
-  car.laneX += (car.laneXTarget - car.laneX) * 0.18 * dt;
+  if (!inGame) return;
 
-  // Rush: ramp speed
-  if (mode === 'rush') {
+  // Lane input
+  if (car.cooldown > 0) {
+    car.cooldown -= dt;
+  } else {
+    if (keys.left  && car.lane > 0)          { car.lane--; car.cooldown = 16; }
+    if (keys.right && car.lane < LANES - 1)  { car.lane++; car.cooldown = 16; }
+  }
+  car.laneXTarget = laneToNorm(car.lane);
+  car.laneX += (car.laneXTarget - car.laneX) * 0.16 * dt;
+
+  // Speed
+  if (gameMode === 'rush') {
     rushTime += dt;
-    let rampSpeed;
-    if      (rushTime < 60*3.6)  rampSpeed = 5.5;
-    else if (rushTime < 60*3.6*3) rampSpeed = 8;
-    else if (rushTime < 60*3.6*5) rampSpeed = 11;
-    else                           rampSpeed = 15;
-    targetSpeed = rampSpeed;
-    // Decrease spawn interval
-    spawnInterval = Math.max(45, 150 - Math.floor(rushTime / 180));
+    const ramp = rushTime < 60*3.6 ? 1.8
+               : rushTime < 60*3.6*3 ? 2.6
+               : rushTime < 60*3.6*5 ? 3.6
+               : 5.0;
+    targetSpd = ramp;
+    spawnInterval = Math.max(40, 140 - rushTime / 80);
   } else {
-    targetSpeed = 3 + Math.sin(Date.now() / 8000) * 0.5;
+    targetSpd = 1.0 + Math.sin(Date.now() / 9000) * 0.2;
   }
-  speed += (targetSpeed - speed) * 0.03 * dt;
+  speed += (targetSpd - speed) * 0.035 * dt;
 
-  // Scroll road
-  segOffset += speed * dt * 0.018;
-  if (segOffset >= segments.length - NUM_SEGS) segOffset = 0;
+  // Scroll
+  scrollPos = (scrollPos + speed * dt * 0.015) % ROAD_SEGS_TOTAL;
 
   // Distance
-  distance += speed * dt * 0.00035;
+  distance += speed * dt * 0.00028;
 
   // Obstacle spawn
-  if (mode === 'rush' || (mode === 'cruise' && obstacles.length < 3)) {
-    obstacleSpawnTimer += dt;
-    if (obstacleSpawnTimer >= spawnInterval) {
-      obstacleSpawnTimer = 0;
-      spawnObstacle();
-    }
+  spawnTimer += dt;
+  if (spawnTimer >= spawnInterval) {
+    spawnTimer = 0;
+    if (gameMode === 'rush' || obstacles.length < 2) spawnObstacle();
   }
 
-  // Move obstacles toward player
+  // Move obstacles (depth grows as they approach)
   for (let i = obstacles.length - 1; i >= 0; i--) {
     const o = obstacles[i];
-    o.segPos -= speed * dt * 0.018;
+    // depth increases from 0 (horizon) toward 1 (camera)
+    // rate proportional to current depth (perspective acceleration)
+    o.depth += speed * dt * 0.0035 * (0.2 + o.depth * 2.8);
 
-    // Near miss detection: obstacle passed the car
-    if (!o.nearMissed && !o.hit && o.segPos < 0.5 && o.segPos > -2) {
-      const sameLane = o.lane === car.lane;
-      if (!sameLane) {
-        // Near miss!
-        o.nearMissed = true;
+    // Near miss window: depth 0.78..0.92, different lane
+    if (!o.missed && !o.hit && o.depth > 0.78 && o.depth < 0.92) {
+      if (o.lane !== car.lane) {
+        o.missed = true;
         if (Math.abs(o.lane - car.lane) === 1) {
-          // Adjacent lane = near miss
-          triggerNearMiss();
+          triggerNearMiss(o);
         }
       }
     }
 
-    // Collision detection
-    if (!o.hit && o.segPos < 0.8 && o.segPos > -0.5) {
-      if (o.lane === car.lane) {
-        o.hit = true;
-        triggerCrash();
-      }
+    // Collision: depth 0.88..0.97, same lane
+    if (!o.hit && o.depth > 0.88 && o.depth < 0.97 && o.lane === car.lane) {
+      o.hit = true;
+      triggerCrash();
     }
 
-    // Remove far-behind obstacles
-    if (o.segPos < -8) {
-      obstacles.splice(i, 1);
-    }
+    if (o.depth > 1.1) obstacles.splice(i, 1);
+  }
+
+  // Particles
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const p = particles[i];
+    p.x += p.vx; p.y += p.vy; p.vy += 0.15;
+    p.life -= p.decay;
+    if (p.life <= 0) particles.splice(i, 1);
   }
 
   // Shake decay
   if (shakeMag > 0) {
     shakeX = (Math.random() - 0.5) * shakeMag * 2;
     shakeY = (Math.random() - 0.5) * shakeMag * 2;
-    shakeMag *= 0.82;
-    if (shakeMag < 0.1) shakeMag = 0;
-  } else {
-    shakeX = shakeY = 0;
-  }
+    shakeMag *= 0.80;
+    if (shakeMag < 0.3) shakeMag = 0;
+  } else { shakeX = shakeY = 0; }
 
-  // Car crash flash decay
   if (car.crashFlash > 0) car.crashFlash -= dt;
+  if (crashLock > 0) crashLock -= dt;
 
   // Billboard
-  billboardTimer -= dt;
-  if (billboardTimer <= 0) {
-    showBillboard();
-    billboardTimer = BILLBOARD_INTERVAL + Math.random() * 600;
-  }
+  signTimer -= dt;
+  if (signTimer <= 0) { showSign(); signTimer = 1600 + Math.random() * 700; }
 
-  // Speed lines (parallax stars)
-  for (const s of speedLines) {
-    s.y += s.speed * speed * dt * 0.0004;
-    if (s.y > 0.52) { s.y = 0; s.x = Math.random(); }
+  // Stars parallax
+  for (const s of stars) {
+    s.y += s.spd * speed * dt * 0.0003;
+    if (s.y > 0.44) { s.y = 0; s.x = Math.random(); }
   }
 
   // HUD
   document.getElementById('hud-distance').textContent = distance.toFixed(1) + ' km';
-  const comboEl = document.getElementById('hud-combo');
-  if (combo >= 2) {
-    comboEl.classList.remove('hidden');
-    comboEl.textContent = 'x' + combo;
-  } else {
-    comboEl.classList.add('hidden');
-  }
+  const cel = document.getElementById('hud-combo');
+  if (combo >= 2) { cel.classList.remove('hidden'); cel.textContent = 'x' + combo; }
+  else cel.classList.add('hidden');
 }
 
-// ── NEAR MISS ─────────────────────────────────────────────
-let nearMissTimeout = null;
-function triggerNearMiss() {
-  nearMisses++;
+// ── EVENTS ────────────────────────────────────────────────
+let nmTimeout = null;
+function triggerNearMiss(o) {
   combo++;
-  if (combo > maxCombo) maxCombo = combo;
+  const pts = combo >= 3 ? 100 : 50;
+  const fl  = document.getElementById('near-miss-flash');
+  fl.textContent = combo >= 3
+    ? `NEAR MISS  ×${combo}  +${pts * combo}`
+    : `NEAR MISS  +${pts}`;
+  fl.style.opacity = '1';
+  if (nmTimeout) clearTimeout(nmTimeout);
+  nmTimeout = setTimeout(() => { fl.style.opacity = '0'; }, 900);
+  shake(3);
 
-  const pts = combo >= 5 ? 100 : 50;
-  const flash = document.getElementById('near-miss-flash');
-  flash.textContent = combo >= 3 ? `NEAR MISS  x${combo}  +${pts * combo}` : `NEAR MISS  +${pts}`;
-  flash.style.opacity = '1';
-  if (nearMissTimeout) clearTimeout(nearMissTimeout);
-  nearMissTimeout = setTimeout(() => { flash.style.opacity = '0'; }, 900);
-
-  triggerShake(2);
+  // particle burst at car position (screen center bottom-ish)
+  burst(W / 2 + car.laneX * W * 0.18, H * 0.78);
 }
 
-// ── CRASH ─────────────────────────────────────────────────
-let crashRecovery = 0;
 function triggerCrash() {
-  if (crashRecovery > 0) return;
-  crashRecovery = 60;
+  if (crashLock > 0) return;
+  crashLock = 55;
   combo = 0;
-  triggerShake(mode === 'rush' ? 10 : 5);
-  car.crashFlash = 30;
-
-  const overlay = document.getElementById('crash-overlay');
-  overlay.style.opacity = '1';
-  setTimeout(() => { overlay.style.opacity = '0'; }, 200);
-
-  if (mode === 'rush') {
-    speed = Math.max(2, speed * 0.6);
-    targetSpeed = Math.max(2, targetSpeed * 0.8);
+  shake(gameMode === 'rush' ? 12 : 6);
+  car.crashFlash = 28;
+  const ov = document.getElementById('crash-overlay');
+  ov.style.opacity = '1';
+  setTimeout(() => { ov.style.opacity = '0'; }, 220);
+  if (gameMode === 'rush') {
+    speed *= 0.55;
+    targetSpd *= 0.75;
+  } else {
+    speed *= 0.75;
   }
-  setTimeout(() => { crashRecovery = 0; }, 1000);
-}
-
-// ── BILLBOARD ─────────────────────────────────────────────
-function showBillboard() {
-  let idx;
-  do { idx = Math.floor(Math.random() * billboards.length); }
-  while (idx === lastBillboard);
-  lastBillboard = idx;
-
-  const el = document.getElementById('billboard-msg');
-  el.textContent = '"' + billboards[idx] + '"';
-  el.style.opacity = '1';
-  setTimeout(() => { el.style.opacity = '0'; }, 3500);
 }
 
 // ── RENDER ────────────────────────────────────────────────
 function render() {
   ctx.save();
-  if (shakeMag > 0.1) ctx.translate(shakeX, shakeY);
+  if (shakeMag > 0.3) ctx.translate(shakeX, shakeY);
+  ctx.clearRect(0, 0, W, H);
 
-  const horizonY = H * 0.42;
-
-  // 1. SKY
+  const horizonY = H * 0.44;
   drawSky(horizonY);
-
-  // 2. SPEED LINES (stars parallax behind horizon)
-  drawSpeedLines(horizonY);
-
-  // 3. PSEUDO-3D ROAD
+  drawStars(horizonY);
   drawRoad(horizonY);
-
-  // 4. CAR
-  drawCar();
+  drawObstacles(horizonY);
+  drawCar(horizonY);
+  drawParticles();
 
   ctx.restore();
 }
 
-function drawSky(horizonY) {
-  // Deep space top → warm sunset horizon
-  const grad = ctx.createLinearGradient(0, 0, 0, horizonY);
-  if (mode === 'rush') {
-    grad.addColorStop(0,   '#050008');
-    grad.addColorStop(0.6, '#1a0020');
-    grad.addColorStop(1,   '#ff2200');
+// ── SKY ───────────────────────────────────────────────────
+function drawSky(hy) {
+  const g = ctx.createLinearGradient(0, 0, 0, hy);
+  if (gameMode === 'rush') {
+    g.addColorStop(0,   '#04000a');
+    g.addColorStop(0.55,'#180022');
+    g.addColorStop(1,   '#dd1a00');
   } else {
-    grad.addColorStop(0,   '#070010');
-    grad.addColorStop(0.5, '#120025');
-    grad.addColorStop(1,   '#cc3300');
+    g.addColorStop(0,   '#06000e');
+    g.addColorStop(0.5, '#100022');
+    g.addColorStop(1,   '#bb2a00');
   }
-  ctx.fillStyle = grad;
-  ctx.fillRect(0, 0, W, horizonY);
+  ctx.fillStyle = g;
+  ctx.fillRect(0, 0, W, hy);
 
   // Horizon glow
-  const glowGrad = ctx.createLinearGradient(0, horizonY - 40, 0, horizonY + 20);
-  glowGrad.addColorStop(0, 'rgba(255,80,0,0.0)');
-  glowGrad.addColorStop(0.5, 'rgba(255,80,0,0.22)');
-  glowGrad.addColorStop(1, 'rgba(255,80,0,0.0)');
-  ctx.fillStyle = glowGrad;
-  ctx.fillRect(0, horizonY - 40, W, 60);
+  const hg = ctx.createLinearGradient(0, hy - 50, 0, hy + 30);
+  hg.addColorStop(0,   'rgba(255,70,0,0)');
+  hg.addColorStop(0.5, 'rgba(255,70,0,0.22)');
+  hg.addColorStop(1,   'rgba(255,70,0,0)');
+  ctx.fillStyle = hg;
+  ctx.fillRect(0, hy - 50, W, 80);
 
-  // Moon / sun disc
-  ctx.save();
-  ctx.beginPath();
-  ctx.arc(W * 0.5, horizonY * 0.52, W * 0.055, 0, Math.PI * 2);
-  const discGrad = ctx.createRadialGradient(
-    W * 0.5, horizonY * 0.52, 0,
-    W * 0.5, horizonY * 0.52, W * 0.055
-  );
-  discGrad.addColorStop(0,   'rgba(255,220,160,1)');
-  discGrad.addColorStop(0.6, 'rgba(255,160,60,0.9)');
-  discGrad.addColorStop(1,   'rgba(255,60,0,0)');
-  ctx.fillStyle = discGrad;
-  ctx.fill();
-  ctx.restore();
+  // Moon
+  const mx = W * 0.5, my = hy * 0.48, mr = W * 0.048;
+  const mg = ctx.createRadialGradient(mx, my, 0, mx, my, mr);
+  mg.addColorStop(0,   'rgba(255,215,150,1)');
+  mg.addColorStop(0.6, 'rgba(255,140,40,0.85)');
+  mg.addColorStop(1,   'rgba(255,50,0,0)');
+  ctx.fillStyle = mg;
+  ctx.beginPath(); ctx.arc(mx, my, mr, 0, Math.PI * 2); ctx.fill();
 
-  // Distant city skyline silhouette
-  drawSkyline(horizonY);
+  // Skyline
+  drawSkyline(hy);
 }
 
-function drawSkyline(horizonY) {
-  ctx.save();
-  ctx.fillStyle = 'rgba(0,0,0,0.55)';
-
-  // Simple procedural skyline
-  const buildings = [
-    {x:0.02, w:0.05, h:0.06},
-    {x:0.08, w:0.03, h:0.10},
-    {x:0.12, w:0.06, h:0.08},
-    {x:0.19, w:0.04, h:0.13},
-    {x:0.24, w:0.03, h:0.07},
-    {x:0.28, w:0.07, h:0.05},
-    {x:0.36, w:0.04, h:0.11},
-    {x:0.41, w:0.02, h:0.14},
-    {x:0.44, w:0.05, h:0.09},
-    {x:0.50, w:0.03, h:0.12},
-    {x:0.54, w:0.06, h:0.06},
-    {x:0.61, w:0.04, h:0.10},
-    {x:0.66, w:0.02, h:0.15},
-    {x:0.69, w:0.05, h:0.08},
-    {x:0.75, w:0.04, h:0.11},
-    {x:0.80, w:0.06, h:0.07},
-    {x:0.87, w:0.03, h:0.09},
-    {x:0.91, w:0.05, h:0.06},
-    {x:0.97, w:0.03, h:0.10},
+function drawSkyline(hy) {
+  const blds = [
+    [0.01,0.05,0.06],[0.07,0.03,0.10],[0.11,0.06,0.07],[0.18,0.04,0.13],
+    [0.23,0.03,0.07],[0.27,0.06,0.05],[0.34,0.04,0.11],[0.40,0.02,0.15],
+    [0.43,0.05,0.09],[0.49,0.03,0.12],[0.53,0.06,0.06],[0.60,0.04,0.10],
+    [0.65,0.02,0.14],[0.68,0.05,0.08],[0.74,0.04,0.11],[0.79,0.06,0.07],
+    [0.86,0.03,0.09],[0.90,0.05,0.06],[0.96,0.04,0.10],
   ];
-
-  for (const b of buildings) {
-    const bx = b.x * W;
-    const bw = b.w * W;
-    const bh = b.h * horizonY;
-    ctx.fillRect(bx, horizonY - bh, bw, bh);
-
-    // Neon windows
-    ctx.fillStyle = 'rgba(0,220,255,0.4)';
-    for (let wy = horizonY - bh + 4; wy < horizonY - 4; wy += 7) {
-      for (let wx = bx + 3; wx < bx + bw - 3; wx += 6) {
-        if (Math.random() > 0.45) {
-          ctx.fillRect(wx, wy, 2, 3);
-        }
+  ctx.fillStyle = 'rgba(0,0,0,0.6)';
+  for (const [bx,bw,bh] of blds) {
+    const x = bx*W, w = bw*W, h = bh*hy;
+    ctx.fillRect(x, hy-h, w, h);
+    // windows
+    ctx.fillStyle = 'rgba(0,180,255,0.35)';
+    for (let wy = hy-h+5; wy < hy-5; wy += 8) {
+      for (let wx = x+3; wx < x+w-3; wx += 7) {
+        if (Math.random() > 0.5) ctx.fillRect(wx, wy, 2, 3);
       }
     }
-    ctx.fillStyle = 'rgba(0,0,0,0.55)';
+    ctx.fillStyle = 'rgba(0,0,0,0.6)';
   }
-
-  ctx.restore();
 }
 
-function drawSpeedLines(horizonY) {
+function drawStars(hy) {
   ctx.save();
-  for (const s of speedLines) {
-    ctx.globalAlpha = s.alpha * (speed / targetSpeed);
+  for (const s of stars) {
+    ctx.globalAlpha = s.a * Math.min(1, speed / 1.2);
     ctx.fillStyle = '#fff';
-    ctx.fillRect(s.x * W, s.y * horizonY, s.size, s.size * 3);
+    ctx.fillRect(s.x * W, s.y * hy, s.s, s.s * 2.5);
   }
-  ctx.globalAlpha = 1;
-  ctx.restore();
+  ctx.globalAlpha = 1; ctx.restore();
 }
 
-function drawRoad(horizonY) {
-  // OutRun-style segment projection
-  // Project from horizon down to bottom of screen
+// ── ROAD (pseudo-3D) ──────────────────────────────────────
+function drawRoad(hy) {
+  // Build projected segments from far (idx=0) to near (idx=NUM_DRAW_SEGS-1)
+  const segs = [];
+  let curveX = 0;
 
-  const cameraPos = segOffset;
-  const totalSegs = segments.length;
+  for (let n = 0; n < NUM_DRAW_SEGS; n++) {
+    const frac = n / NUM_DRAW_SEGS;       // 0=horizon, 1=bottom
+    const { y, roadHalfW } = project(frac);
 
-  // We project NUM_SEGS segments from cameraPos
-  let prevLeft  = W * 0.5;
-  let prevRight = W * 0.5;
-  let prevY     = horizonY;
-  let x = 0; // horizontal curve accumulator
+    // Accumulate curve offset (perspective-correct accumulation)
+    const segIdx = Math.floor(scrollPos + n * 0.5) % ROAD_SEGS_TOTAL;
+    const seg    = roadSegs[segIdx < 0 ? segIdx + ROAD_SEGS_TOTAL : segIdx];
+    curveX += seg.curve * (1 - frac) * speed * 0.4;
 
-  // Draw from far to near (painter's algorithm)
-  const drawSegs = [];
+    const cx    = W / 2 + curveX;
+    const left  = cx - roadHalfW;
+    const right = cx + roadHalfW;
 
-  for (let n = 0; n < NUM_SEGS; n++) {
-    const segIdx = Math.floor(cameraPos + n) % totalSegs;
-    const seg = segments[segIdx < 0 ? segIdx + totalSegs : segIdx];
-    const frac = n / NUM_SEGS;
-
-    // Perspective scale: closer = bigger
-    const depth = CAM_DEPTH / (frac + 0.01);
-    const scale = depth / CAM_HEIGHT;
-    const screenW = scale * W * 1800;
-
-    // Projected Y (road segments fill bottom portion)
-    const t = 1 - frac;
-    const y = horizonY + t * (H - horizonY);
-
-    // Horizontal shift from curve
-    x += seg.curve * scale * 0.08 * speed;
-
-    const cx = W / 2 + x;
-    const left  = cx - screenW / 2;
-    const right = cx + screenW / 2;
-
-    drawSegs.push({ seg, y, prevY, left, prevLeft, right, prevRight, frac, n });
-    prevY = y; prevLeft = left; prevRight = right;
+    segs.push({ seg, y, left, right, frac, n });
   }
 
-  // Render from far (top) to near (bottom)
-  for (let i = drawSegs.length - 1; i >= 0; i--) {
-    const d = drawSegs[i];
-    drawRoadSegment(d);
-  }
+  // Draw from near to far: reversed so far segments draw first (painter's)
+  for (let i = segs.length - 1; i >= 0; i--) {
+    const cur  = segs[i];
+    const prev = segs[i - 1] || { y: hy, left: W/2, right: W/2 };
 
-  // Render obstacle sprites over road
-  for (const o of obstacles) {
-    drawObstacle(o, drawSegs, horizonY);
-  }
-}
+    const alt = cur.seg.alt;
 
-function drawRoadSegment({ seg, y, prevY, left, prevLeft, right, prevRight, frac, n }) {
-  const isAlt = seg.color === 1;
-
-  // Grass bands (edge of road)
-  const grassL = left  - (right - left) * 0.3;
-  const grassR = right + (right - left) * 0.3;
-  const prevGrassL = prevLeft  - (prevRight - prevLeft) * 0.3;
-  const prevGrassR = prevRight + (prevRight - prevLeft) * 0.3;
-
-  // Grass
-  ctx.fillStyle = isAlt ? '#0a1a08' : '#081508';
-  ctx.beginPath();
-  ctx.moveTo(0, prevY); ctx.lineTo(prevGrassL, prevY);
-  ctx.lineTo(grassL, y); ctx.lineTo(0, y);
-  ctx.closePath(); ctx.fill();
-
-  ctx.beginPath();
-  ctx.moveTo(W, prevY); ctx.lineTo(prevGrassR, prevY);
-  ctx.lineTo(grassR, y); ctx.lineTo(W, y);
-  ctx.closePath(); ctx.fill();
-
-  // Road surface
-  ctx.fillStyle = isAlt ? '#1a1a2e' : '#0d0d20';
-  ctx.beginPath();
-  ctx.moveTo(prevLeft, prevY); ctx.lineTo(prevRight, prevY);
-  ctx.lineTo(right, y); ctx.lineTo(left, y);
-  ctx.closePath(); ctx.fill();
-
-  // Road edge lines (neon glow)
-  ctx.strokeStyle = 'rgba(255,45,120,0.7)';
-  ctx.lineWidth = Math.max(1, (y - prevY) * 0.15);
-  ctx.beginPath();
-  ctx.moveTo(prevLeft, prevY); ctx.lineTo(left, y);
-  ctx.stroke();
-  ctx.beginPath();
-  ctx.moveTo(prevRight, prevY); ctx.lineTo(right, y);
-  ctx.stroke();
-
-  // Center dashes (alternating)
-  if (isAlt) {
-    const cx1 = (prevLeft + prevRight) / 2;
-    const cx2 = (left + right) / 2;
-    ctx.strokeStyle = 'rgba(255,200,0,0.85)';
-    ctx.lineWidth = Math.max(0.5, (y - prevY) * 0.08);
+    // Grass
+    ctx.fillStyle = alt ? '#0a1c07' : '#071507';
+    // Left grass
     ctx.beginPath();
-    ctx.moveTo(cx1, prevY); ctx.lineTo(cx2, y);
-    ctx.stroke();
-  }
+    ctx.moveTo(0, prev.y); ctx.lineTo(prev.left * 0.62, prev.y);
+    ctx.lineTo(cur.left * 0.62, cur.y); ctx.lineTo(0, cur.y);
+    ctx.closePath(); ctx.fill();
+    // Right grass
+    ctx.beginPath();
+    ctx.moveTo(W, prev.y); ctx.lineTo(prev.right + (W - prev.right) * 0.38, prev.y);
+    ctx.lineTo(cur.right + (W - cur.right) * 0.38, cur.y); ctx.lineTo(W, cur.y);
+    ctx.closePath(); ctx.fill();
 
-  // Lane dividers (subtle)
-  if (isAlt) {
-    const roadW = right - left;
-    for (let l = 1; l < LANE_COUNT; l++) {
-      const lx1 = prevLeft + (prevRight - prevLeft) * (l / LANE_COUNT);
-      const lx2 = left + (right - left) * (l / LANE_COUNT);
-      ctx.strokeStyle = 'rgba(255,255,255,0.08)';
-      ctx.lineWidth = Math.max(0.3, (y - prevY) * 0.05);
-      ctx.beginPath();
-      ctx.moveTo(lx1, prevY); ctx.lineTo(lx2, y);
-      ctx.stroke();
+    // Road surface
+    ctx.fillStyle = alt ? '#18182c' : '#0d0d1e';
+    ctx.beginPath();
+    ctx.moveTo(prev.left, prev.y); ctx.lineTo(prev.right, prev.y);
+    ctx.lineTo(cur.right,  cur.y); ctx.lineTo(cur.left,   cur.y);
+    ctx.closePath(); ctx.fill();
+
+    // Edge neon lines
+    const ew = Math.max(1, (cur.y - prev.y) * 0.12);
+    ctx.strokeStyle = 'rgba(255,45,120,0.75)';
+    ctx.lineWidth = ew;
+    ctx.beginPath(); ctx.moveTo(prev.left, prev.y); ctx.lineTo(cur.left, cur.y); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(prev.right,prev.y); ctx.lineTo(cur.right,cur.y); ctx.stroke();
+
+    // Center dashes
+    if (alt) {
+      const pc = (prev.left + prev.right) / 2;
+      const cc = (cur.left  + cur.right)  / 2;
+      ctx.strokeStyle = 'rgba(255,200,0,0.8)';
+      ctx.lineWidth   = Math.max(0.5, ew * 0.5);
+      ctx.beginPath(); ctx.moveTo(pc, prev.y); ctx.lineTo(cc, cur.y); ctx.stroke();
+    }
+
+    // Lane dividers
+    if (alt) {
+      for (let l = 1; l < LANES; l++) {
+        const t  = l / LANES;
+        const px = prev.left + (prev.right - prev.left) * t;
+        const cx2 = cur.left  + (cur.right  - cur.left)  * t;
+        ctx.strokeStyle = 'rgba(255,255,255,0.07)';
+        ctx.lineWidth = Math.max(0.3, ew * 0.3);
+        ctx.beginPath(); ctx.moveTo(px, prev.y); ctx.lineTo(cx2, cur.y); ctx.stroke();
+      }
     }
   }
 }
 
-function drawObstacle(o, drawSegs, horizonY) {
-  // Find where this obstacle sits in projected segments
-  const targetN = Math.round(o.segPos);
-  if (targetN < 1 || targetN >= drawSegs.length - 1) return;
+// ── OBSTACLES ─────────────────────────────────────────────
+function drawObstacles(hy) {
+  for (const o of obstacles) {
+    if (o.depth < 0.04 || o.depth > 1.05) continue;
 
-  const d = drawSegs[targetN];
-  if (!d) return;
+    const frac = o.depth;
+    const { y, roadHalfW } = project(frac);
 
-  // Lane X position
-  const laneRatio = (o.lane + 0.5) / LANE_COUNT;
-  const obsX = d.left + (d.right - d.left) * laneRatio;
-  const obsW = (d.right - d.left) * 0.28;
-  const obsH = obsW * 0.55;
+    // Lane X: map lane 0..LANES-1 to road left..right
+    const laneT = (o.lane + 0.5) / LANES;
+    const obsX  = W / 2 - roadHalfW + laneT * roadHalfW * 2;
 
-  // Draw a simple car shape
-  ctx.save();
-  ctx.globalAlpha = o.hit ? 0.2 : 1;
+    // Size proportional to how close (scale)
+    const scale = 0.5 + frac * 3.5;
+    const ow = Math.min(roadHalfW * 0.6, 60 * scale * (W / 800));
+    const oh = ow * 0.52;
 
-  // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.4)';
-  ctx.ellipse(obsX, d.y + obsH * 0.1, obsW * 0.45, obsH * 0.15, 0, 0, Math.PI * 2);
-  ctx.fill();
+    ctx.save();
+    ctx.globalAlpha = o.hit ? 0.15 : 1;
 
-  // Car body
-  ctx.fillStyle = o.color;
-  ctx.beginPath();
-  ctx.roundRect(obsX - obsW / 2, d.y - obsH, obsW, obsH, 3);
-  ctx.fill();
+    // Shadow under car
+    ctx.fillStyle = 'rgba(0,0,0,0.35)';
+    ctx.beginPath();
+    ctx.ellipse(obsX, y + oh * 0.12, ow * 0.44, oh * 0.18, 0, 0, Math.PI*2);
+    ctx.fill();
 
-  // Windshield
-  ctx.fillStyle = 'rgba(150,230,255,0.5)';
-  ctx.beginPath();
-  ctx.roundRect(obsX - obsW * 0.28, d.y - obsH * 0.85, obsW * 0.56, obsH * 0.35, 2);
-  ctx.fill();
+    // Body
+    ctx.fillStyle = o.col;
+    ctx.beginPath();
+    ctx.roundRect(obsX - ow/2, y - oh, ow, oh, Math.max(2, oh * 0.08));
+    ctx.fill();
 
-  // Tail lights
-  ctx.fillStyle = '#ff2200';
-  ctx.fillRect(obsX - obsW / 2 + 2, d.y - obsH * 0.18, obsW * 0.18, obsH * 0.1);
-  ctx.fillRect(obsX + obsW / 2 - obsW * 0.2, d.y - obsH * 0.18, obsW * 0.18, obsH * 0.1);
+    // Roof / cabin
+    ctx.fillStyle = shadeColor(o.col, -30);
+    ctx.beginPath();
+    ctx.roundRect(obsX - ow*0.3, y - oh*1.38, ow*0.6, oh*0.42, Math.max(1, oh*0.06));
+    ctx.fill();
 
-  ctx.restore();
+    // Windshield
+    ctx.fillStyle = 'rgba(140,220,255,0.45)';
+    ctx.beginPath();
+    ctx.roundRect(obsX - ow*0.26, y - oh*1.30, ow*0.52, oh*0.30, 2);
+    ctx.fill();
+
+    // Tail lights
+    ctx.fillStyle = '#ff1500';
+    ctx.fillRect(obsX - ow/2 + 2,        y - oh*0.20, ow*0.17, oh*0.10);
+    ctx.fillRect(obsX + ow/2 - ow*0.19,  y - oh*0.20, ow*0.17, oh*0.10);
+
+    ctx.restore();
+  }
 }
 
-function drawCar() {
-  // Car positioned at bottom center, offset by lane
-  const horizonY = H * 0.42;
-  const roadBottom = H;
-  const roadCenterY = H * 0.8;
+function shadeColor(hex, pct) {
+  const n = parseInt(hex.slice(1), 16);
+  const r = Math.max(0, Math.min(255, (n >> 16) + pct));
+  const g = Math.max(0, Math.min(255, ((n >> 8) & 0xff) + pct));
+  const b = Math.max(0, Math.min(255, (n & 0xff) + pct));
+  return `rgb(${r},${g},${b})`;
+}
 
-  // Road width at car position (near bottom)
-  const carFrac = 0.0; // very near
-  const depth = CAM_DEPTH / (carFrac + 0.01);
-  const scale = depth / CAM_HEIGHT;
-  const roadHalfW = scale * W * 900;
+// ── CAR ───────────────────────────────────────────────────
+function drawCar(hy) {
+  // Car sits near bottom of screen, slightly above road surface
+  const baseY = H * 0.80;
+  const cw    = Math.min(W * 0.13, 100);   // car width
+  const ch    = cw * 0.48;                 // car height
 
-  const baseX = W / 2 + car.laneX * roadHalfW * 0.5;
-  const baseY = H * 0.78;
+  // Horizontal offset from lane.
+  // project(frac) blows up near 1.0 so use a safe frac (0.82) to get a
+  // representative road half-width, then place the car within that band.
+  const { roadHalfW: rhw } = project(0.82);
+  const laneSlotW = (rhw * 2) / LANES;
+  const baseX = W / 2 + car.laneX * laneSlotW * 0.5;
 
-  const cw = W * 0.085;
-  const ch = cw * 0.52;
-
-  car.screenX = baseX;
-  car.screenY = baseY;
-  car.w = cw;
-  car.h = ch;
+  // Flash on crash (blink)
+  if (car.crashFlash > 0 && Math.floor(car.crashFlash / 4) % 2 === 1) return;
 
   ctx.save();
 
-  // Headlight glow on road
-  const glowGrad = ctx.createRadialGradient(baseX, baseY, 0, baseX, baseY, cw * 2.5);
-  glowGrad.addColorStop(0,   'rgba(180,220,255,0.18)');
-  glowGrad.addColorStop(0.5, 'rgba(100,160,255,0.06)');
-  glowGrad.addColorStop(1,   'rgba(0,0,0,0)');
-  ctx.fillStyle = glowGrad;
+  // Headlight cone
+  const hg = ctx.createRadialGradient(baseX, baseY - ch, 0, baseX, baseY, cw * 3);
+  hg.addColorStop(0,   'rgba(160,210,255,0.16)');
+  hg.addColorStop(0.5, 'rgba(80,140,255,0.05)');
+  hg.addColorStop(1,   'rgba(0,0,0,0)');
+  ctx.fillStyle = hg;
   ctx.beginPath();
-  ctx.ellipse(baseX, baseY + ch * 0.3, cw * 2.5, ch * 3, 0, 0, Math.PI * 2);
+  ctx.ellipse(baseX, baseY, cw * 2, ch * 4, 0, 0, Math.PI*2);
   ctx.fill();
 
   // Shadow
-  ctx.fillStyle = 'rgba(0,0,0,0.5)';
+  ctx.fillStyle = 'rgba(0,0,0,0.45)';
   ctx.beginPath();
-  ctx.ellipse(baseX, baseY + ch * 0.35, cw * 0.52, ch * 0.22, 0, 0, Math.PI * 2);
+  ctx.ellipse(baseX, baseY + ch * 0.25, cw * 0.5, ch * 0.18, 0, 0, Math.PI*2);
   ctx.fill();
 
-  // Flash on crash
-  if (car.crashFlash > 0 && Math.floor(car.crashFlash / 4) % 2 === 0) {
-    ctx.restore();
-    return;
-  }
-
-  // Car body
-  const bodyColor = mode === 'rush' ? '#e91e7a' : '#00c8c0';
-  ctx.fillStyle = bodyColor;
+  // Body color
+  const bc = gameMode === 'rush' ? '#e81c76' : '#00b8b0';
+  ctx.fillStyle = bc;
   ctx.beginPath();
-  ctx.roundRect(baseX - cw / 2, baseY - ch, cw, ch, 4);
+  ctx.roundRect(baseX - cw/2, baseY - ch, cw, ch, ch * 0.08);
   ctx.fill();
 
   // Roof
-  ctx.fillStyle = mode === 'rush' ? '#c01060' : '#009090';
+  ctx.fillStyle = gameMode === 'rush' ? '#b0105a' : '#008888';
   ctx.beginPath();
-  ctx.roundRect(baseX - cw * 0.32, baseY - ch * 1.38, cw * 0.64, ch * 0.44, 3);
+  ctx.roundRect(baseX - cw*0.3, baseY - ch*1.40, cw*0.6, ch*0.44, ch*0.06);
   ctx.fill();
 
   // Windshield
-  ctx.fillStyle = 'rgba(150,240,255,0.55)';
+  ctx.fillStyle = 'rgba(140,235,255,0.52)';
   ctx.beginPath();
-  ctx.roundRect(baseX - cw * 0.28, baseY - ch * 1.30, cw * 0.56, ch * 0.32, 2);
+  ctx.roundRect(baseX - cw*0.26, baseY - ch*1.32, cw*0.52, ch*0.32, 3);
   ctx.fill();
 
   // Headlights
-  ctx.fillStyle = 'rgba(220,240,255,0.9)';
-  ctx.fillRect(baseX - cw / 2 + 3, baseY - ch * 0.22, cw * 0.2, ch * 0.12);
-  ctx.fillRect(baseX + cw / 2 - cw * 0.22, baseY - ch * 0.22, cw * 0.2, ch * 0.12);
+  ctx.fillStyle = 'rgba(220,238,255,0.95)';
+  ctx.fillRect(baseX - cw/2 + 3,      baseY - ch*0.22, cw*0.18, ch*0.10);
+  ctx.fillRect(baseX + cw/2 - cw*0.20, baseY - ch*0.22, cw*0.18, ch*0.10);
 
   // Neon underglow
-  ctx.shadowColor   = bodyColor;
-  ctx.shadowBlur    = 14;
-  ctx.strokeStyle   = bodyColor;
-  ctx.lineWidth     = 1.5;
+  ctx.save();
+  ctx.shadowColor = bc; ctx.shadowBlur = 16;
+  ctx.strokeStyle = bc; ctx.lineWidth = 2;
   ctx.beginPath();
-  ctx.moveTo(baseX - cw / 2 + 4, baseY);
-  ctx.lineTo(baseX + cw / 2 - 4, baseY);
+  ctx.moveTo(baseX - cw/2 + 5, baseY + 1);
+  ctx.lineTo(baseX + cw/2 - 5, baseY + 1);
   ctx.stroke();
-  ctx.shadowBlur = 0;
+  ctx.restore();
 
   ctx.restore();
 }
 
+// ── PARTICLES ─────────────────────────────────────────────
+function drawParticles() {
+  for (const p of particles) {
+    ctx.save();
+    ctx.globalAlpha = p.life;
+    ctx.fillStyle   = p.col;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r * p.life, 0, Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+}
+
 // ── MENU ──────────────────────────────────────────────────
+// Idle animation while menu is visible
+let menuAnimId = null;
+function menuIdle() {
+  if (inGame) return;
+  ctx.clearRect(0, 0, W, H);
+  drawSky(H * 0.44);
+  drawStars(H * 0.44);
+  menuAnimId = requestAnimationFrame(menuIdle);
+}
+menuIdle();
+
 document.getElementById('btn-cruise').addEventListener('click', () => {
   document.getElementById('menu-screen').style.display = 'none';
+  if (menuAnimId) cancelAnimationFrame(menuAnimId);
   startGame('cruise');
 });
 document.getElementById('btn-rush').addEventListener('click', () => {
   document.getElementById('menu-screen').style.display = 'none';
+  if (menuAnimId) cancelAnimationFrame(menuAnimId);
   startGame('rush');
 });
 
-// Draw idle animation on canvas while menu is shown
-function drawMenuIdle() {
-  if (gameState !== STATE.MENU) return;
-  const horizonY = H * 0.42;
-  drawSky(horizonY);
-  requestAnimationFrame(drawMenuIdle);
-}
-drawMenuIdle();
+})(); // END GAME IIFE
 
-})(); // end IIFE
 
 // ═══════════════════════════════════════════════════════════
-//  RADIO PUMPO INTEGRATION
-//  Lightweight inline version — mirrors radio-player.js logic
-//  but scoped to the game. On same origin, fetches the real
-//  manifest. Falls back gracefully if not available.
+//  RADIO PUMPO — inline player (no auto-play, button-only)
 // ═══════════════════════════════════════════════════════════
+(function RADIO() {
+  'use strict';
 
-(function() {
   const MANIFEST_URL = '/radio-manifest.json';
 
-  let manifest    = null;
-  let radioAudio  = null;
-  let isPlaying   = false;
-  let sequence    = null;
-  let syncTimer   = null;
+  let manifest   = null;
+  let audio      = null;
+  let playing    = false;
+  let sequence   = null;
+  let syncTick   = null;
+  let fbIdx      = 0;
 
-  // ── HELPERS (mirrors radio-player.js) ─────────────────
-  function getUTCSecondOfDay() {
-    const n = new Date();
-    return n.getUTCHours()*3600 + n.getUTCMinutes()*60 + n.getUTCSeconds();
-  }
-  function getUTCHour() { return new Date().getUTCHours(); }
-  function getCurrentDaypart() {
-    const h = getUTCHour();
-    if (h >= 6  && h < 12) return 'breakfast';
-    if (h >= 12 && h < 19) return 'afternoons';
-    return 'latenight';
-  }
-  function getDateSeed() {
-    const d = new Date();
-    return parseInt(
-      `${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,'0')}${String(d.getUTCDate()).padStart(2,'0')}`
-    );
-  }
-  function seededShuffle(arr, seed) {
-    const a = [...arr]; let s = seed >>> 0;
-    const rand = () => { s = (Math.imul(1664525,s)+1013904223)>>>0; return s/0x100000000; };
-    for (let i = a.length-1; i > 0; i--) {
-      const j = Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]];
-    }
-    return a;
-  }
-
-  function buildSequence() {
-    const dp   = getCurrentDaypart();
-    const sf   = manifest.scheduling.segment_frequency;
-    const seed = getDateSeed();
-    const pool = manifest.tracks.filter(t => t.dayparts.includes(dp));
-    const shuffled = seededShuffle(pool, seed);
-    const seq = []; let total = 0, ti = 0, tc = 0;
-    while (total < 86400 && seq.length < 200) {
-      const track = shuffled[ti % shuffled.length];
-      seq.push({ type: 'track', ...track });
-      total += track.duration; ti++; tc++;
-    }
-    return seq;
-  }
-
-  function getCurrentPosition(seq) {
-    const s = getUTCSecondOfDay();
-    let elapsed = 0;
-    for (let i = 0; i < seq.length; i++) {
-      if (elapsed + seq[i].duration > s) return { item: seq[i], pos: s - elapsed, idx: i };
-      elapsed += seq[i].duration;
-    }
-    return { item: seq[0], pos: 0, idx: 0 };
-  }
-
-  // ── DISPLAY ───────────────────────────────────────────
-  function updateDisplay(item) {
-    const marquee = document.getElementById('pumpo-song-marquee');
-    if (!marquee || !item) return;
-    const dp    = manifest ? manifest.dayparts[getCurrentDaypart()].label : 'Radio Pumpo';
-    const title = item.title || item.label || 'Radio Pumpo';
-    marquee.textContent = `${dp.toUpperCase()} — ${title}`;
-    // Enable scrolling if text overflows
-    const container = marquee.parentElement;
-    if (container && marquee.scrollWidth > container.clientWidth) {
-      const dist = -(marquee.scrollWidth - container.clientWidth + 8);
-      marquee.style.setProperty('--scroll-dist', dist + 'px');
-      marquee.classList.add('scrolling');
-    } else {
-      marquee.classList.remove('scrolling');
-    }
-  }
-
-  function setDot(on) {
-    const dot = document.getElementById('radio-dot');
-    if (dot) { on ? dot.classList.remove('off') : dot.classList.add('off'); }
-  }
-
-  function setBtn(text) {
-    const btn = document.getElementById('pumpo-radio-toggle');
-    if (btn) btn.textContent = text;
-  }
-
-  // ── PLAY ──────────────────────────────────────────────
-  function playFromPosition() {
-    const { item, pos } = getCurrentPosition(sequence);
-    radioAudio.src = item.file;
-    radioAudio.currentTime = pos;
-    radioAudio.play().then(() => {
-      setDot(true);
-      setBtn('■ ON AIR');
-      updateDisplay(item);
-    }).catch(() => {
-      setBtn('▶ TAP');
-      const handler = () => {
-        radioAudio.play().then(() => { setDot(true); setBtn('■ ON AIR'); });
-        document.removeEventListener('click', handler);
-      };
-      document.addEventListener('click', handler);
-    });
-  }
-
-  function startSyncTimer() {
-    if (syncTimer) clearInterval(syncTimer);
-    syncTimer = setInterval(() => {
-      if (!isPlaying || !sequence) return;
-      const { item, pos } = getCurrentPosition(sequence);
-      const currentFile = (radioAudio.src || '').split('/').pop();
-      const expectedFile = (item.file || '').split('/').pop();
-      const drift = Math.abs((radioAudio.currentTime || 0) - pos);
-      if (currentFile !== expectedFile) {
-        playFromPosition();
-      } else if (drift > 8) {
-        radioAudio.currentTime = pos;
-      }
-    }, 15000);
-  }
-
-  // ── TOGGLE ────────────────────────────────────────────
-  async function toggleRadio() {
-    if (isPlaying) {
-      isPlaying = false;
-      radioAudio.pause();
-      if (syncTimer) { clearInterval(syncTimer); syncTimer = null; }
-      setDot(false);
-      setBtn('TUNE IN');
-      const marquee = document.getElementById('pumpo-song-marquee');
-      if (marquee) { marquee.textContent = 'Radio Pumpo — Tuned out'; marquee.classList.remove('scrolling'); }
-      return;
-    }
-
-    // First time: load manifest
-    if (!manifest) {
-      setBtn('...');
-      try {
-        const r = await fetch(MANIFEST_URL);
-        if (!r.ok) throw new Error('manifest 404');
-        manifest = await r.json();
-      } catch(e) {
-        // Fallback: play tracks directly without manifest sync
-        console.warn('[Drive Radio] Manifest not found — using fallback track list');
-        manifest = null;
-        playFallback();
-        return;
-      }
-    }
-
-    isPlaying = true;
-    if (!radioAudio) { radioAudio = new Audio(); radioAudio.preload = 'auto'; }
-    radioAudio.addEventListener('ended', () => {
-      if (isPlaying && sequence) playFromPosition();
-    }, { once: false });
-
-    sequence = buildSequence();
-    playFromPosition();
-    startSyncTimer();
-  }
-
-  // ── FALLBACK (no manifest — e.g. local file:// preview) ─
-  const FALLBACK_TRACKS = [
+  // Fallback track list (absolute URLs, works even without manifest)
+  const FALLBACK = [
     { file: 'https://radiopumpo.github.io/songs/pumpofantastique.mp3',   title: 'Pumpo est Fantastique' },
     { file: 'https://radiopumpo.github.io/songs/pumpoelectrolatino.mp3', title: 'Tirate un Pumpo' },
     { file: 'https://radiopumpo.github.io/songs/pumpophonkbr.mp3',       title: 'A ora do Pumpo' },
     { file: 'https://radiopumpo.github.io/songs/housepumpo.mp3',         title: 'House Pumpo' },
     { file: 'https://radiopumpo.github.io/songs/dnbpumpo.mp3',           title: 'DNB Pumpo' },
     { file: 'https://radiopumpo.github.io/songs/pumpophonkbr2.mp3',      title: 'A ora do Pumpo Dois' },
+    { file: 'https://radiopumpo.github.io/songs/pumponostalgiaphonk.mp3',title: 'Pumpo Nostalgia Phonk' },
   ];
-  let fallbackIdx = 0;
 
-  function playFallback() {
-    if (!radioAudio) { radioAudio = new Audio(); }
-    isPlaying = true;
-    const t = FALLBACK_TRACKS[fallbackIdx % FALLBACK_TRACKS.length];
-    fallbackIdx++;
-    radioAudio.src = t.file;
-    radioAudio.play().then(() => {
-      setDot(true);
-      setBtn('■ ON AIR');
-      const marquee = document.getElementById('pumpo-song-marquee');
-      if (marquee) marquee.textContent = 'Radio Pumpo — ' + t.title;
-    }).catch(() => { setBtn('▶ TAP'); });
-    radioAudio.onended = () => { if (isPlaying) playFallback(); };
+  // ── Clock helpers (mirror radio-player.js exactly) ──────
+  function utcSec()  { const n=new Date(); return n.getUTCHours()*3600+n.getUTCMinutes()*60+n.getUTCSeconds(); }
+  function utcHour() { return new Date().getUTCHours(); }
+  function daypart() {
+    const h = utcHour();
+    if (h>=6  && h<12) return 'breakfast';
+    if (h>=12 && h<19) return 'afternoons';
+    return 'latenight';
+  }
+  function dateSeed() {
+    const d=new Date();
+    return parseInt(`${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,'0')}${String(d.getUTCDate()).padStart(2,'0')}`);
+  }
+  function seededShuffle(arr, seed) {
+    const a=[...arr]; let s=seed>>>0;
+    const rand=()=>{ s=(Math.imul(1664525,s)+1013904223)>>>0; return s/0x100000000; };
+    for (let i=a.length-1;i>0;i--){ const j=Math.floor(rand()*(i+1)); [a[i],a[j]]=[a[j],a[i]]; }
+    return a;
+  }
+  // Mirrors radio-player.js buildSequence() exactly — tracks + segments + station IDs
+  function buildSeq() {
+    const dp   = daypart();
+    const seed = dateSeed();
+    const sf   = manifest.scheduling.segment_frequency;
+    const sidf = manifest.scheduling.station_id_frequency;
+    const wrap = manifest.segments.show_wrappers;
+    const segs = manifest.segments[dp];
+    const sids = manifest.segments.station_ids;
+    const pool = manifest.tracks.filter(t => t.dayparts.includes(dp));
+    const sh   = seededShuffle(pool, seed);
+
+    const seq = [];
+    let total = 0, ti = 0, segi = 0, sidi = 0, tc = 0;
+
+    // Daypart intro wrapper
+    const intro = wrap[`${dp}_intro`];
+    seq.push({ type:'segment', subtype:'intro', ...intro,
+               title: manifest.dayparts[dp].label });
+    total += intro.duration;
+
+    while (total < 86400) {
+      const track = sh[ti % sh.length];
+      seq.push({ type:'track', ...track });
+      total += track.duration; ti++; tc++;
+
+      if (tc % sf === 0) {
+        const seg = segs[segi % segs.length];
+        seq.push({ type:'segment', subtype:'host', ...seg,
+                   title: manifest.station.host });
+        total += seg.duration; segi++;
+      }
+
+      if (tc % sidf === 0 && tc % sf !== 0) {
+        const sid = sids[sidi % sids.length];
+        seq.push({ type:'segment', subtype:'station_id', ...sid,
+                   title: 'Radio Pumpo' });
+        total += sid.duration; sidi++;
+      }
+    }
+    return seq;
+  }
+  function currentPos(seq) {
+    const s=utcSec(); let e=0;
+    for(const item of seq){ if(e+item.duration>s) return {item,pos:s-e}; e+=item.duration; }
+    return {item:seq[0],pos:0};
   }
 
-  // ── BIND BUTTON ───────────────────────────────────────
+  // ── Display ──────────────────────────────────────────────
+  function showTrack(item) {
+    const marquee = document.getElementById('pumpo-song-marquee');
+    if (!marquee) return;
+    const dp  = manifest ? manifest.dayparts[daypart()].label : 'Radio Pumpo';
+    const ttl = (item.type === 'track' ? item.title : null) || item.label || item.title || 'Radio Pumpo';
+    marquee.textContent = `${dp.toUpperCase()} — ${ttl}`;
+    marquee.classList.remove('scrolling');
+    requestAnimationFrame(() => {
+      const parent = marquee.parentElement;
+      if (parent && marquee.scrollWidth > parent.clientWidth + 4) {
+        const d = -(marquee.scrollWidth - parent.clientWidth + 10);
+        marquee.style.setProperty('--sd', d + 'px');
+        marquee.classList.add('scrolling');
+      }
+    });
+  }
+
+  function setDot(on) {
+    const d = document.getElementById('radio-dot');
+    if (d) { d.className = on ? 'live' : ''; }
+  }
+
+  function setBtn(txt, on) {
+    const b = document.getElementById('pumpo-radio-toggle');
+    if (!b) return;
+    b.textContent = txt;
+    b.className   = on ? 'on' : '';
+  }
+
+  // ── Playback ─────────────────────────────────────────────
+  function ensureAudio() {
+    if (!audio) {
+      audio = new Audio();
+      audio.preload = 'auto';
+      audio.addEventListener('ended', onEnded);
+    }
+  }
+
+  function onEnded() {
+    if (!playing) return;
+    if (sequence) playFromPos();
+    else          playFallback();
+  }
+
+  function playFromPos() {
+    const {item, pos} = currentPos(sequence);
+    audio.src = item.file;
+    audio.currentTime = pos;
+    audio.play().then(() => {
+      setDot(true); setBtn('■ ON AIR', true);
+      showTrack(item);
+    }).catch(() => {
+      setBtn('▶ TAP TO TUNE', false);
+    });
+  }
+
+  function startSync() {
+    if (syncTick) clearInterval(syncTick);
+    syncTick = setInterval(() => {
+      if (!playing || !sequence) return;
+      const {item, pos} = currentPos(sequence);
+      const cur = (audio.src||'').split('/').pop();
+      const exp = (item.file||'').split('/').pop();
+      const drift = Math.abs((audio.currentTime||0) - pos);
+      if (cur !== exp) playFromPos();
+      else if (drift > 8) audio.currentTime = pos;
+    }, 15000);
+  }
+
+  function playFallback() {
+    const t = FALLBACK[fbIdx % FALLBACK.length]; fbIdx++;
+    audio.src = t.file;
+    audio.play().then(() => {
+      setDot(true); setBtn('■ ON AIR', true);
+      const m = document.getElementById('pumpo-song-marquee');
+      if (m) m.textContent = 'Radio Pumpo — ' + t.title;
+    }).catch(() => { setBtn('▶ TAP TO TUNE', false); });
+  }
+
+  // ── Toggle (button click only — NO auto-play) ────────────
+  async function toggle() {
+    ensureAudio();
+
+    if (playing) {
+      playing = false;
+      audio.pause();
+      if (syncTick) { clearInterval(syncTick); syncTick = null; }
+      setDot(false);
+      setBtn('TUNE IN', false);
+      const m = document.getElementById('pumpo-song-marquee');
+      if (m) { m.textContent = 'Radio Pumpo — Tuned out'; m.classList.remove('scrolling'); }
+      return;
+    }
+
+    playing = true;
+    setBtn('...', false);
+
+    // Load manifest if not yet loaded
+    if (!manifest) {
+      try {
+        const r = await fetch(MANIFEST_URL);
+        if (!r.ok) throw 0;
+        manifest = await r.json();
+      } catch(_) {
+        manifest = null;
+        console.log('[Drive Radio] No manifest — using fallback tracks.');
+      }
+    }
+
+    if (manifest) {
+      sequence = buildSeq();
+      playFromPos();
+      startSync();
+    } else {
+      playFallback();
+    }
+  }
+
+  // ── Wire button (ONLY button, never auto) ────────────────
   const btn = document.getElementById('pumpo-radio-toggle');
-  if (btn) btn.addEventListener('click', toggleRadio);
+  if (btn) btn.addEventListener('click', toggle);
 
-  // Pre-fetch manifest silently
-  fetch(MANIFEST_URL).then(r => r.json()).then(m => {
-    manifest = m;
-    console.log('[Drive Radio] Manifest ready.');
-  }).catch(() => {
-    console.log('[Drive Radio] Running without manifest (deploy to repo for full sync).');
-  });
+  // Pre-fetch manifest silently — but do NOT start playback
+  fetch(MANIFEST_URL)
+    .then(r => r.ok ? r.json() : null)
+    .then(m => { if (m) { manifest = m; console.log('[Drive Radio] Manifest cached.'); } })
+    .catch(() => {});
 
-})();
+})(); // END RADIO IIFE
 </script>
 </body>
 </html>
