@@ -46,7 +46,7 @@
     .hero-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 45%,rgba(13,13,13,0.75) 100%);}
     .hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.1rem;max-width:560px;}
 
-    .hero-logo{max-width:min(320px,78vw);width:100%;filter:drop-shadow(0 0 30px var(--pink-glow));animation:logoIn 2s ease-out forwards;opacity:0;}
+    .hero-logo{max-width:min(320px,78vw);width:100%;border-radius:50%;overflow:hidden;filter:drop-shadow(0 0 30px var(--pink-glow));animation:logoIn 2s ease-out forwards;opacity:0;}
     @keyframes logoIn{0%{opacity:0;transform:translateY(18px) scale(.95)}100%{opacity:1;transform:none}}
 
     .live-badge{background:rgba(255,0,51,0.12);border:1px solid rgba(255,0,51,0.35);color:#ff3355;padding:4px 14px;border-radius:12px;font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;animation:livePulse 1.4s infinite;}
