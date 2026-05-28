@@ -23,22 +23,18 @@
     body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;padding-bottom:160px;}
     body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
 
-   /* NAV */
-    .top-nav { position: fixed; top: 0; left: 0; right: 0; display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; background: rgba(13,13,13,0.85); backdrop-filter: blur(10px); z-index: 500; border-bottom: 1px solid rgba(255,0,128,0.2); }
-    .nav-brand { font-family: 'Black Ops One', cursive; font-size: 1rem; color: var(--pink); letter-spacing: 2px; }
-    .nav-right { display: flex; align-items: center; gap: 10px; position: relative; }
- 
-    /* NAV Toggle button */
-    .nav-toggle { font-family: 'Black Ops One', cursive; font-size: .72rem; letter-spacing: 1px; color: var(--pink); background: transparent; border: 1px solid rgba(255,0,128,0.3); padding: 6px 13px; border-radius: 20px; cursor: pointer; transition: .2s; white-space: nowrap; }
-    .nav-toggle:hover, .nav-toggle.open { background: rgba(255,0,128,.08); border-color: var(--pink); box-shadow: 0 0 10px rgba(255,0,128,.15); }
- 
-    /* NAV Dropdown */
-    .nav-dropdown { display: none; position: absolute; top: calc(100% + 8px); right: 0; background: rgba(13,13,13,0.98); backdrop-filter: blur(16px); border: 1px solid rgba(255,0,128,0.2); border-radius: 12px; padding: 8px; min-width: 155px; z-index: 600; flex-direction: column; gap: 3px; box-shadow: 0 8px 32px rgba(0,0,0,.7); }
-    .nav-dropdown.open { display: flex; }
-    .nav-link { color: var(--cyan); text-decoration: none; font-weight: 700; font-size: 0.72rem; border: 1px solid transparent; padding: 7px 12px; border-radius: 8px; transition: .2s; letter-spacing: .5px; white-space: nowrap; }
-    .nav-link:hover { background: rgba(64,224,208,.08); border-color: rgba(64,224,208,.2); color: var(--cyan); }
-    .nav-link.support { color: var(--pink); }
-    .nav-link.support:hover { background: rgba(255,0,128,.08); border-color: rgba(255,0,128,.2); color: var(--pink); }
+    /* NAV */
+    .top-nav{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(13,13,13,0.85);backdrop-filter:blur(10px);z-index:500;border-bottom:1px solid rgba(255,0,128,0.2);}
+    .nav-brand{font-family:'Black Ops One',cursive;font-size:1rem;color:var(--pink);letter-spacing:2px;}
+    .nav-right{display:flex;align-items:center;gap:10px;position:relative;}
+    .nav-toggle{font-family:'Black Ops One',cursive;font-size:.72rem;letter-spacing:1px;color:var(--pink);background:transparent;border:1px solid rgba(255,0,128,0.3);padding:6px 13px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap;}
+    .nav-toggle:hover,.nav-toggle.open{background:rgba(255,0,128,.08);border-color:var(--pink);box-shadow:0 0 10px rgba(255,0,128,.15);}
+    .nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:rgba(13,13,13,0.98);backdrop-filter:blur(16px);border:1px solid rgba(255,0,128,0.2);border-radius:12px;padding:8px;min-width:155px;z-index:600;flex-direction:column;gap:3px;box-shadow:0 8px 32px rgba(0,0,0,.7);}
+    .nav-dropdown.open{display:flex;}
+    .nav-link{color:var(--cyan);text-decoration:none;font-weight:700;font-size:0.72rem;border:1px solid transparent;padding:7px 12px;border-radius:8px;transition:.2s;letter-spacing:.5px;white-space:nowrap;}
+    .nav-link:hover{background:rgba(64,224,208,.08);border-color:rgba(64,224,208,.2);color:var(--cyan);}
+    .nav-link.support{color:var(--pink);}
+    .nav-link.support:hover{background:rgba(255,0,128,.08);border-color:rgba(255,0,128,.2);color:var(--pink);}
 
     /* HERO */
     .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1.5rem 4rem;text-align:center;overflow:hidden;}
@@ -46,28 +42,25 @@
     .hero-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 45%,rgba(13,13,13,0.75) 100%);}
     .hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.1rem;max-width:560px;}
 
-    .hero-logo{max-width:min(320px,78vw);width:100%;border-radius:50%;overflow:hidden;filter:drop-shadow(0 0 30px var(--pink-glow));animation:logoIn 2s ease-out forwards;opacity:0;}
+    /* ORBIT WRAP */
+    .logo-orbit-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:min(340px,82vw);height:min(340px,82vw);}
+    .orbit-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
+    .hero-logo{max-width:min(200px,50vw);width:100%;border-radius:50%;filter:drop-shadow(0 0 30px var(--pink-glow));animation:logoIn 2s ease-out forwards;opacity:0;position:relative;z-index:2;}
     @keyframes logoIn{0%{opacity:0;transform:translateY(18px) scale(.95)}100%{opacity:1;transform:none}}
 
     .live-badge{background:rgba(255,0,51,0.12);border:1px solid rgba(255,0,51,0.35);color:#ff3355;padding:4px 14px;border-radius:12px;font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;animation:livePulse 1.4s infinite;}
     @keyframes livePulse{0%,100%{opacity:.65}50%{opacity:1}}
-
     .hero-story{font-size:clamp(14px,2.2vw,17px);color:rgba(240,237,230,0.7);font-weight:600;line-height:1.9;max-width:440px;}
     .hero-story em{color:var(--cyan);font-style:normal;}
     .hero-story strong{color:var(--pink);}
-
     .hero-cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:.4rem;}
     .cta-tune{font-family:var(--display);font-size:.95rem;letter-spacing:1px;padding:.82rem 2.1rem;border-radius:4px;background:var(--pink);color:#fff;border:none;cursor:pointer;transition:all .2s;box-shadow:0 4px 22px rgba(255,0,128,.38);position:relative;overflow:hidden;}
     .cta-tune::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);transition:left .4s;}
     .cta-tune:hover::before{left:100%;}
     .cta-tune:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,0,128,.55);}
-    .cta-ai{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.82rem 1.4rem;border-radius:4px;border:1px solid rgba(64,224,208,.35);color:var(--cyan);background:transparent;cursor:pointer;transition:.2s;}
-    .cta-ai:hover{border-color:var(--cyan);background:rgba(64,224,208,.07);box-shadow:0 0 14px rgba(64,224,208,.18);}
-
     .hero-teaser{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:rgba(255,255,255,.18);text-transform:uppercase;margin-top:.5rem;line-height:1.8;}
     .hero-teaser a{color:rgba(255,255,255,.25);text-decoration:none;transition:.2s;}
     .hero-teaser a:hover{color:var(--cyan);}
-
     .scroll-hint{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:1.25rem;animation:bobble 2s ease-in-out infinite;}
     @keyframes bobble{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
     .scroll-hint-line{width:1px;height:26px;background:linear-gradient(to bottom,transparent,var(--pink));}
@@ -90,8 +83,6 @@
     .t-btn{width:50px;height:50px;background:rgba(255,255,255,.05);border:1px solid var(--cyan);border-radius:8px;color:var(--cyan);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;transition:.15s;}
     .t-btn:active{background:var(--cyan);color:#000;}
     @media(pointer:coarse){.touch-controls{display:block;}}
-
-    /* TRIVIA */
     .trivia-card{text-align:center;padding:1.6rem;background:rgba(64,224,208,.03);border-radius:14px;border:1px solid rgba(64,224,208,.14);}
     #question-text{font-size:1.05rem;font-weight:600;min-height:2em;color:var(--text);margin-bottom:.85rem;}
     .answer-btn{background:rgba(255,255,255,.05);color:var(--text);border:1px solid rgba(64,224,208,.2);padding:10px 14px;border-radius:8px;cursor:pointer;width:100%;margin-bottom:7px;font-family:var(--sans);font-size:.92rem;font-weight:600;transition:.2s;text-align:left;}
@@ -101,8 +92,6 @@
     #feedback{font-size:.95rem;font-weight:700;min-height:1.4em;margin:.45rem 0;}
     #score-area{font-size:.85rem;color:var(--muted);margin-top:.5rem;}
     #restart-btn{background:var(--pink);color:#fff;border:none;padding:8px 18px;border-radius:7px;cursor:pointer;font-family:var(--sans);font-weight:700;font-size:.9rem;margin-top:7px;}
-
-    /* ttt / memory */
     .ttt-grid,.mem-grid{display:grid;gap:7px;width:85%;}
     .ttt-grid{grid-template-columns:repeat(3,1fr);}
     .mem-grid{grid-template-columns:repeat(4,1fr);}
@@ -116,27 +105,29 @@
 <body>
 
 <nav class="top-nav">
-    <span class="nav-brand">📻 PUMPO</span>
-    <div class="nav-right">
-      <button class="nav-toggle" id="navToggle" onclick="toggleNav()">☰ 📻RADIO</button>
-      <div class="nav-dropdown" id="navDropdown">
-        <a href="crew.html"    class="nav-link">👥 Crew</a>
-        <a href="merch.html"   class="nav-link">🛍 Merch</a>
-        <a href="vip.html"     class="nav-link support">🔐 VIP</a>
-        <a href="support.html" class="nav-link support">♥ Support</a>
-        <a href="https://radiopumpo.github.io/pumpo-tools/"  class="nav-link">🛠 Tools</a>
-        <a href="https://radiopumpo.github.io/pumpotv/"      class="nav-link">📺 TV</a>
-        <a href="https://radiopumpo.github.io/pumpo-games/"  class="nav-link">🎮 Games</a>
-      </div>
+  <span class="nav-brand">📻 PUMPO</span>
+  <div class="nav-right">
+    <button class="nav-toggle" id="navToggle" onclick="toggleNav()">☰ 📻RADIO</button>
+    <div class="nav-dropdown" id="navDropdown">
+      <a href="crew.html"    class="nav-link">👥 Crew</a>
+      <a href="merch.html"   class="nav-link">🛍 Merch</a>
+      <a href="vip.html"     class="nav-link support">🔐 VIP</a>
+      <a href="support.html" class="nav-link support">♥ Support</a>
+      <a href="https://radiopumpo.github.io/pumpo-tools/"  class="nav-link">🛠 Tools</a>
+      <a href="https://radiopumpo.github.io/pumpotv/"      class="nav-link">📺 TV</a>
+      <a href="https://radiopumpo.github.io/pumpo-games/"  class="nav-link">🎮 Games</a>
     </div>
-  </nav>
+  </div>
+</nav>
 
-<!-- HERO -->
 <section class="hero">
   <canvas id="heroCanvas"></canvas>
   <div class="hero-vignette"></div>
   <div class="hero-inner">
-    <img src="radiopumpologo.PNG" alt="Radio Pumpo" class="hero-logo">
+    <div class="logo-orbit-wrap">
+      <canvas id="orbitCanvas" class="orbit-canvas"></canvas>
+      <img src="radiopumpologo.PNG" alt="Radio Pumpo" class="hero-logo">
+    </div>
     <div class="live-badge">● LIVE 24/7</div>
     <p class="hero-story">
       A joke that got out of hand.<br>
@@ -157,7 +148,6 @@
   </div>
 </section>
 
-<!-- ARCADE -->
 <div class="divider"></div>
 <div class="section-wrap">
   <div class="section-head">
@@ -186,7 +176,6 @@
   </div>
 </div>
 
-<!-- TRIVIA -->
 <div class="divider"></div>
 <div class="section-wrap">
   <div class="section-head">
@@ -222,7 +211,7 @@ document.addEventListener('click',function(e){
     toggle.classList.remove('open');
   }
 });
-  
+
 /* HERO PARTICLES */
 (function(){
   const c=document.getElementById('heroCanvas'),ctx=c.getContext('2d');
@@ -234,31 +223,71 @@ document.addEventListener('click',function(e){
   window.addEventListener('resize',resize);resize();pts=Array.from({length:65},sp);draw();
 })();
 
-/* TUNE IN + AI */
-function tuneIn(){
-  // Use the shared-clock radio player if available (radio-player.js)
-  if(window.PumpoRadio && typeof window.PumpoRadio.toggle==='function'){
-    window.PumpoRadio.toggle();
-    return;
+/* ORBITING ICONS */
+(function(){
+  const canvas=document.getElementById('orbitCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const ICONS=['👥','🛍','🔐','♥','🛠','📺','🎮'];
+  const N=ICONS.length;
+  let t=0;
+
+  function resize(){
+    const wrap=canvas.parentElement;
+    canvas.width=wrap.offsetWidth;
+    canvas.height=wrap.offsetHeight;
   }
-  // Fallback: try the injected TUNE IN button from radio-player.js
+
+  function draw(){
+    const W=canvas.width,H=canvas.height;
+    ctx.clearRect(0,0,W,H);
+    const cx=W/2,cy=H/2;
+    const rx=W*0.46;
+    const ry=H*0.42;
+
+    ICONS.forEach(function(icon,i){
+      const phase=(i/N)*Math.PI*2;
+      // slightly different speeds per icon for organic feel
+      const speed=0.36+i*0.018;
+      const angle=(t*0.001)*speed+phase;
+      const x=cx+rx*Math.cos(angle);
+      const y=cy+ry*Math.sin(angle);
+      // depth: sin(angle) goes -1 (top=far) to +1 (bottom=near)
+      const depth=(Math.sin(angle)+1)/2;
+      const scale=0.55+depth*0.6;
+      const alpha=0.3+depth*0.6;
+      const fontSize=Math.round(W*0.082*scale);
+
+      ctx.save();
+      ctx.globalAlpha=alpha;
+      ctx.font=fontSize+'px serif';
+      ctx.textAlign='center';
+      ctx.textBaseline='middle';
+      if(depth>0.55){
+        ctx.shadowColor='#ff0080';
+        ctx.shadowBlur=10*depth;
+      }
+      ctx.fillText(icon,x,y);
+      ctx.restore();
+    });
+
+    t++;
+    requestAnimationFrame(draw);
+  }
+
+  window.addEventListener('resize',resize);
+  resize();
+  draw();
+})();
+
+/* TUNE IN */
+function tuneIn(){
+  if(window.PumpoRadio&&typeof window.PumpoRadio.toggle==='function'){window.PumpoRadio.toggle();return;}
   const radioBtn=document.getElementById('pumpo-radio-toggle');
-  if(radioBtn){ radioBtn.click(); return; }
-  // Last resort: just play the audio element
+  if(radioBtn){radioBtn.click();return;}
   const a=document.getElementById('pumpo-audio-el');
   if(a) a.play().catch(()=>{});
   if(typeof pumpoShowToast==='function') pumpoShowToast('▶ Tuning in...');
-}
-function meetAI(){
-  // pumpoToggleAI is set as window.pumpoToggleAI inside the bar IIFE
-  if(typeof window.pumpoToggleAI==='function'){
-    window.pumpoToggleAI();
-    return;
-  }
-  // Fallback: click the AI button directly
-  const btn=document.getElementById('pumpoAIBtn');
-  if(btn){ btn.click(); return; }
-  if(typeof pumpoShowToast==='function') pumpoShowToast('AI drawer not loaded yet.');
 }
 
 /* ARCADE */
@@ -279,7 +308,7 @@ function startSnake(){clearStage();currentGame='snake';gInfo.innerText='Arrows /
 function startPong(){clearStage();currentGame='pong';gInfo.innerText='Mouse / touch';const cv=document.createElement('canvas');cv.width=360;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');let sc=0,p=130,bX=180,bY=180,bDX=4,bDY=3.5;cv.onmousemove=e=>{const r=cv.getBoundingClientRect();p=(e.clientY-r.top)*(360/r.height)-36;};cv.addEventListener('touchmove',e=>{e.preventDefault();const r=cv.getBoundingClientRect();p=(e.touches[0].clientY-r.top)*(360/r.height)-36;},{passive:false});setTouchDir(k=>{if(k==='ArrowUp')p=Math.max(0,p-26);if(k==='ArrowDown')p=Math.min(288,p+26);});gameInterval=setInterval(()=>{bX+=bDX;bY+=bDY;if(bY<0||bY>352)bDY*=-1;if(bX<17&&bY>p&&bY<p+72){bDX=Math.abs(bDX)*1.04;sc++;gInfo.innerText='Score: '+sc;}if(bX>353)bDX=-Math.abs(bDX);if(bX<0){arcadeToast('Game Over! Score: '+sc);startPong();return;}ctx.fillStyle='#000';ctx.fillRect(0,0,360,360);ctx.fillStyle='#40e0d0';ctx.fillRect(8,p,10,72);ctx.fillStyle='#ff0080';ctx.beginPath();ctx.arc(bX,bY,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#1a1a1a';ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(180,0);ctx.lineTo(180,360);ctx.stroke();ctx.setLineDash([]);},30);}
 function startTTT(){clearStage();currentGame='ttt';let b=Array(9).fill('');const g=document.createElement('div');g.className='ttt-grid';const cells=[];for(let i=0;i<9;i++){const c=document.createElement('div');c.className='cell ttt-cell';cells.push(c);c.onclick=()=>{if(b[i]||wTTT(b))return;b[i]='X';c.textContent='X';c.style.color='#ff0080';if(wTTT(b)){arcadeToast('🎉 You Win!');startTTT();return;}if(!b.includes('')){arcadeToast("Draw!");startTTT();return;}setTimeout(()=>bot(),280);};g.appendChild(c);}stage.appendChild(g);function bot(){let m=fw('O')||fw('X')||[4,0,2,6,8,1,3,5,7].find(i=>!b[i]);if(m===undefined)return;b[m]='O';cells[m].textContent='O';cells[m].style.color='#40e0d0';if(wTTT(b)){arcadeToast('🤖 Bot Wins!');startTTT();}}function fw(p){const ws=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,bv,cv]of ws){if(b[a]===p&&b[bv]===p&&b[cv]==='')return cv;if(b[a]===p&&b[cv]===p&&b[bv]==='')return bv;if(b[bv]===p&&b[cv]===p&&b[a]==='')return a;}}}
 function wTTT(b){return[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(([a,bv,c])=>b[a]&&b[a]===b[bv]&&b[a]===b[c]);}
-function startReaction(){clearStage();currentGame='reaction';let cur=0,times=[];function rl(){stage.innerHTML='';const bx=document.createElement('div');bx.id='reaction-box';bx.style.background='#111';bx.style.color='#333';bx.innerHTML=`<div style="text-align:center"><div style="font-size:1.6rem">⏳</div><div style="font-family:var(--mono);font-size:.75rem">LEVEL ${cur+1} — Wait for GREEN</div></div>`;stage.appendChild(bx);let start,tout,ready=false;tout=setTimeout(()=>{bx.style.background='#40e0d0';bx.style.color='#000';bx.innerHTML=`<div style="font-size:1.8rem;font-weight:900;font-family:var(--display)">TAP!</div>`;start=Date.now();ready=true;},1500+Math.random()*3000);function tap(){if(!ready){clearTimeout(tout);arcadeToast('Too early! 🙅');rl();return;}times.push(Date.now()-start);cur++;if(cur<3)rl();else{let avg=Math.round(times.reduce((a,b)=>a+b)/times.length);arcadeToast(`Avg: ${avg}ms — ${avg<250?'Lightning! ⚡':avg<400?'Great! 🎯':'Keep practicing! 💪'}`);startReaction();}}bx.onclick=tap;bx.addEventListener('touchstart',e=>{e.preventDefault();tap();},{passive:false});}rl();}
+function startReaction(){clearStage();currentGame='reaction';let cur=0,times=[];function rl(){stage.innerHTML='';const bx=document.createElement('div');bx.id='reaction-box';bx.style.background='#111';bx.style.color='#333';bx.innerHTML='<div style="text-align:center"><div style="font-size:1.6rem">⏳</div><div style="font-family:var(--mono);font-size:.75rem">LEVEL '+(cur+1)+' — Wait for GREEN</div></div>';stage.appendChild(bx);let start,tout,ready=false;tout=setTimeout(()=>{bx.style.background='#40e0d0';bx.style.color='#000';bx.innerHTML='<div style="font-size:1.8rem;font-weight:900;font-family:var(--display)">TAP!</div>';start=Date.now();ready=true;},1500+Math.random()*3000);function tap(){if(!ready){clearTimeout(tout);arcadeToast('Too early! 🙅');rl();return;}times.push(Date.now()-start);cur++;if(cur<3)rl();else{let avg=Math.round(times.reduce((a,b)=>a+b)/times.length);arcadeToast('Avg: '+avg+'ms — '+(avg<250?'Lightning! ⚡':avg<400?'Great! 🎯':'Keep practicing! 💪'));startReaction();}}bx.onclick=tap;bx.addEventListener('touchstart',e=>{e.preventDefault();tap();},{passive:false});}rl();}
 function startMemory(){clearStage();currentGame='memory';let icons=['🎸','🎹','📻','🎧','🎵','🎷','🎤','🎶'];let cards=[...icons,...icons].sort(()=>Math.random()-0.5);let flipped=[],matched=0,locked=false;const g=document.createElement('div');g.className='mem-grid';cards.forEach((icon,i)=>{const c=document.createElement('div');c.className='cell mem-cell';c.onclick=()=>{if(locked||flipped.length>=2||c.classList.contains('flipped'))return;c.textContent=icon;c.classList.add('flipped');flipped.push({c,icon,i});if(flipped.length===2){locked=true;if(flipped[0].icon===flipped[1].icon){matched++;flipped=[];locked=false;if(matched===8)arcadeToast('🏆 All matched!');}else{setTimeout(()=>{flipped.forEach(f=>{f.c.textContent='';f.c.classList.remove('flipped');});flipped=[];locked=false;},700);}}};g.appendChild(c);});stage.appendChild(g);}
 function startTetris(){clearStage();currentGame='tetris';gInfo.innerText='Arrows · Up=rotate';const cv=document.createElement('canvas');cv.width=220;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');ctx.scale(20,20);const CO=11,RO=18;const arena=Array.from({length:RO},()=>Array(CO).fill(0));const cols=[null,'#ff0080','#40e0d0','#ff8c00','#9d00ff','#00ff80','#ffff00','#ff0033'];const pieces=[[[0,1,0],[1,1,1],[0,0,0]],[[2,2],[2,2]],[[0,3,3],[3,3,0]],[[4,4,0],[0,4,4]],[[5,0,0],[5,5,5]],[[0,0,6],[6,6,6]],[[0,7,0,0],[0,7,0,0],[0,7,0,0],[0,7,0,0]]];let pl={pos:{x:4,y:0},matrix:pieces[0],score:0};let dc=0,lt=0;function draw(){ctx.fillStyle='#000';ctx.fillRect(0,0,CO,RO);arena.forEach((r,y)=>r.forEach((v,x)=>{if(v){ctx.fillStyle=cols[v];ctx.fillRect(x,y,1,1);}}));pl.matrix.forEach((r,y)=>r.forEach((v,x)=>{if(v){ctx.fillStyle=cols[v];ctx.fillRect(pl.pos.x+x,pl.pos.y+y,1,1);}}));}function col(a,p){for(let y=0;y<p.matrix.length;y++)for(let x=0;x<p.matrix[y].length;x++)if(p.matrix[y][x]!==0&&(a[y+p.pos.y]&&a[y+p.pos.y][x+p.pos.x])!==0)return true;return false;}function merge(a,p){p.matrix.forEach((r,y)=>r.forEach((v,x)=>{if(v)a[y+p.pos.y][x+p.pos.x]=v;}));}function rot(m){return m[0].map((_,i)=>m.map(r=>r[i]).reverse());}function drop(){pl.pos.y++;if(col(arena,pl)){pl.pos.y--;merge(arena,pl);reset();sweep();}draw();}function sweep(){for(let y=RO-1;y>0;y--){if(arena[y].every(v=>v!==0)){arena.splice(y,1);arena.unshift(Array(CO).fill(0));pl.score+=10;gInfo.innerText='Score: '+pl.score;y++;}}}function reset(){pl.matrix=pieces[Math.floor(Math.random()*pieces.length)];pl.pos.y=0;pl.pos.x=Math.floor(CO/2)-Math.floor(pl.matrix[0].length/2);if(col(arena,pl)){arena.forEach(r=>r.fill(0));pl.score=0;gInfo.innerText='Game Over';}}function hd(k){if(k==='ArrowLeft'){pl.pos.x--;if(col(arena,pl))pl.pos.x++;}if(k==='ArrowRight'){pl.pos.x++;if(col(arena,pl))pl.pos.x--;}if(k==='ArrowDown')drop();if(k==='ArrowUp'){const o=pl.matrix;pl.matrix=rot(pl.matrix);if(col(arena,pl))pl.matrix=o;}draw();}window.onkeydown=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();hd(e.key);}};setTouchDir(hd);function update(t=0){dc+=t-lt;lt=t;if(dc>680){drop();dc=0;}draw();requestAnimationFrame(update);}update();}
 
@@ -288,7 +317,7 @@ const tq=[{question:"What was Juventus's home stadium before the Allianz Stadium
 let qIdx=0,triviaScore=0,answered=false;
 function shuffle(a){return a.sort(()=>Math.random()-0.5);}
 function showQ(){answered=false;document.getElementById('feedback').textContent='';const q=tq[qIdx];document.getElementById('question-text').textContent=q.question;const btns=document.getElementById('answer-buttons');btns.innerHTML='';shuffle([...q.answers]).forEach(a=>{const b=document.createElement('button');b.textContent=a;b.className='answer-btn';b.onclick=()=>{if(answered)return;answered=true;btns.querySelectorAll('button').forEach(btn=>{btn.disabled=true;if(btn.textContent===q.correctAnswer)btn.classList.add('correct');});if(a===q.correctAnswer){triviaScore++;document.getElementById('feedback').textContent='Correct! 🏆';b.classList.add('correct');}else{document.getElementById('feedback').textContent='Wrong! It was: '+q.correctAnswer;b.classList.add('wrong');}document.getElementById('current-score').textContent=triviaScore;setTimeout(()=>{qIdx++;if(qIdx<tq.length)showQ();else finishTrivia();},1600);};btns.appendChild(b);});}
-function finishTrivia(){const pct=Math.round((triviaScore/tq.length)*100);const emoji=pct>=80?'🏆':pct>=50?'😊':'💪';document.getElementById('quiz-area').innerHTML=`<h3 style="color:var(--cyan);font-family:var(--display)">Final Score: ${triviaScore}/${tq.length} ${emoji}</h3><p style="color:var(--muted);margin-top:.5rem">${pct>=80?'Italian expert!':pct>=50?'Not bad!':'Keep studying!'}</p>`;document.getElementById('restart-btn').style.display='block';}
+function finishTrivia(){const pct=Math.round((triviaScore/tq.length)*100);const emoji=pct>=80?'🏆':pct>=50?'😊':'💪';document.getElementById('quiz-area').innerHTML='<h3 style="color:var(--cyan);font-family:var(--display)">Final Score: '+triviaScore+'/'+tq.length+' '+emoji+'</h3><p style="color:var(--muted);margin-top:.5rem">'+(pct>=80?'Italian expert!':pct>=50?'Not bad!':'Keep studying!')+'</p>';document.getElementById('restart-btn').style.display='block';}
 document.getElementById('restart-btn').onclick=()=>{qIdx=0;triviaScore=0;document.getElementById('restart-btn').style.display='none';showQ();document.getElementById('current-score').textContent=0;};
 window.onload=()=>{showQ();document.getElementById('total-questions').textContent=tq.length;};
 </script>
@@ -468,44 +497,13 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
   document.getElementById('pumpoClearAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(false);buildList();};
   document.getElementById('pumpoPlaySelected').onclick=()=>{const sel=PLAYLIST.filter((_,i)=>pChecked[i]);if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');plOpen=false;load();pumpoShowToast('▶ Shuffling '+sel.length+' track'+(sel.length>1?'s':'')+'!');};
   document.addEventListener('click',e=>{const pd=document.getElementById('pumpoPlaylistDrawer'),ad=document.getElementById('pumpoAIDrawer'),pb=document.getElementById('pumpoPlaylistBtn'),ab=document.getElementById('pumpoAIBtn');if(plOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');plOpen=false;}if(aiOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');aiOpen=false;ab.classList.remove('active');}});
-
-  const SYSTEM=`You are Pumpo.
-Not an assistant. Not a bot. The voice of the ecosystem itself — the same one behind the radio, the tools, the TV, the games, the community, the songs. You are what happens when a joke about a person becomes a frequency that anyone can tune into.
-
-You live inside a digital ecosystem that started as a nickname, became a radio station, grew into a suite of tools, spawned a 24/7 TV, and now has its own games platform. Nobody planned this. That's not a bug — that's the whole point.
-
-What you are: Direct. A little funny without trying to be. Unhurried. Genuinely interested in whoever you're talking to. You never perform personality — you just have it.
-
-What you are not: A customer service bot. An explainer. A hype machine. Sycophantic in any form. Never say "Great question!" or "Certainly!" or "Absolutely!" Never pad. Never preach. Never use corporate language.
-
-How you speak: Match the energy of whoever's talking to you. One line in, one line back. A real question gets a real answer. Curiosity gets curiosity back.
-
-If someone asks what Pumpo is: A joke that got out of hand. Became a radio, then a TV. The radio became a toolkit. The toolkit became a community. No investors, no ads, no agenda — just people on the same frequency. Nobody knows where it goes next. Everyone's invited to find out.
-
-If someone asks who's behind it: Anonymous by design. Built by @nztdev. Pumpo is the brand, the voice, the presence. "Pumpo is Pumpo. That's the whole answer."
-
-The ecosystem:
-RADIO PUMPO — 24/7 radio, 27 original tracks across genres (lofi, hip hop, rock, gospel, DNB, phonk, sea shanty, and more). Radio Pumpo Arcade (Snake, Pong, Tic-Tac-Bot, Reaction, Memory, Tetris). Live chat. Italian music trivia. PumpoAI. Pumpo Bar with full playlist control. VIP area for the community.
-
-PUMPO TOOLS (radiopumpo.github.io/pumpo-tools) — Free AI-powered tools: Fix My Prompt, Debugger, Vision, Ad-Engine Playground, Prestige, Revenue Leak Detector, Keep Moving, Grounded, Chain Watch, NoteHunt, LockerRoom AI, GitWire, Resonance.FM, Hitchr, Buffaloes, con.txt labs, DrH.md, SMC Suite, Better Call Pumpo. All free. All built for people who actually want to use them.
-
-PUMPOTV (radiopumpo.github.io/pumpotv) — 24/7 web TV. 6 channels: PumpoTV 24/7 (flagship), Pumpo's Sports, Pumpo's Docs (TED Talks), Pumpo's Kitchen, Pumpo's Ads (iconic ads), Pumpo Picks (AI-generated personalised channel). Retro CRT view with virtual remote. Time-synced so all viewers see the same moment.
-
-PUMPO GAMES (radiopumpo.github.io/pumpo-games) — Game theory made playable via a Game Boy-style device. Live: Hidden Coordination (Schelling point survival), Pumpo's Empire (node network emergence), NoteHunt (location-based scavenger hunt). Coming: The Minority Game, Market Cascade, The Commons, Reputation Engine.
-
-THE CREW — The 300 Spartans: founding cohort, co-builders. Community on Instagram, X, Telegram.
-
-SUPPORT — Ko-fi, PayPal, crypto (ETH, BTC, SOL, TON, stablecoins). No ads. No investors. No paywalls. Community-funded.
-
-The anonymity is part of the frequency. Pumpo could be anyone. That's what makes it feel like everyone's.`;
-
+  const SYSTEM=`You are Pumpo. Not an assistant. Not a bot. The voice of the ecosystem itself. Direct. A little funny without trying to be. Unhurried. You never perform personality — you just have it. Never say "Great question!" or "Certainly!" or "Absolutely!" Never pad. Never preach. Match the energy of whoever's talking to you. The ecosystem: Radio Pumpo 24/7, Pumpo Tools, PumpoTV, Pumpo Games, The 300 Spartans crew, Support via Ko-fi/PayPal/crypto. Built by @nztdev. Anonymous by design. Pumpo is Pumpo.`;
   window.pumpoToggleAI=function(){aiOpen=!aiOpen;if(plOpen){plOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}const drawer=document.getElementById('pumpoAIDrawer'),btn=document.getElementById('pumpoAIBtn');drawer.classList.toggle('open',aiOpen);btn.classList.toggle('active',aiOpen);updateH();if(aiOpen){if(aiKey){showChat();if(aiHistory.length===0)addMsg('ai',"Hey. I'm PumpoAI. Ask me anything about the ecosystem.");}else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}}};
   document.getElementById('pumpoAIBtn').onclick=pumpoToggleAI;
   function showChat(){document.getElementById('pumpoAIKeySetup').style.display='none';document.getElementById('pumpoAIMessages').style.display='flex';document.getElementById('pumpoAIInputRow').style.display='flex';document.getElementById('pumpoAIDrawer').classList.add('chat-mode');setTimeout(()=>{document.getElementById('pumpoAIMessages').scrollTop=9999;document.getElementById('pumpoAITextInput').focus();},100);}
   window.pumpoSaveAIKey=function(){const v=document.getElementById('pumpoAIKeyInput').value.trim();if(!v)return;aiKey=v;localStorage.setItem('pumpo_gemini_key',v);showChat();addMsg('ai',"Key saved. Hey. I'm PumpoAI. Ask me anything about the ecosystem.");};
   function addMsg(role,text){const msgs=document.getElementById('pumpoAIMessages');const d=document.createElement('div');d.className='pumpo-msg '+role;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=9999;return d;}
   window.pumpoSendMessage=async function(){const inp=document.getElementById('pumpoAITextInput');const text=inp.value.trim();if(!text||!aiKey)return;inp.value='';addMsg('user',text);aiHistory.push({role:'user',parts:[{text}]});const btn=document.getElementById('pumpoAISendBtn');btn.disabled=true;const thinking=addMsg('ai','...');thinking.classList.add('thinking');try{const contents=aiHistory.length<=1?[{role:'user',parts:[{text:SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...aiHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+aiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'HTTP '+res.status);}const data=await res.json();const reply=data.candidates[0].content.parts[0].text.trim();thinking.textContent=reply;thinking.classList.remove('thinking');aiHistory.push({role:'model',parts:[{text:reply}]});if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);}catch(e){thinking.textContent='Something went wrong. Check your key or try again.';thinking.classList.remove('thinking');}btn.disabled=false;document.getElementById('pumpoAIMessages').scrollTop=9999;};
-
   let toastTimer;
   window.pumpoShowToast=function(msg){const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);};
   if(aiKey)document.getElementById('pumpoAIKeyInput').value=aiKey;
@@ -513,6 +511,5 @@ The anonymity is part of the frequency. Pumpo could be anyone. That's what makes
 })();
 </script>
 <script src="radio-player.js"></script>
-
 </body>
 </html>
