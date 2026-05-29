@@ -5,927 +5,1295 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Radio Pumpo Drive</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap');
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --neon-pink:   #ff2d78;
-    --neon-cyan:   #00ffe7;
-    --neon-purple: #b24bff;
-  }
-  html, body {
-    width: 100%; height: 100%;
-    overflow: hidden;
-    background: #000;
-    font-family: 'Rajdhani', sans-serif;
-    user-select: none;
-    -webkit-tap-highlight-color: transparent;
-  }
-  #gameCanvas {
-    display: block;
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    z-index: 1;
-  }
-  /* ── HUD OVERLAYS ── */
-  #hud {
-    position: fixed; inset: 0;
-    pointer-events: none;
-    z-index: 10;
-  }
-  #mode-badge {
-    position: absolute;
-    top: max(20px, env(safe-area-inset-top));
-    left: 24px;
-    font-size: 13px; letter-spacing: 3px; font-weight: 700;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 10px var(--neon-cyan);
-    text-transform: uppercase;
-  }
-  #near-miss-flash {
-    position: absolute; top: 35%; left: 50%;
-    transform: translate(-50%,-50%);
-    font-size: clamp(20px, 6vw, 36px); font-weight: 700;
-    color: var(--neon-cyan);
-    text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px var(--neon-cyan);
-    letter-spacing: 4px; opacity: 0;
-    transition: opacity 0.1s;
-    white-space: nowrap; text-align: center;
-  }
-  #crash-overlay {
-    position: absolute; inset: 0;
-    background: rgba(255,0,80,0.4);
-    opacity: 0; transition: opacity 0.1s;
-  }
-  #billboard-msg {
-    position: absolute; top: 25%; left: 50%;
-    transform: translateX(-50%);
-    font-size: clamp(14px, 3.5vw, 18px); font-style: italic;
-    color: rgba(255,220,150,0.95);
-    text-shadow: 0 0 15px rgba(255,120,0,0.8);
-    letter-spacing: 2px; opacity: 0;
-    transition: opacity 0.8s;
-    white-space: nowrap; text-align: center;
-  }
-  /* Interactive screen hitboxes matching the rendered canvas dashboard layout */
-  #btn-tune-hitbox {
-    position: absolute;
-    bottom: 4vh;
-    right: 14vw;
-    width: 12vw; height: 6vh;
-    min-width: 80px; min-height: 35px;
-    cursor: pointer; pointer-events: all;
-    z-index: 15;
-    background: transparent; border: none; outline: none;
-  }
-  #touch-left, #touch-right {
-    position: fixed; top: 0; bottom: 0; width: 50%; z-index: 5;
-    pointer-events: all;
-  }
-  #touch-left  { left: 0; }
-  #touch-right { right: 0; }
-  #scanlines {
-    position: fixed; inset: 0; z-index: 20; pointer-events: none;
-    background: repeating-linear-gradient(
-      0deg, transparent, transparent 2px,
-      rgba(0,0,0,0.12) 2px, rgba(0,0,0,0.12) 4px
-    );
-    opacity: 0.7;
-  }
-  /* ── MENU OVERLAY ── */
-  #menu-screen {
-    position: fixed; inset: 0; z-index: 100;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    background: linear-gradient(180deg, rgba(5,0,12,0.65) 0%, rgba(15,0,30,0.85) 60%, rgba(35,0,20,0.95) 100%);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    transition: opacity 0.4s ease;
-  }
-  .menu-logo {
-    font-size: clamp(38px, 12vw, 68px);
-    font-weight: 700; letter-spacing: 6px; color: #fff;
-    text-shadow: 0 0 20px var(--neon-pink), 0 0 50px rgba(255,45,120,0.6);
-    margin-bottom: 4px;
-  }
-  .menu-sub {
-    font-size: clamp(12px, 3.5vw, 16px); letter-spacing: 9px;
-    color: var(--neon-cyan); text-shadow: 0 0 12px var(--neon-cyan);
-    margin-bottom: 48px; text-transform: uppercase;
-  }
-  .menu-buttons {
-    display: flex; flex-direction: column; gap: 18px;
-    align-items: center; width: 100%; max-width: 320px; padding: 0 20px;
-  }
-  .menu-btn {
-    width: 100%; background: rgba(0,0,0,0.4);
-    font-family: 'Rajdhani', sans-serif;
-    font-size: clamp(16px, 4.5vw, 20px); font-weight: 700; letter-spacing: 3px;
-    padding: 16px 24px; border-radius: 8px; cursor: pointer;
-    text-transform: uppercase; transition: all 0.2s ease;
-    -webkit-tap-highlight-color: transparent;
-  }
-  .menu-btn.cruise {
-    border: 2px solid var(--neon-cyan); color: var(--neon-cyan);
-    text-shadow: 0 0 8px var(--neon-cyan);
-    box-shadow: 0 0 15px rgba(0,255,231,0.15);
-  }
-  .menu-btn.cruise:hover { background: rgba(0,255,231,0.15); box-shadow: 0 0 25px rgba(0,255,231,0.3); }
-  .menu-btn.rush {
-    border: 2px solid var(--neon-pink); color: var(--neon-pink);
-    text-shadow: 0 0 8px var(--neon-pink);
-    box-shadow: 0 0 15px rgba(255,45,120,0.15);
-  }
-  .menu-btn.rush:hover { background: rgba(255,45,120,0.15); box-shadow: 0 0 25px rgba(255,45,120,0.3); }
-  .menu-mode-desc {
-    font-size: 12px; color: rgba(255,255,255,0.5);
-    letter-spacing: 1.5px; margin-top: -8px; text-align: center;
-  }
+@import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html,body{
+  width:100%;height:100%;overflow:hidden;background:#000;
+  font-family:'Rajdhani',sans-serif;
+  user-select:none;-webkit-tap-highlight-color:transparent;
+}
+#c{
+  display:block;position:fixed;top:0;left:0;
+  width:100%;height:100%;z-index:1;
+}
+/* Scanlines */
+#sc{
+  position:fixed;inset:0;z-index:20;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.09) 2px,rgba(0,0,0,0.09) 4px);
+}
+/* HUD layer — only near-miss flash, crash, billboard */
+#hud{position:fixed;inset:0;z-index:15;pointer-events:none;}
+#near-miss{
+  position:absolute;top:32%;left:50%;transform:translate(-50%,-50%);
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(18px,5vw,32px);font-weight:700;
+  color:#00ffe7;text-shadow:0 0 18px #00ffe7,0 0 36px #00ffe7;
+  letter-spacing:4px;opacity:0;transition:opacity 0.08s;
+  white-space:nowrap;text-align:center;pointer-events:none;
+}
+#crash-flash{
+  position:absolute;inset:0;background:rgba(255,0,60,0.45);
+  opacity:0;transition:opacity 0.1s;pointer-events:none;
+}
+#billboard{
+  position:absolute;top:24%;left:50%;transform:translateX(-50%);
+  font-family:'Share Tech Mono',monospace;
+  font-size:clamp(11px,2.8vw,16px);font-style:italic;
+  color:rgba(255,215,120,0.92);text-shadow:0 0 14px rgba(255,120,0,0.7);
+  letter-spacing:2px;opacity:0;transition:opacity 0.8s;
+  white-space:nowrap;text-align:center;pointer-events:none;
+}
+#mode-badge{
+  position:absolute;top:max(18px,env(safe-area-inset-top));left:20px;
+  font-size:11px;letter-spacing:3px;font-weight:700;
+  color:#00ffe7;text-shadow:0 0 10px #00ffe7;text-transform:uppercase;
+}
+/* Touch zones — disabled until game active */
+#tl,#tr{
+  position:fixed;top:0;bottom:0;width:50%;z-index:8;
+  pointer-events:none;
+}
+#tl{left:0;}#tr{right:0;}
+/* Menu */
+#menu{
+  position:fixed;inset:0;z-index:100;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  background:linear-gradient(180deg,rgba(4,0,10,0.55) 0%,rgba(14,0,28,0.82) 55%,rgba(32,0,18,0.96) 100%);
+  backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px);
+  transition:opacity 0.45s ease;
+}
+.logo{
+  font-size:clamp(36px,11vw,64px);font-weight:700;letter-spacing:6px;color:#fff;
+  text-shadow:0 0 18px #ff2d78,0 0 44px rgba(255,45,120,0.5);margin-bottom:6px;
+}
+.sub{
+  font-size:clamp(11px,3vw,15px);letter-spacing:8px;color:#00ffe7;
+  text-shadow:0 0 12px #00ffe7;margin-bottom:44px;text-transform:uppercase;
+}
+.btns{
+  display:flex;flex-direction:column;gap:16px;
+  align-items:center;width:100%;max-width:310px;padding:0 20px;
+}
+.mbtn{
+  width:100%;background:rgba(0,0,0,0.35);
+  font-family:'Rajdhani',sans-serif;font-size:clamp(15px,4.5vw,19px);
+  font-weight:700;letter-spacing:3px;padding:15px 24px;border-radius:8px;
+  cursor:pointer;text-transform:uppercase;transition:all 0.18s ease;
+  -webkit-tap-highlight-color:transparent;
+}
+.mbtn.cr{border:2px solid #00ffe7;color:#00ffe7;text-shadow:0 0 8px #00ffe7;box-shadow:0 0 14px rgba(0,255,231,0.12);}
+.mbtn.cr:active{background:rgba(0,255,231,0.14);}
+.mbtn.ru{border:2px solid #ff2d78;color:#ff2d78;text-shadow:0 0 8px #ff2d78;box-shadow:0 0 14px rgba(255,45,120,0.12);}
+.mbtn.ru:active{background:rgba(255,45,120,0.14);}
+.mdesc{font-size:11px;color:rgba(255,255,255,0.38);letter-spacing:1.5px;margin-top:-8px;text-align:center;}
 </style>
 </head>
 <body>
-
-<canvas id="gameCanvas"></canvas>
-<div id="scanlines"></div>
-
+<canvas id="c"></canvas>
+<div id="sc"></div>
 <div id="hud">
-  <div id="mode-badge">IDLE CRUISE</div>
-  <div id="near-miss-flash"></div>
-  <div id="crash-overlay"></div>
-  <div id="billboard-msg"></div>
-  <button id="btn-tune-hitbox" title="Tune Radio"></button>
+  <div id="mode-badge">IDLE</div>
+  <div id="near-miss"></div>
+  <div id="crash-flash"></div>
+  <div id="billboard"></div>
 </div>
-
-<div id="touch-left"></div>
-<div id="touch-right"></div>
-
-<div id="menu-screen">
-  <div class="menu-logo">RADIO PUMPO</div>
-  <div class="menu-sub">Drive</div>
-  <div class="menu-buttons">
-    <button class="menu-btn cruise" id="btn-cruise">Start Cruise</button>
-    <div class="menu-mode-desc">meditative · slow lanes · infinite glide</div>
-    <button class="menu-btn rush" id="btn-rush">Start Rush</button>
-    <div class="menu-mode-desc">high speed · near misses · high density</div>
+<div id="tl"></div>
+<div id="tr"></div>
+<div id="menu">
+  <div class="logo">RADIO PUMPO</div>
+  <div class="sub">Drive</div>
+  <div class="btns">
+    <button class="mbtn cr" id="btn-cr">Start Cruise</button>
+    <div class="mdesc">meditative &middot; slow lanes &middot; infinite glide</div>
+    <button class="mbtn ru" id="btn-ru">Start Rush</button>
+    <div class="mdesc">high speed &middot; near misses &middot; one more run</div>
   </div>
 </div>
-
 <script>
 'use strict';
+(function(){
 
-(function GAME() {
-
-// Helper for curved rounded rects inside custom vector frames
-function rrect(x, y, w, h, r) {
-  r = Math.min(r || 0, Math.abs(w) / 2, Math.abs(h) / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + r, y);
-  ctx.lineTo(x + w - r, y);
-  ctx.arcTo(x + w, y, x + w, y + r, r);
-  ctx.lineTo(x + w, y + h - r);
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r);
-  ctx.lineTo(x + r, y + h);
-  ctx.arcTo(x, y + h, x, y + h - r, r);
-  ctx.lineTo(x, y + r);
-  ctx.arcTo(x, y, x + r, y, r);
-  ctx.closePath();
-}
-
-var canvas = document.getElementById('gameCanvas');
+// ── CANVAS ────────────────────────────────────────────────────────────────────
+var canvas = document.getElementById('c');
 var ctx    = canvas.getContext('2d');
-var W = 0, H = 0;
-
-function resize() {
-  var dpr = window.devicePixelRatio || 1;
-  W = canvas.width  = window.innerWidth  * dpr;
-  H = canvas.height = window.innerHeight * dpr;
+var W=0,H=0,DPR=1;
+function resize(){
+  DPR = Math.min(window.devicePixelRatio||1, 2);
+  W   = canvas.width  = window.innerWidth  * DPR;
+  H   = canvas.height = window.innerHeight * DPR;
+  canvas.style.width  = window.innerWidth  + 'px';
+  canvas.style.height = window.innerHeight + 'px';
 }
 resize();
 window.addEventListener('resize', resize);
 
-// States: System management variables
-var gameMode = 'idle'; // 'idle', 'cruise', 'rush'
-var inGame   = false;
-var H_FRAC   = 0.46; // Custom high-positioned horizon lines to frame car cockpit views
+// ── RRECT helper (Safari compat) ─────────────────────────────────────────────
+function rr(x,y,w,h,r){
+  r=Math.min(r||0,Math.abs(w)/2,Math.abs(h)/2);
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+  ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
+  ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+  ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
+  ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+}
 
-// Controls
-var keys = { left: false, right: false };
-document.addEventListener('keydown', function(e) {
-  if (!inGame) return;
-  if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') keys.left  = true;
-  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = true;
+// ── STATE ─────────────────────────────────────────────────────────────────────
+// Modes: 'idle' (attract/screensaver), 'cruise', 'rush'
+var MODE   = 'idle';
+var inGame = false; // true = player is driving (cruise or rush)
+
+// ── INPUT ─────────────────────────────────────────────────────────────────────
+var keys = {left:false, right:false};
+document.addEventListener('keydown',function(e){
+  if(e.key==='ArrowLeft' ||e.key==='a'||e.key==='A') keys.left =true;
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D') keys.right=true;
 });
-document.addEventListener('keyup', function(e) {
-  if (e.key === 'ArrowLeft'  || e.key === 'a' || e.key === 'A') keys.left  = false;
-  if (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') keys.right = false;
+document.addEventListener('keyup',function(e){
+  if(e.key==='ArrowLeft' ||e.key==='a'||e.key==='A') keys.left =false;
+  if(e.key==='ArrowRight'||e.key==='d'||e.key==='D') keys.right=false;
+});
+var tl=document.getElementById('tl'), tr=document.getElementById('tr');
+tl.addEventListener('touchstart',function(){if(inGame)keys.left =true;},{passive:true});
+tl.addEventListener('touchend',  function(){keys.left =false;},{passive:true});
+tl.addEventListener('touchcancel',function(){keys.left=false;});
+tr.addEventListener('touchstart',function(){if(inGame)keys.right=true;},{passive:true});
+tr.addEventListener('touchend',  function(){keys.right=false;},{passive:true});
+tr.addEventListener('touchcancel',function(){keys.right=false;});
+
+// Drag steering — hold and drag anywhere to steer smoothly
+var dragStartX=null, dragLastX=null, isDragging=false;
+var DRAG_THRESHOLD=6; // px before considered a drag (not a tap)
+
+function onDragStart(clientX,clientY){
+  // Ignore if over radio button area
+  var bounds=window._radioBtnBounds;
+  if(bounds){
+    var dpr=DPR||1;
+    var cx=clientX*dpr, cy=clientY*dpr;
+    if(cx>=bounds.x&&cx<=bounds.x+bounds.w&&cy>=bounds.y&&cy<=bounds.y+bounds.h) return;
+  }
+  dragStartX=clientX; dragLastX=clientX; isDragging=false;
+}
+function onDragMove(clientX){
+  if(dragStartX===null) return;
+  var dx=clientX-dragStartX;
+  if(Math.abs(dx)>DRAG_THRESHOLD) isDragging=true;
+  if(!isDragging||!inGame) return;
+  var delta=clientX-dragLastX;
+  dragLastX=clientX;
+  // Accumulate drag into lane target — sensitivity tuned for finger width
+  var sensitivity=0.012;
+  car.laneXTarget=Math.max(-1,Math.min(1,car.laneXTarget+delta*sensitivity));
+  // Map continuous laneXTarget back to nearest lane
+  var newLane=Math.round(car.laneXTarget+1);
+  newLane=Math.max(0,Math.min(LANES-1,newLane));
+  car.lane=newLane;
+  // Also drive wheel directly from drag
+  car.wheelTarget=(car.laneXTarget)*48;
+}
+function onDragEnd(){
+  dragStartX=null; dragLastX=null; isDragging=false;
+}
+
+canvas.addEventListener('touchstart',function(e){
+  if(e.touches.length===1) onDragStart(e.touches[0].clientX,e.touches[0].clientY);
+},{passive:true});
+canvas.addEventListener('touchmove',function(e){
+  if(e.touches.length===1) onDragMove(e.touches[0].clientX);
+  e.preventDefault();
+},{passive:false});
+canvas.addEventListener('touchend',function(e){
+  if(!isDragging&&e.changedTouches.length){
+    // It was a tap — check radio button
+    var t=e.changedTouches[0];
+    var bounds=window._radioBtnBounds;
+    if(bounds){
+      var dpr=DPR||1;
+      var cx=t.clientX*dpr, cy=t.clientY*dpr;
+      if(cx>=bounds.x&&cx<=bounds.x+bounds.w&&cy>=bounds.y&&cy<=bounds.y+bounds.h){
+        if(window.radioToggle) window.radioToggle();
+      }
+    }
+  }
+  onDragEnd();
+},{passive:true});
+
+// Mouse drag for desktop testing
+canvas.addEventListener('mousedown',function(e){ onDragStart(e.clientX,e.clientY); });
+canvas.addEventListener('mousemove',function(e){ if(e.buttons) onDragMove(e.clientX); });
+canvas.addEventListener('mouseup',function(e){
+  if(!isDragging){
+    var bounds=window._radioBtnBounds;
+    if(bounds){
+      var dpr=DPR||1;
+      var cx=e.clientX*dpr, cy=e.clientY*dpr;
+      if(cx>=bounds.x&&cx<=bounds.x+bounds.w&&cy>=bounds.y&&cy<=bounds.y+bounds.h){
+        if(window.radioToggle) window.radioToggle();
+      }
+    }
+  }
+  onDragEnd();
 });
 
-var tl = document.getElementById('touch-left');
-var tr = document.getElementById('touch-right');
-tl.addEventListener('touchstart', function() { if(inGame) keys.left  = true; }, { passive: true });
-tl.addEventListener('touchend',   function() { keys.left  = false; }, { passive: true });
-tr.addEventListener('touchstart', function() { if(inGame) keys.right = true; }, { passive: true });
-tr.addEventListener('touchend',   function() { keys.right = false; }, { passive: true });
+// ── CAR ───────────────────────────────────────────────────────────────────────
+var LANES=3;
+var car={
+  lane:1, laneX:0, laneXTarget:0,
+  wheel:0,        // current steering wheel angle deg
+  wheelTarget:0,  // target wheel angle deg
+  cooldown:0,
+  crashFlash:0
+};
+function laneToNorm(l){return l-1;} // -1,0,1
 
-// Simulation Vehicles
-var LANES = 3;
-var car = { lane: 1, laneX: 0, laneXTarget: 0, speedShift: 0.05, wheelRotation: 0 };
-
-// Auto Pilot (Idle Mode)
-var idleState = { laneTimer: 0, actionCooldown: 0 };
-
-function laneToX(lane) { return (lane - 1); }
-
-// Horizon Map Generation
-var ROAD_SEGS_TOTAL = 600;
-var NUM_DRAW_SEGS   = 130;
-var roadSegs = [];
-var scrollPos = 0;
-
-function initRoad() {
-  roadSegs = [];
-  for (var i = 0; i < ROAD_SEGS_TOTAL; i++) {
-    var phase = (i / ROAD_SEGS_TOTAL) * Math.PI * 8;
-    var curve = Math.sin(phase * 0.5) * 0.35 + Math.sin(phase * 0.2) * 0.15;
-    roadSegs.push({ curve: curve, alt: i % 2 });
+// ── ROAD ──────────────────────────────────────────────────────────────────────
+var NSEGS=600, NDRAW=160;
+var road=[], scroll=0;
+function initRoad(){
+  road=[];
+  for(var i=0;i<NSEGS;i++){
+    var p=(i/NSEGS)*Math.PI*10;
+    road.push({c:Math.sin(p*0.6)*0.4+Math.sin(p*0.25)*0.2, alt:i%2});
   }
 }
 
-function project(frac) {
-  var depth = 0.94;
-  var scale = 1 / (1 - frac * depth + 0.001);
-  var horizonY = H * H_FRAC;
-  var y = horizonY + frac * (H * 0.62 - horizonY); // Compress drawing floor to clear space for dashboard graphics
-  var roadHalfW = scale * W * 0.32;
-  return { y: y, roadHalfW: roadHalfW, scale: scale };
+// Road projection — returns screen y and road half-width for a 0-1 depth fraction
+// The road fills only the lower portion of the windshield area
+function proj(frac){
+  // True perspective: scale grows as frac -> 1 (near camera)
+  var dp=0.97, sc=1/(1-frac*dp+0.001);
+  var hy=H*HY;
+  // Non-linear Y: segments accelerate toward camera (pow gives rush feeling)
+  var roadBot=H*0.624; // meet exact dash top
+  var y=hy+(roadBot-hy)*Math.pow(frac,0.52);
+  // Road half-width: narrower constant so road doesn't overfill at near distance
+  // but still wide enough for 3 visible lanes
+  var hw=sc*W*0.115;
+  return {y:y, hw:hw, sc:sc};
 }
 
-// Obstacles
-var obstacles = [];
-var spawnTimer = 0;
-var spawnInterval = 250;
+var HY=0.42; // horizon as fraction of H
 
-function spawnObstacle() {
-  var lane = Math.floor(Math.random() * LANES);
-  var colors = ['#ff2a6d', '#05d9e8', '#f39c12', '#9b59b6', '#2ecc71'];
-  obstacles.push({
-    lane: lane,
-    depth: 0.01,
-    hit: false,
-    missed: false,
-    color: colors[Math.floor(Math.random() * colors.length)]
-  });
+// ── OBSTACLES ─────────────────────────────────────────────────────────────────
+var obs=[], spawnT=0, spawnIv=220;
+function spawnObs(){
+  var cols=['#ff2a6d','#05d9e8','#f39c12','#9b59b6','#2ecc71','#e74c3c'];
+  obs.push({lane:Math.floor(Math.random()*LANES),depth:0.01,hit:false,missed:false,
+            color:cols[Math.floor(Math.random()*cols.length)]});
 }
 
-// Variables Setup
-var distance  = 0;
-var combo     = 0;
-var speed     = 1.0;
-var targetSpd = 1.0;
-var runTime   = 0;
-var waveOffsets = Array.from({length: 12}, () => Math.random());
+// ── METRICS ───────────────────────────────────────────────────────────────────
+var dist=0, combo=0, speed=0.9, tSpeed=0.9, rTime=0, crashLock=0;
 
-// Particles FX
-var particles = [];
-function burst(x, y, color) {
-  for (var i = 0; i < 15; i++) {
-    var ang = Math.random() * Math.PI * 2;
-    var spd = 1 + Math.random() * 4;
-    particles.push({
-      x: x, y: y,
-      vx: Math.cos(ang) * spd, vy: Math.sin(ang) * spd - 1,
-      life: 1.0, decay: 0.03 + Math.random() * 0.03,
-      size: 2 + Math.random() * 3,
-      color: color || '#ff2d78'
-    });
+// ── PARTICLES ─────────────────────────────────────────────────────────────────
+var parts=[];
+function burst(x,y,col){
+  for(var i=0;i<14;i++){
+    var a=Math.random()*Math.PI*2, s=1+Math.random()*4;
+    parts.push({x:x,y:y,vx:Math.cos(a)*s,vy:Math.sin(a)*s-0.8,
+                life:1,dec:0.03+Math.random()*0.03,r:2+Math.random()*3,col:col||'#00ffe7'});
   }
 }
 
-// Screen Shake
-var shakeMag = 0, shakeX = 0, shakeY = 0;
-function shake(m) { shakeMag = Math.max(shakeMag, m); }
+// ── SHAKE ─────────────────────────────────────────────────────────────────────
+var shk=0,shkX=0,shkY=0;
+function shake(m){shk=Math.max(shk,m);}
 
-var SIGNS = [
-  '"RIDE THE WAVE"', '"CRUISE FOREVER"', '"NEON NIGHTS AWAIT"', 
-  '"RADIO PUMPO STATION"', '"INFINITE HIGHWAY"', '"DON\'T LOOK BACK"'
+// ── STARS ─────────────────────────────────────────────────────────────────────
+var stars=[];
+for(var si=0;si<90;si++){
+  stars.push({x:Math.random(),y:Math.random()*HY,
+              s:0.4+Math.random()*1.4,a:0.2+Math.random()*0.6,
+              tw:Math.random()*Math.PI*2, twSpd:0.01+Math.random()*0.03});
+}
+
+// ── BILLBOARD MESSAGES ────────────────────────────────────────────────────────
+var SIGNS=[
+  '"You made it this far."','"No destination required."',
+  '"Maybe today changes everything."','"Are you becoming who you imagined?"',
+  '"Keep driving."','"Radio Pumpo. Always on."',
+  '"Still here. Still moving."','"The road remembers."'
 ];
-var signTimer = 1000;
-function showSign() {
-  var el = document.getElementById('billboard-msg');
-  el.textContent = SIGNS[Math.floor(Math.random() * SIGNS.length)];
-  el.style.opacity = '1';
-  setTimeout(function() { el.style.opacity = '0'; }, 3000);
+var signT=1400, lastSign=-1;
+function showSign(){
+  var i; do{i=Math.floor(Math.random()*SIGNS.length);}while(i===lastSign);
+  lastSign=i;
+  var el=document.getElementById('billboard');
+  el.textContent=SIGNS[i]; el.style.opacity='1';
+  setTimeout(function(){el.style.opacity='0';},3200);
 }
 
-// Environment Background Coordinates
-var stars = [];
-for (var si = 0; si < 80; si++) {
-  stars.push({ x: Math.random(), y: Math.random() * H_FRAC, size: 0.5 + Math.random() * 1.5, alpha: 0.3 + Math.random() * 0.6 });
+// ── AI / IDLE DRIVER ──────────────────────────────────────────────────────────
+var ai={laneTimer:0, targetLane:1, sinPhase:0};
+function aiUpdate(dt){
+  ai.sinPhase+=dt*0.008;
+  ai.laneTimer+=dt;
+  // Change lane every ~3-5 seconds, avoid occupied lanes
+  if(ai.laneTimer>200+Math.random()*80){
+    ai.laneTimer=0;
+    var clear=[0,1,2];
+    for(var i=obs.length-1;i>=0;i--){
+      if(obs[i].depth>0.35&&obs[i].depth<0.75) clear=clear.filter(function(l){return l!==obs[i].lane;});
+    }
+    if(clear.length>0) ai.targetLane=clear[Math.floor(Math.random()*clear.length)];
+  }
+  car.lane=ai.targetLane;
 }
 
-function startActiveGame(mode) {
-  gameMode = mode;
-  inGame = true;
-  distance = 0; combo = 0; runTime = 0;
-  obstacles = []; particles = [];
-  car.lane = 1; car.laneXTarget = laneToX(car.lane);
-  
-  var badge = document.getElementById('mode-badge');
-  badge.textContent = mode === 'rush' ? 'RUSH MODE' : 'CRUISE MODE';
-  badge.style.color = mode === 'rush' ? '#ff2d78' : '#00ffe7';
-  badge.style.textShadow = '0 0 10px ' + (mode === 'rush' ? '#ff2d78' : '#00ffe7');
+// ── START GAME ────────────────────────────────────────────────────────────────
+function startGame(mode){
+  MODE=mode; inGame=(mode!=='idle');
+  dist=0;combo=0;rTime=0;scroll=0;
+  obs=[];parts=[];spawnT=0;crashLock=0;shk=0;
+  car.lane=1;car.laneX=0;car.laneXTarget=0;car.wheel=0;car.wheelTarget=0;car.cooldown=0;car.crashFlash=0;
+  speed=tSpeed=(mode==='rush')?1.9:1.0;
+  spawnIv=(mode==='rush')?110:240;
+  ai.laneTimer=0;ai.targetLane=1;ai.sinPhase=0;
+  signT=1200;
 
-  document.getElementById('menu-screen').style.opacity = '0';
-  setTimeout(() => document.getElementById('menu-screen').style.display = 'none', 400);
+  var badge=document.getElementById('mode-badge');
+  if(mode==='rush'){badge.textContent='RUSH MODE';badge.style.color='#ff2d78';badge.style.textShadow='0 0 10px #ff2d78';}
+  else if(mode==='cruise'){badge.textContent='CRUISE MODE';badge.style.color='#00ffe7';badge.style.textShadow='0 0 10px #00ffe7';}
+  else{badge.textContent='IDLE';badge.style.color='#b24bff';badge.style.textShadow='0 0 10px #b24bff';}
+
+  if(inGame){
+    tl.style.pointerEvents='all';
+    tr.style.pointerEvents='all';
+  }
 }
 
-// Core Game Loop
-var lastTs = 0;
-function loop(ts) {
-  var dt = Math.min((ts - lastTs) / 16.667, 3);
-  lastTs = ts;
-
-  update(dt);
-  render();
-
+// ── GAME LOOP ─────────────────────────────────────────────────────────────────
+var lastTs=0;
+function loop(ts){
+  var dt=Math.min((ts-lastTs)/16.667,3); lastTs=ts;
+  update(dt); render();
   requestAnimationFrame(loop);
 }
 
-function update(dt) {
-  runTime += dt;
+// ── UPDATE ────────────────────────────────────────────────────────────────────
+function update(dt){
+  rTime+=dt;
 
-  // Mode Speeds Config
-  if (gameMode === 'idle') {
-    targetSpd = 0.85;
-    speed += (targetSpd - speed) * 0.05 * dt;
+  // Speed targets
+  if(MODE==='idle'){
+    tSpeed=0.80+Math.sin(rTime*0.005)*0.12;
+  } else if(MODE==='cruise'){
+    tSpeed=1.05+Math.sin(rTime*0.008)*0.15;
+  } else {
+    var ramp=rTime<200?1.9:rTime<600?2.5:rTime<1200?3.2:4.0;
+    tSpeed=ramp; spawnIv=Math.max(45,110-rTime*0.04);
+  }
+  speed+=(tSpeed-speed)*0.03*dt;
 
-    // AI Driving Simulation logic
-    idleState.laneTimer += dt;
-    if (idleState.laneTimer > 120) {
-      idleState.laneTimer = 0;
-      // Scan upcoming threats to steer out of the path dynamically
-      var clearLanes = [0, 1, 2];
-      obstacles.forEach(o => {
-        if (o.depth > 0.4 && o.depth < 0.8) {
-          clearLanes = clearLanes.filter(l => l !== o.lane);
-        }
-      });
-      if (clearLanes.length > 0) {
-        car.lane = clearLanes[Math.floor(Math.random() * clearLanes.length)];
-      } else {
-        car.lane = Math.floor(Math.random() * LANES);
+  // Input / AI steering
+  if(MODE==='idle'){
+    aiUpdate(dt);
+  } else {
+    if(car.cooldown>0){car.cooldown-=dt;}
+    else{
+      if(keys.left &&car.lane>0)      {car.lane--;car.cooldown=MODE==='rush'?12:22;}
+      if(keys.right&&car.lane<LANES-1){car.lane++;car.cooldown=MODE==='rush'?12:22;}
+    }
+  }
+
+  // Lane interpolation — cruise is slow and dreamy
+  car.laneXTarget=laneToNorm(car.lane);
+  var lerpF=MODE==='rush'?0.10:MODE==='cruise'?0.035:0.045;
+  var diff=car.laneXTarget-car.laneX;
+  car.laneX+=diff*lerpF*dt;
+
+  // Steering wheel angle follows lane diff
+  car.wheelTarget=diff*48;
+  car.wheel+=( car.wheelTarget-car.wheel)*0.14*dt;
+
+  // Road scroll
+  scroll=(scroll+speed*dt*0.032)%NSEGS;
+
+  // Distance
+  dist+=speed*dt*0.00028;
+
+  // Spawn
+  spawnT+=dt;
+  if(spawnT>=spawnIv){spawnT=0;if(MODE==='rush'||obs.length<3)spawnObs();}
+
+  // Obstacle logic
+  for(var i=obs.length-1;i>=0;i--){
+    var o=obs[i];
+    o.depth+=speed*dt*0.0065*(0.18+o.depth*2.8);
+
+    if(!o.missed&&!o.hit&&o.depth>0.70&&o.depth<0.84){
+      if(o.lane!==car.lane){
+        o.missed=true;
+        if(Math.abs(o.lane-car.lane)===1&&inGame) doNearMiss();
       }
     }
-  } else if (gameMode === 'cruise') {
-    targetSpd = 1.1 + Math.sin(runTime * 0.01) * 0.15;
-    speed += (targetSpd - speed) * 0.03 * dt;
-    
-    // Smooth input evaluations
-    if (keys.left && car.lane > 0) { car.lane--; keys.left = false; }
-    if (keys.right && car.lane < LANES - 1) { car.lane++; keys.right = false; }
-  } else if (gameMode === 'rush') {
-    targetSpd = 2.0 + (runTime * 0.001);
-    speed += (targetSpd - speed) * 0.02 * dt;
-
-    if (keys.left && car.lane > 0) { car.lane--; keys.left = false; }
-    if (keys.right && car.lane < LANES - 1) { car.lane++; keys.right = false; }
-  }
-
-  // Smooth Interpolated Steer Transition Updates
-  car.laneXTarget = laneToX(car.lane);
-  var speedFactor = (gameMode === 'cruise' || gameMode === 'idle') ? 0.06 : 0.14; // Gradual slow glide versus racing speeds
-  var diffX = car.laneXTarget - car.laneX;
-  car.laneX += diffX * speedFactor * dt;
-  car.wheelRotation = car.wheelRotation * 0.82 + (diffX * 42) * 0.18;
-
-  // Environment Ticks
-  scrollPos = (scrollPos + speed * dt * 0.02) % ROAD_SEGS_TOTAL;
-  distance += speed * dt * 0.0003;
-
-  // Obstacle Generation engine logic
-  spawnInterval = gameMode === 'rush' ? 90 : 180;
-  spawnTimer += dt;
-  if (spawnTimer >= spawnInterval) {
-    spawnTimer = 0;
-    spawnObstacle();
-  }
-
-  // Handle processing items array down
-  for (var i = obstacles.length - 1; i >= 0; i--) {
-    var o = obstacles[i];
-    o.depth += speed * dt * 0.004 * (0.2 + o.depth * 2.5);
-
-    // Collision Check boundaries
-    if (!o.hit && !o.missed && o.depth > 0.78 && o.depth < 0.90) {
-      var currentCarLanePosition = Math.round(car.laneX + 1);
-      if (o.lane === currentCarLanePosition) {
-        if (gameMode !== 'idle') {
-          o.hit = true;
-          triggerCrash();
-        } else {
-          // If in screen-saver attract mode, shift lane automatically to bypass
-          car.lane = (car.lane + 1) % 3;
-        }
-      } else if (Math.abs(o.lane - currentCarLanePosition) <= 1) {
-        o.missed = true;
-        if (gameMode !== 'idle') triggerNearMiss();
-      }
+    if(!o.hit&&!o.missed&&o.depth>0.76&&o.depth<0.90&&o.lane===car.lane){
+      o.hit=true;
+      if(inGame) doCrash();
+      else{car.lane=(car.lane+1)%LANES;} // AI avoids
     }
-
-    if (o.depth > 1.1) obstacles.splice(i, 1);
+    if(o.depth>1.08) obs.splice(i,1);
   }
 
-  // Engine FX arrays ticks
-  for (var pi = particles.length - 1; pi >= 0; pi--) {
-    var p = particles[pi];
-    p.x += p.vx * dt; p.y += p.vy * dt;
-    p.life -= p.decay * dt;
-    if (p.life <= 0) particles.splice(pi, 1);
+  // Particles
+  for(var pi=parts.length-1;pi>=0;pi--){
+    var p=parts[pi];
+    p.x+=p.vx*dt; p.y+=p.vy*dt; p.vy+=0.12*dt;
+    p.life-=p.dec*dt;
+    if(p.life<=0) parts.splice(pi,1);
   }
 
-  // Math updates for shake magnitudes
-  if (shakeMag > 0.1) {
-    shakeX = (Math.random() - 0.5) * shakeMag;
-    shakeY = (Math.random() - 0.5) * shakeMag;
-    shakeMag *= 0.88 * dt;
-  } else { shakeX = 0; shakeY = 0; }
+  // Shake decay
+  if(shk>0.3){shkX=(Math.random()-0.5)*shk*2;shkY=(Math.random()-0.5)*shk*2;shk*=0.82;}
+  else{shkX=shkY=shk=0;}
 
-  signTimer -= dt;
-  if (signTimer <= 0) { signTimer = 1200 + Math.random() * 800; showSign(); }
+  if(car.crashFlash>0) car.crashFlash-=dt;
+  if(crashLock>0) crashLock-=dt;
+
+  // Billboard
+  signT-=dt;
+  if(signT<=0){showSign();signT=1300+Math.random()*600;}
+
+  // Star twinkle
+  for(var sti=0;sti<stars.length;sti++) stars[sti].tw+=stars[sti].twSpd*dt;
 }
 
-function triggerNearMiss() {
+// ── EVENTS ────────────────────────────────────────────────────────────────────
+var nmTO=null;
+function doNearMiss(){
   combo++;
-  var fl = document.getElementById('near-miss-flash');
-  fl.textContent = 'NEAR MISS x' + combo;
-  fl.style.opacity = '1';
-  setTimeout(() => fl.style.opacity = '0', 800);
-  shake(6);
-  var rhw = project(0.85).roadHalfW;
-  var targetDrawX = W / 2 + car.laneX * rhw * 0.65;
-  burst(targetDrawX, H * 0.55, '#00ffe7');
+  var el=document.getElementById('near-miss');
+  el.textContent=combo>=3?('NEAR MISS  x'+combo+'  +'+(combo*100)):('NEAR MISS  +50');
+  el.style.opacity='1';
+  if(nmTO) clearTimeout(nmTO);
+  nmTO=setTimeout(function(){el.style.opacity='0';},850);
+  shake(4);
+  var rh=proj(0.84).hw;
+  burst(W/2+car.laneX*rh*0.55, H*0.56, '#00ffe7');
 }
 
-function triggerCrash() {
-  combo = 0;
-  shake(18);
-  var ov = document.getElementById('crash-overlay');
-  ov.style.opacity = '1';
-  setTimeout(() => ov.style.opacity = '0', 150);
-  speed *= 0.5;
+function doCrash(){
+  if(crashLock>0) return;
+  crashLock=32; combo=0;
+  shake(MODE==='rush'?14:7);
+  car.crashFlash=18;
+  var ov=document.getElementById('crash-flash');
+  ov.style.opacity='1';
+  setTimeout(function(){ov.style.opacity='0';},180);
+  speed*=0.52; tSpeed*=0.72;
 }
 
-// Rendering graphics engine
-function render() {
+// ── RENDER ────────────────────────────────────────────────────────────────────
+function render(){
   ctx.save();
-  ctx.clearRect(0, 0, W, H);
-  if (shakeMag > 0.1) ctx.translate(shakeX, shakeY);
+  ctx.clearRect(0,0,W,H);
+  if(shk>0.3) ctx.translate(shkX,shkY);
 
-  var hy = H * H_FRAC;
+  var hy=H*HY;
 
-  // Vector render passes layers layout structure
+  // World layers
   drawSky(hy);
   drawStars(hy);
   drawSun(hy);
   drawCity(hy);
+  drawPalms(hy);
   drawRoad(hy);
-  drawObstacles(hy);
-  drawPlayerCar(hy);
+  drawObs(hy);
   drawParticles();
-  
-  // Immersive Cockpit Overlay Pass
-  drawDashboardLayout();
+
+  // Cockpit drawn last — on top of world
+  drawCockpit(hy);
 
   ctx.restore();
 }
 
-function drawSky(hy) {
-  var g = ctx.createLinearGradient(0, 0, 0, hy);
-  g.addColorStop(0, '#0a0016');
-  g.addColorStop(0.6, '#1a0033');
-  g.addColorStop(1, '#560047');
-  ctx.fillStyle = g;
-  ctx.fillRect(0, 0, W, hy);
+// ── SKY ───────────────────────────────────────────────────────────────────────
+function drawSky(hy){
+  var g=ctx.createLinearGradient(0,0,0,hy);
+  g.addColorStop(0,'#07000f');
+  g.addColorStop(0.55,'#18002e');
+  g.addColorStop(1,'#4a0040');
+  ctx.fillStyle=g; ctx.fillRect(0,0,W,hy);
+  // Horizon glow
+  var hg=ctx.createLinearGradient(0,hy-55,0,hy+15);
+  hg.addColorStop(0,'rgba(255,0,120,0)');
+  hg.addColorStop(0.5,'rgba(255,0,120,0.22)');
+  hg.addColorStop(1,'rgba(255,0,80,0)');
+  ctx.fillStyle=hg; ctx.fillRect(0,hy-55,W,70);
 }
 
-function drawStars(hy) {
+// ── STARS ─────────────────────────────────────────────────────────────────────
+function drawStars(hy){
   ctx.save();
-  for (var i = 0; i < stars.length; i++) {
-    var s = stars[i];
-    ctx.fillStyle = '#ffffff';
-    ctx.globalAlpha = s.alpha * (0.5 + Math.sin(runTime * 0.02 + i) * 0.5);
-    ctx.fillRect(s.x * W, s.y * hy, s.size, s.size);
-  }
-  ctx.restore();
-}
-
-function drawSun(hy) {
-  var cx = W * 0.5;
-  var cy = hy * 0.8;
-  var r = Math.min(W, H) * 0.18;
-  
-  ctx.save();
-  var gradient = ctx.createLinearGradient(cx, cy - r, cx, cy + r);
-  gradient.addColorStop(0, '#fffb00');
-  gradient.addColorStop(0.3, '#ff007c');
-  gradient.addColorStop(1, '#3a0037');
-  
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, 0, Math.PI * 2);
-  ctx.clip();
-  
-  ctx.fillStyle = gradient;
-  ctx.fillRect(cx - r, cy - r, r * 2, r * 2);
-
-  // Digital Grid Cut Lines Line bars
-  var sliceCount = 10;
-  ctx.fillStyle = '#1a0033';
-  for (var i = 0; i < sliceCount; i++) {
-    var iy = cy - r + (i / sliceCount) * r * 2;
-    var thickness = 2 + (i * 1.5);
-    if (iy > cy - r * 0.2) {
-      ctx.fillRect(cx - r, iy, r * 2, thickness);
+  for(var i=0;i<stars.length;i++){
+    var s=stars[i];
+    var tw=0.55+Math.sin(s.tw)*0.45;
+    ctx.globalAlpha=s.a*tw;
+    ctx.fillStyle='#fff';
+    if(s.s>1.1){
+      // Cross sparkle
+      ctx.fillRect(s.x*W-s.s,s.y*hy,s.s*2,s.s*0.35);
+      ctx.fillRect(s.x*W-s.s*0.18,s.y*hy-s.s*0.9,s.s*0.35,s.s*1.8);
+    } else {
+      ctx.fillRect(s.x*W,s.y*hy,s.s,s.s);
     }
   }
-  ctx.restore();
+  ctx.globalAlpha=1; ctx.restore();
 }
 
-function drawCity(hy) {
+// ── RETROWAVE SUN ─────────────────────────────────────────────────────────────
+function drawSun(hy){
+  var cx=W*0.5, cy=hy*0.68, r=Math.min(W*0.5,hy)*0.28;
   ctx.save();
-  var count = 25;
-  ctx.fillStyle = 'rgba(12, 2, 28, 0.9)';
-  for (var i = 0; i < count; i++) {
-    var w = W * 0.08;
-    var h = hy * (0.3 + Math.abs(Math.sin(i * 9.7)) * 0.4);
-    var x = (i * W * 0.045) - (w * 0.2);
-    ctx.fillRect(x, hy - h, w, h);
-    
-    // Top roof edge outline styling accent lights lines
-    ctx.fillStyle = '#ff007c';
-    ctx.fillRect(x, hy - h, w, 1.5);
-    ctx.fillStyle = 'rgba(12, 2, 28, 0.9)';
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.clip();
+
+  // Gradient body
+  var sg=ctx.createLinearGradient(cx,cy-r,cx,cy+r);
+  sg.addColorStop(0,'#fffbe0');
+  sg.addColorStop(0.18,'#ffcc00');
+  sg.addColorStop(0.42,'#ff2d9a');
+  sg.addColorStop(0.75,'#cc0066');
+  sg.addColorStop(1,'#550030');
+  ctx.fillStyle=sg; ctx.fillRect(cx-r,cy-r,r*2,r*2);
+
+  // Horizontal stripe cuts — denser toward bottom
+  var n=11;
+  for(var i=0;i<n;i++){
+    var t=i/n;
+    var sy=cy-r*0.05+t*r*1.05;
+    var chord=Math.sqrt(Math.max(0,r*r-(sy-cy)*(sy-cy)))*2;
+    var th=r/(n*1.6)*(1+t*1.4);
+    ctx.fillStyle='rgba(8,0,18,'+(0.5+t*0.38)+')';
+    ctx.fillRect(cx-chord/2,sy,chord,th);
+  }
+  ctx.restore();
+
+  // Outer glow corona
+  var og=ctx.createRadialGradient(cx,cy,r*0.72,cx,cy,r*2.4);
+  og.addColorStop(0,'rgba(255,40,120,0.20)');
+  og.addColorStop(0.5,'rgba(180,0,80,0.07)');
+  og.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=og;
+  ctx.beginPath(); ctx.arc(cx,cy,r*2.4,0,Math.PI*2); ctx.fill();
+}
+
+// ── CITY SKYLINE ──────────────────────────────────────────────────────────────
+function drawCity(hy){
+  // Back layer — taller, faint
+  var back=[
+    [0.00,0.06,0.16],[0.07,0.04,0.22],[0.12,0.05,0.14],[0.18,0.03,0.26],
+    [0.22,0.06,0.18],[0.29,0.04,0.13],[0.34,0.07,0.22],[0.42,0.03,0.28],
+    [0.46,0.05,0.16],[0.52,0.04,0.24],[0.57,0.06,0.14],[0.64,0.04,0.20],
+    [0.69,0.03,0.27],[0.73,0.06,0.16],[0.80,0.04,0.22],[0.85,0.06,0.14],
+    [0.92,0.04,0.20],[0.97,0.03,0.18]
+  ];
+  ctx.save();
+  ctx.fillStyle='rgba(12,0,26,0.85)';
+  for(var i=0;i<back.length;i++){
+    var b=back[i], bx=b[0]*W, bw=b[1]*W, bh=b[2]*hy*0.72;
+    ctx.fillRect(bx,hy-bh,bw,bh);
+  }
+  // Tiny windows
+  for(var i=0;i<back.length;i++){
+    var b=back[i], bx=b[0]*W, bw=b[1]*W, bh=b[2]*hy*0.72;
+    for(var wy=hy-bh+5;wy<hy-5;wy+=8){
+      for(var wx=bx+3;wx<bx+bw-3;wx+=7){
+        if(Math.random()>0.5){
+          ctx.fillStyle=Math.random()>0.55?'rgba(0,200,255,0.5)':'rgba(255,60,160,0.4)';
+          ctx.fillRect(wx,wy,2,3);
+        }
+      }
+    }
+  }
+  // Front layer — darker, lower
+  var front=[
+    [0.00,0.08,0.10],[0.09,0.06,0.14],[0.16,0.09,0.08],[0.26,0.07,0.13],
+    [0.34,0.08,0.09],[0.43,0.06,0.14],[0.66,0.06,0.12],[0.73,0.09,0.10],
+    [0.83,0.07,0.15],[0.91,0.08,0.09]
+  ];
+  ctx.fillStyle='rgba(5,0,12,0.97)';
+  for(var i=0;i<front.length;i++){
+    var b=front[i];
+    ctx.fillRect(b[0]*W,hy-b[2]*hy,b[1]*W,b[2]*hy);
+    // Rooftop accent line
+    ctx.fillStyle='rgba(255,0,120,0.55)';
+    ctx.fillRect(b[0]*W,hy-b[2]*hy,b[1]*W,1.5);
+    ctx.fillStyle='rgba(5,0,12,0.97)';
   }
   ctx.restore();
 }
 
-function drawRoad(hy) {
-  var segments = [];
-  var runningCurve = 0;
-  
-  for (var n = 0; n < NUM_DRAW_SEGS; n++) {
-    var frac = n / NUM_DRAW_SEGS;
-    var proj = project(frac);
-    var idx = Math.floor(scrollPos + n * 0.6) % ROAD_SEGS_TOTAL;
-    var seg = roadSegs[idx < 0 ? idx + ROAD_SEGS_TOTAL : idx];
-    
-    runningCurve += seg.curve * (1 - frac) * 0.35;
-    var cx = W / 2 + (runningCurve * W * 0.4);
-    segments.push({ alt: seg.alt, y: proj.y, left: cx - proj.roadHalfW, right: cx + proj.roadHalfW, w: proj.roadHalfW * 2 });
-  }
-
-  // Draw polygons backward floor panels layout sorting loops
-  for (var i = segments.length - 1; i > 0; i--) {
-    var curr = segments[i];
-    var prev = segments[i - 1];
-
-    ctx.fillStyle = curr.alt ? '#0d021f' : '#080014';
+// ── PALMS ─────────────────────────────────────────────────────────────────────
+function drawPalms(hy){
+  dPalm(W*0.05,hy,hy*0.58,-1);
+  dPalm(W*0.95,hy,hy*0.58, 1);
+  dPalm(W*0.15,hy,hy*0.40,-1);
+  dPalm(W*0.85,hy,hy*0.40, 1);
+}
+function dPalm(x,gy,h,dir){
+  var lean=dir*h*0.14;
+  ctx.save();
+  ctx.strokeStyle='#06001a'; ctx.lineCap='round';
+  ctx.lineWidth=Math.max(2,h*0.035);
+  ctx.beginPath();
+  ctx.moveTo(x,gy);
+  ctx.bezierCurveTo(x+lean*0.3,gy-h*0.38,x+lean*0.72,gy-h*0.72,x+lean,gy-h);
+  ctx.stroke();
+  var tx=x+lean, ty=gy-h;
+  var fronds=[[-0.5,-0.28],[0.5,-0.24],[0,-0.52],[-0.34,-0.52],[0.34,-0.48],[-0.62,-0.14],[0.62,-0.11]];
+  ctx.lineWidth=Math.max(1.5,h*0.02);
+  for(var fi=0;fi<fronds.length;fi++){
+    var fx=fronds[fi][0], fy=fronds[fi][1];
     ctx.beginPath();
-    ctx.moveTo(prev.left, prev.y);
-    ctx.lineTo(prev.right, prev.y);
-    ctx.lineTo(curr.right, curr.y);
-    ctx.lineTo(curr.left, curr.y);
-    ctx.fill();
-
-    // Side Neon Grid Trims
-    ctx.fillStyle = curr.alt ? '#ff007c' : '#b24bff';
-    ctx.fillRect(curr.left - 4, curr.y, 4, 2);
-    ctx.fillRect(curr.right, curr.y, 4, 2);
-    
-    // Continuous light line vectors strip
-    ctx.strokeStyle = '#00ffe7';
-    ctx.lineWidth = 1.5;
-    ctx.beginPath();
-    ctx.moveTo(prev.left, prev.y); ctx.lineTo(curr.left, curr.y);
-    ctx.moveTo(prev.right, prev.y); ctx.lineTo(curr.right, curr.y);
+    ctx.moveTo(tx,ty);
+    ctx.quadraticCurveTo(tx+fx*h*0.28,ty+fy*h*0.32,tx+fx*h*0.52,ty+fy*h*0.48+h*0.09);
     ctx.stroke();
   }
+  ctx.restore();
 }
 
-function drawObstacles(hy) {
-  for (var i = 0; i < obstacles.length; i++) {
-    var o = obstacles[i];
-    if (o.depth < 0.05 || o.depth > 0.95) continue;
-    
-    var proj = project(o.depth);
-    var laneWidth = (proj.roadHalfW * 2) / LANES;
-    // Track center of curve alignment dynamically to space coordinates evenly
-    var targetRoadCenter = W / 2; 
-    
-    var ox = (W / 2) - proj.roadHalfW + (o.lane * laneWidth) + (laneWidth * 0.5);
-    var size = 45 * proj.scale * (W / 1200);
+// ── ROAD ──────────────────────────────────────────────────────────────────────
+function drawRoad(hy){
+  var segs=[], cx2=0;
+  // Camera offset: shift vanishing point horizontally with car.laneX
+  // This makes the world "turn" toward you when steering
+  var camShift = car.laneX * W * 0.055;
 
-    if(o.hit) ctx.globalAlpha = 0.3;
-    
-    // Tail lights glow pass
-    ctx.fillStyle = o.color;
-    rrect(ox - size*0.5, proj.y - size*0.4, size, size*0.4, 4);
-    ctx.fill();
-    
-    // Windows mask frame accent
-    ctx.fillStyle = '#080011';
-    rrect(ox - size*0.4, proj.y - size*0.38, size*0.8, size*0.15, 2);
-    ctx.fill();
+  for(var n=0;n<NDRAW;n++){
+    var frac=n/NDRAW;
+    var p=proj(frac);
+    var idx=Math.floor(scroll+n*0.42)%NSEGS;
+    var seg=road[idx<0?idx+NSEGS:idx];
+    cx2+=seg.c*(1-frac)*0.38;
+    var cx=W/2 + camShift*(1-frac) + cx2*W*0.040;
+    segs.push({seg:seg,y:p.y,l:cx-p.hw,r:cx+p.hw,hw:p.hw});
+  }
 
-    // Brake Lights Dots Indicators matrix
-    ctx.fillStyle = '#ff0055';
-    ctx.fillRect(ox - size * 0.45, proj.y - size * 0.2, size * 0.15, size * 0.08);
-    ctx.fillRect(ox + size * 0.3, proj.y - size * 0.2, size * 0.15, size * 0.08);
-    
-    ctx.globalAlpha = 1.0;
+  // Draw far→near (painter's algorithm)
+  for(var i=segs.length-1;i>0;i--){
+    var c=segs[i], pv=segs[i-1]||{y:hy,l:W/2,r:W/2};
+    dRoadSeg(c,pv,hy);
+  }
+
+  // Wet-road center reflection
+  var last=segs[segs.length-1];
+  var rg=ctx.createLinearGradient(0,hy,0,last.y);
+  rg.addColorStop(0,'rgba(255,0,120,0.22)');
+  rg.addColorStop(0.6,'rgba(255,0,120,0.06)');
+  rg.addColorStop(1,'rgba(0,0,0,0)');
+  ctx.fillStyle=rg;
+  ctx.beginPath();
+  ctx.moveTo(W/2+camShift,hy);
+  ctx.lineTo(last.l+(last.r-last.l)*0.34,last.y);
+  ctx.lineTo(last.l+(last.r-last.l)*0.66,last.y);
+  ctx.closePath(); ctx.fill();
+}
+
+function dRoadSeg(c,pv,hy){
+  var alt=c.seg.alt;
+  // Shoulder
+  ctx.fillStyle=alt?'#0e0018':'#0a0012';
+  ctx.beginPath();
+  ctx.moveTo(0,pv.y); ctx.lineTo(pv.l-W*0.22,pv.y);
+  ctx.lineTo(c.l-W*0.22,c.y); ctx.lineTo(0,c.y);
+  ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(W,pv.y); ctx.lineTo(pv.r+W*0.22,pv.y);
+  ctx.lineTo(c.r+W*0.22,c.y); ctx.lineTo(W,c.y);
+  ctx.closePath(); ctx.fill();
+
+  // Road surface
+  ctx.fillStyle=alt?'#0d0d22':'#09091a';
+  ctx.beginPath();
+  ctx.moveTo(pv.l,pv.y); ctx.lineTo(pv.r,pv.y);
+  ctx.lineTo(c.r,c.y);   ctx.lineTo(c.l,c.y);
+  ctx.closePath(); ctx.fill();
+
+  // Rumble strips
+  var sw=(c.r-c.l)*0.055;
+  ctx.fillStyle=alt?'#cc0066':'#440099';
+  ctx.beginPath(); ctx.moveTo(pv.l,pv.y); ctx.lineTo(pv.l+sw,pv.y); ctx.lineTo(c.l+sw,c.y); ctx.lineTo(c.l,c.y); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(pv.r-sw,pv.y); ctx.lineTo(pv.r,pv.y); ctx.lineTo(c.r,c.y); ctx.lineTo(c.r-sw,c.y); ctx.closePath(); ctx.fill();
+
+  var ew=Math.max(0.5,(c.y-pv.y)*0.09);
+  // Edge neon lines
+  ctx.save();
+  ctx.shadowColor='#ff0099'; ctx.shadowBlur=5;
+  ctx.strokeStyle='rgba(255,0,153,0.9)'; ctx.lineWidth=ew;
+  ctx.beginPath(); ctx.moveTo(pv.l,pv.y); ctx.lineTo(c.l,c.y); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(pv.r,pv.y); ctx.lineTo(c.r,c.y); ctx.stroke();
+  ctx.restore();
+
+  // Centre dash
+  if(alt){
+    var pc=(pv.l+pv.r)/2, cc2=(c.l+c.r)/2;
+    ctx.strokeStyle='rgba(200,240,255,0.82)'; ctx.lineWidth=Math.max(0.4,ew*0.45);
+    ctx.beginPath(); ctx.moveTo(pc,pv.y); ctx.lineTo(cc2,c.y); ctx.stroke();
+  }
+  // Lane dividers
+  if(alt){
+    for(var l=1;l<LANES;l++){
+      var t=l/LANES;
+      ctx.strokeStyle='rgba(0,180,255,0.10)'; ctx.lineWidth=Math.max(0.3,ew*0.28);
+      ctx.beginPath();
+      ctx.moveTo(pv.l+(pv.r-pv.l)*t,pv.y);
+      ctx.lineTo(c.l+(c.r-c.l)*t,c.y);
+      ctx.stroke();
+    }
   }
 }
 
-function drawPlayerCar(hy) {
-  // Rendered embedded depth layout scale variables config
-  var proj = project(0.85);
-  var laneWidth = (proj.roadHalfW * 2) / LANES;
-  var targetCarX = (W / 2) - proj.roadHalfW + (car.laneX + 1) * laneWidth + (laneWidth * 0.5);
-  var targetCarY = proj.y + H * 0.02;
+// ── OBSTACLES ─────────────────────────────────────────────────────────────────
+function drawObs(hy){
+  for(var i=0;i<obs.length;i++){
+    var o=obs[i];
+    if(o.depth<0.04||o.depth>1.02) continue;
+    var p=proj(o.depth);
+    var lt=(o.lane+0.5)/LANES;
+    // Apply same camera shift as road
+    var camShift=car.laneX*W*0.055;
+    var roadLeft = W/2 + camShift*(1-o.depth) - p.hw;
+    var ox = roadLeft + lt * p.hw * 2;
+    var sc2=0.45+o.depth*3.6;
+    var ow=Math.min(p.hw*0.56,52*sc2*(W/820));
+    var oh=ow*0.50;
 
-  // Hidden beneath dashboard layout viewpoint view framework context.
-  // Render minimal hood visual element indicators if scaling extends outward.
+    ctx.save();
+    ctx.globalAlpha=o.hit?0.12:1;
+
+    // Neon glow shadow under car
+    ctx.save();
+    ctx.shadowColor=o.color; ctx.shadowBlur=ow*0.38;
+    ctx.fillStyle=o.color+'33';
+    ctx.beginPath(); ctx.ellipse(ox,p.y+oh*0.12,ow*0.46,oh*0.14,0,0,Math.PI*2); ctx.fill();
+    ctx.restore();
+
+    // Body
+    ctx.fillStyle=o.color; rr(ox-ow/2,p.y-oh,ow,oh,Math.max(2,oh*0.1)); ctx.fill();
+    // Roof
+    ctx.fillStyle=shade(o.color,-38); rr(ox-ow*0.28,p.y-oh*1.44,ow*0.56,oh*0.46,Math.max(1,oh*0.07)); ctx.fill();
+    // Windshield
+    ctx.fillStyle='rgba(80,220,255,0.38)'; rr(ox-ow*0.24,p.y-oh*1.35,ow*0.48,oh*0.30,2); ctx.fill();
+    // Brake lights
+    ctx.save(); ctx.shadowColor='#ff0055'; ctx.shadowBlur=ow*0.28;
+    ctx.fillStyle='#ff0055';
+    ctx.fillRect(ox-ow/2+2,p.y-oh*0.22,ow*0.16,oh*0.10);
+    ctx.fillRect(ox+ow/2-ow*0.18,p.y-oh*0.22,ow*0.16,oh*0.10);
+    ctx.restore();
+
+    ctx.restore();
+  }
 }
 
-function drawParticles() {
+function shade(hex,pct){
+  var n=parseInt(hex.replace('#',''),16);
+  var r=Math.max(0,Math.min(255,(n>>16)+pct));
+  var g=Math.max(0,Math.min(255,((n>>8)&0xff)+pct));
+  var b2=Math.max(0,Math.min(255,(n&0xff)+pct));
+  return 'rgb('+r+','+g+','+b2+')';
+}
+
+// ── PARTICLES ─────────────────────────────────────────────────────────────────
+function drawParticles(){
   ctx.save();
-  for (var i = 0; i < particles.length; i++) {
-    var p = particles[i];
-    ctx.fillStyle = p.color;
-    ctx.globalAlpha = p.life;
-    ctx.beginPath();
-    ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-    ctx.fill();
+  for(var i=0;i<parts.length;i++){
+    var p=parts[i];
+    ctx.globalAlpha=p.life; ctx.fillStyle=p.col;
+    ctx.beginPath(); ctx.arc(p.x,p.y,p.r*p.life,0,Math.PI*2); ctx.fill();
   }
   ctx.restore();
 }
 
-// ── CUSTOM PERSPECTIVE VECTOR DASHBOARD ARCHITECTURE (Reference Image Aligned) ──
-function drawDashboardLayout() {
+// ═══════════════════════════════════════════════════════════════════════════════
+//  COCKPIT — drawn entirely on canvas, in perspective, last render pass
+// ═══════════════════════════════════════════════════════════════════════════════
+function drawCockpit(hy){
   ctx.save();
 
-  var dashTopY = H * 0.56; // Dynamic calculated perspective divide breaking point layout line
-  var dashHeight = H - dashTopY;
+  // Dashboard top edge sits at ~63% of screen height
+  var dashY  = H * 0.625;
+  var dashH  = H - dashY;
 
-  // Ground Base Ambient Internal cockpit Shadows mapping
-  var shadowGrad = ctx.createLinearGradient(0, dashTopY - 40, 0, dashTopY);
-  shadowGrad.addColorStop(0, 'rgba(0,0,0,0)');
-  shadowGrad.addColorStop(1, 'rgba(10, 2, 22, 0.95)');
-  ctx.fillStyle = shadowGrad;
-  ctx.fillRect(0, dashTopY - 40, W, 40);
-
-  // 1. Structural A-Pillars Side Framing Layout Bars
-  ctx.fillStyle = '#08020f';
+  // ── 1. A-PILLARS ──────────────────────────────────────────────────────────
+  // Left pillar — dark trapezoid from top-left corner narrowing to dashY
+  ctx.fillStyle='#07020e';
   ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(W * 0.08, 0);
-  ctx.lineTo(W * 0.02, dashTopY);
-  ctx.lineTo(0, dashTopY);
-  ctx.fill();
-
+  ctx.moveTo(0,0); ctx.lineTo(W*0.10,0);
+  ctx.lineTo(W*0.018,dashY); ctx.lineTo(0,dashY);
+  ctx.closePath(); ctx.fill();
+  // Right pillar
   ctx.beginPath();
-  ctx.moveTo(W, 0);
-  ctx.lineTo(W * 0.92, 0);
-  ctx.lineTo(W * 0.98, dashTopY);
-  ctx.lineTo(W, dashTopY);
-  ctx.fill();
+  ctx.moveTo(W,0); ctx.lineTo(W*0.90,0);
+  ctx.lineTo(W*0.982,dashY); ctx.lineTo(W,dashY);
+  ctx.closePath(); ctx.fill();
 
-  // 2. Continuous Main Plastic Casing Block structure
-  var bodyGrad = ctx.createLinearGradient(0, dashTopY, 0, W);
-  bodyGrad.addColorStop(0, '#1c0933');
-  bodyGrad.addColorStop(0.15, '#120524');
-  bodyGrad.addColorStop(1, '#05010a');
-  ctx.fillStyle = bodyGrad;
-  ctx.fillRect(0, dashTopY, W, dashHeight);
+  // Pillar inner chrome edge — subtle neon line
+  ctx.strokeStyle='rgba(160,60,255,0.35)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W*0.10,0); ctx.lineTo(W*0.018,dashY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W*0.90,0); ctx.lineTo(W*0.982,dashY); ctx.stroke();
 
-  // 3. Neon Magenta Seam Top Trim Bezel Strip Ring Wire line path
-  ctx.strokeStyle = '#ff007c';
-  ctx.lineWidth = 3;
-  ctx.shadowColor = '#ff007c';
-  ctx.shadowBlur = 12;
+  // ── 2. DASH BODY ──────────────────────────────────────────────────────────
+  // Main surface — slightly curved top edge for physical depth illusion
+  // Draw as a quad with a bezier top edge
+  var bodyGrad=ctx.createLinearGradient(0,dashY,0,H);
+  bodyGrad.addColorStop(0,'#1e0a36');
+  bodyGrad.addColorStop(0.12,'#140524');
+  bodyGrad.addColorStop(0.5,'#0d031a');
+  bodyGrad.addColorStop(1,'#050010');
+  ctx.fillStyle=bodyGrad;
   ctx.beginPath();
-  ctx.moveTo(0, dashTopY);
-  ctx.lineTo(W, dashTopY);
-  ctx.stroke();
-  ctx.shadowBlur = 0;
+  // Curved top edge — bows slightly downward at center (concave from above)
+  ctx.moveTo(0,dashY);
+  ctx.bezierCurveTo(W*0.25,dashY+dashH*0.06, W*0.75,dashY+dashH*0.06, W,dashY);
+  ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fill();
 
-  // 4. Center Console Hood Unit Housing Block structure (Reference Image Center Box Pod)
-  var podW = W * 0.38;
-  var podH = dashHeight * 0.55;
-  var podX = (W - podW) * 0.5;
-  var podY = dashTopY + (dashHeight * 0.15);
-
-  var podGrad = ctx.createLinearGradient(podX, podY, podX, podY + podH);
-  podGrad.addColorStop(0, '#2b104a');
-  podGrad.addColorStop(1, '#0b0314');
-  ctx.fillStyle = podGrad;
-  
-  ctx.beginPath();
-  ctx.moveTo(podX - 25, podY + podH);
-  ctx.lineTo(podX, podY);
-  ctx.lineTo(podX + podW, podY);
-  ctx.lineTo(podX + podW + 25, podY + podH);
-  ctx.closePath();
-  ctx.fill();
-
-  ctx.strokeStyle = '#9b4bff';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  // Center console lens detail styling lines
-  ctx.fillStyle = '#140724';
-  rrect(podX + 15, podY + 12, podW - 30, podH - 24, 4);
-  ctx.fill();
-
-  // 5. LEFT TELEMETRY SCREEN (SYSTEM DETAILS VECTORS FRAME)
-  var scW = W * 0.22;
-  var scH = dashHeight * 0.58;
-  var scY = dashTopY + (dashHeight * 0.12);
-  var scLeftX = W * 0.08;
-
-  ctx.fillStyle = '#03000a';
-  rrect(scLeftX, scY, scW, scH, 6);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(0, 255, 231, 0.4)';
-  ctx.stroke();
-
-  // Draw System Values Text Content strings lines inside vectors frame graphics
-  ctx.font = 'bold 11px "Share Tech Mono", monospace';
-  ctx.fillStyle = '#00ffe7';
-  ctx.textAlign = 'left';
-  
-  var activeSpeedNum = Math.round(speed * 62);
-  ctx.fillText('SYS.STATUS: ONLINE', scLeftX + 12, scY + 22);
-  ctx.fillText('SPEED: ' + activeSpeedNum + ' KM/H', scLeftX + 12, scY + 42);
-  ctx.fillText('DIST: ' + distance.toFixed(2) + ' KM', scLeftX + 12, scY + 62);
-
-  // Sound Wave or bar vectors progress row bar fills lines context
-  ctx.fillStyle = 'rgba(0, 255, 231, 0.15)';
-  ctx.fillRect(scLeftX + 12, scY + 76, scW - 24, 6);
-  ctx.fillStyle = '#00ffe7';
-  var fillPercent = Math.min(1.0, speed / 3.0);
-  ctx.fillRect(scLeftX + 12, scY + 76, (scW - 24) * fillPercent, 6);
-
-  // 6. RIGHT TELEMETRY SCREEN (RADIO MEDIA SYSTEM INTERFACE MODULE)
-  var scRightX = W * 0.70;
-  ctx.fillStyle = '#03000a';
-  rrect(scRightX, scY, scW, scH, 6);
-  ctx.fill();
-  ctx.strokeStyle = 'rgba(255, 0, 124, 0.4)';
-  ctx.stroke();
-
-  ctx.fillStyle = '#ff007c';
-  ctx.fillText('RADIO PUMPO PRO', scRightX + 12, scY + 22);
-  
-  ctx.font = '9px "Share Tech Mono", monospace';
-  ctx.fillStyle = '#ffffff';
-  var trackStringNameText = window.currentRadioTrackTitle || "TUNE IN TO SYSTEM";
-  ctx.fillText(trackStringNameText.toUpperCase(), scRightX + 12, scY + 42);
-
-  // Interactive Live Animated Eq Audio Waves Bars Bars Loops
-  var barCount = 10;
-  var startBarX = scRightX + 12;
-  var barSpacing = (scW - 24) / barCount;
-  ctx.fillStyle = '#ff007c';
-  for (var b = 0; b < barCount; b++) {
-    var ampHeight = 12 + Math.sin(runTime * 0.2 + (b * 0.8)) * 10 * (window.isRadioActivePlaying ? 1.2 : 0.15);
-    ctx.fillRect(startBarX + (b * barSpacing), scY + scH - 24 - ampHeight, barSpacing - 3, ampHeight);
+  // Dash surface texture — subtle horizontal vent lines in upper third
+  ctx.save(); ctx.globalAlpha=0.25;
+  for(var vi=0;vi<6;vi++){
+    var vy=dashY+dashH*0.04+vi*(dashH*0.04);
+    ctx.fillStyle='rgba(0,0,0,0.6)';
+    ctx.fillRect(W*0.05,vy,W*0.9,dashH*0.018);
   }
+  ctx.restore();
 
-  // Visual Button Frame Layout mapping coordinates context for tune button
-  ctx.fillStyle = window.isRadioActivePlaying ? '#ff007c' : '#220014';
-  rrect(scRightX + 12, scY + scH - 18, 65, 12, 2);
-  ctx.fill();
-  ctx.fillStyle = '#ffffff';
-  ctx.font = 'bold 7px "Share Tech Mono", monospace';
-  ctx.fillText(window.isRadioActivePlaying ? "ON AIR" : "TUNE IN", scRightX + 18, scY + scH - 10);
-
-  // 7. STEERING WHEEL HUD COMPONENT MODULE (Reference Image Geometric Perspective Offset Angle Wheel)
-  var wheelRadius = Math.min(W, H) * 0.24;
-  var wheelX = W * 0.5;
-  var wheelY = H + (wheelRadius * 0.12) - (car.wheelRotation * 0.15); // Add structural motion reaction updates dynamically
-
+  // ── 3. NEON SEAM — top edge of dash ───────────────────────────────────────
   ctx.save();
-  ctx.translate(wheelX, wheelY);
-  ctx.rotate(car.wheelRotation * Math.PI / 180);
-
-  // Outer Grip Body Ring Loop Rim structure shadows
-  ctx.strokeStyle = '#0e041c';
-  ctx.lineWidth = 26;
+  ctx.shadowColor='#ff0088'; ctx.shadowBlur=18;
+  ctx.strokeStyle='#ff0088'; ctx.lineWidth=2.5;
   ctx.beginPath();
-  ctx.arc(0, 0, wheelRadius, 0, Math.PI * 2);
+  ctx.moveTo(W*0.018,dashY);
+  ctx.bezierCurveTo(W*0.25,dashY+dashH*0.06, W*0.75,dashY+dashH*0.06, W*0.982,dashY);
   ctx.stroke();
+  // Second pass — inner bright core
+  ctx.shadowBlur=6; ctx.lineWidth=1;
+  ctx.strokeStyle='rgba(255,120,200,0.7)'; ctx.stroke();
+  ctx.restore();
 
-  // Inner Core Ring Outline Accent Frame path line
-  ctx.strokeStyle = '#b24bff';
-  ctx.lineWidth = 2;
+  // ── 4. INSTRUMENT SCREENS ─────────────────────────────────────────────────
+  // Screens are embedded INSIDE the dash surface — slightly inset, perspective-angled
+  // Screen dimensions relative to dashboard
+  var scH   = dashH * 0.58;
+  var scW   = W * 0.24;
+  var scTop = dashY + dashH * 0.11;
+
+  // Left screen: 8% from left edge
+  var lsX = W * 0.038;
+  drawScreen_Left(lsX, scTop, scW, scH);
+
+  // Right screen: mirrored
+  var rsX = W - W*0.038 - scW;
+  drawScreen_Right(rsX, scTop, scW, scH);
+
+  // ── 5. CENTER CONSOLE POD ─────────────────────────────────────────────────
+  var podW=W*0.30, podH=dashH*0.42;
+  var podX=(W-podW)/2, podY=dashY+dashH*0.14;
+  drawCenterPod(podX,podY,podW,podH);
+
+  // ── 6. STEERING WHEEL ─────────────────────────────────────────────────────
+  // Bottom-center, only top ~58% visible (protrudes from below)
+  var wr = Math.min(W,H)*0.26;
+  var wx = W*0.5;
+  var wy = H + wr*0.38; // center is below screen bottom — only top arc visible
+  drawWheel(wx, wy, wr);
+
+  ctx.restore();
+}
+
+// ── LEFT SCREEN: telemetry ────────────────────────────────────────────────────
+function drawScreen_Left(x,y,w,h){
+  // Bezel / inset shadow
+  ctx.fillStyle='#000'; rr(x-3,y-3,w+6,h+6,7); ctx.fill();
+
+  // Screen glass
+  ctx.fillStyle='#02000a'; rr(x,y,w,h,5); ctx.fill();
+
+  // CRT scanline tint
+  ctx.save(); ctx.globalAlpha=0.06;
+  ctx.fillStyle='#00ffcc';
+  for(var si=0;si<h;si+=4){ ctx.fillRect(x,y+si,w,2); }
+  ctx.restore();
+
+  // Border glow
+  ctx.save(); ctx.shadowColor='#00ddff'; ctx.shadowBlur=10;
+  ctx.strokeStyle='rgba(0,200,255,0.55)'; ctx.lineWidth=1.2;
+  rr(x,y,w,h,5); ctx.stroke();
+  ctx.restore();
+
+  // Content
+  var pad=w*0.08, row=h*0.155, ty=y+h*0.14;
+  ctx.save();
+  ctx.font='bold '+Math.round(w*0.09)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='left';
+
+  // Header
+  ctx.fillStyle='rgba(0,180,255,0.45)';
+  ctx.fillText('SYS.DATA',x+pad,ty);
+  ty+=row*0.7;
+
+  // Divider
+  ctx.fillStyle='rgba(0,180,255,0.18)';
+  ctx.fillRect(x+pad,ty,w-pad*2,1);
+  ty+=row*0.5;
+
+  // Speed
+  var kmh=Math.round(speed*60);
+  ctx.fillStyle='rgba(0,160,255,0.4)'; ctx.font='bold '+Math.round(w*0.074)+'px "Share Tech Mono",monospace';
+  ctx.fillText('SPD',x+pad,ty);
+  ctx.fillStyle='#00ddff'; ctx.font='bold '+Math.round(w*0.16)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='right';
+  ctx.fillText((kmh<10?'00':kmh<100?'0':'')+kmh,x+w-pad,ty);
+  ctx.textAlign='left';
+  ty+=row*0.5;
+  // Speed bar
+  drawBar(x+pad,ty,w-pad*2,h*0.04,Math.min(1,kmh/180),'#0088ff','#00ffcc');
+  ty+=row*0.65;
+
+  // Distance
+  ctx.fillStyle='rgba(0,160,255,0.4)'; ctx.font='bold '+Math.round(w*0.074)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='left'; ctx.fillText('DST',x+pad,ty);
+  ctx.fillStyle='#00ddff'; ctx.font='bold '+Math.round(w*0.13)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='right'; ctx.fillText(dist.toFixed(2),x+w-pad,ty);
+  ctx.textAlign='left';
+  ty+=row*0.5;
+  drawBar(x+pad,ty,w-pad*2,h*0.04,Math.min(1,dist/10),'#5500ff','#cc00ff');
+  ty+=row*0.65;
+
+  // Combo
+  ctx.fillStyle='rgba(255,60,160,0.4)'; ctx.font='bold '+Math.round(w*0.074)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='left'; ctx.fillText('CMB',x+pad,ty);
+  ctx.fillStyle=combo>0?'#ff80cc':'rgba(255,80,160,0.3)';
+  ctx.font='bold '+Math.round(w*0.14)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='right'; ctx.fillText(combo>0?('x'+combo):'--',x+w-pad,ty);
+  ctx.textAlign='left';
+
+  ctx.restore();
+}
+
+// ── RIGHT SCREEN: radio ───────────────────────────────────────────────────────
+function drawScreen_Right(x,y,w,h){
+  ctx.fillStyle='#000'; rr(x-3,y-3,w+6,h+6,7); ctx.fill();
+  ctx.fillStyle='#040008'; rr(x,y,w,h,5); ctx.fill();
+
+  ctx.save(); ctx.globalAlpha=0.06;
+  ctx.fillStyle='#ff00aa';
+  for(var si=0;si<h;si+=4){ ctx.fillRect(x,y+si,w,2); }
+  ctx.restore();
+
+  ctx.save(); ctx.shadowColor='#ff0099'; ctx.shadowBlur=10;
+  ctx.strokeStyle='rgba(255,0,150,0.5)'; ctx.lineWidth=1.2;
+  rr(x,y,w,h,5); ctx.stroke();
+  ctx.restore();
+
+  var pad=w*0.08, ty=y+h*0.14;
+  ctx.save(); ctx.textAlign='left';
+
+  // Header
+  ctx.font='bold '+Math.round(w*0.085)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,0,140,0.45)';
+  ctx.fillText('RADIO.FM',x+pad,ty);
+  ty+=h*0.09;
+  ctx.fillStyle='rgba(255,0,140,0.18)';
+  ctx.fillRect(x+pad,ty,w-pad*2,1);
+  ty+=h*0.07;
+
+  // Live dot + status
+  var isOn=window.radioIsOn||false;
+  ctx.fillStyle=isOn?'#ff2d78':'#330011';
+  ctx.beginPath(); ctx.arc(x+pad+4,ty-3,4,0,Math.PI*2); ctx.fill();
+  if(isOn){ ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=8; ctx.fill(); ctx.restore(); }
+  ctx.font='bold '+Math.round(w*0.072)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle=isOn?'#ff6699':'rgba(255,50,100,0.3)';
+  ctx.fillText(isOn?'ON AIR':'OFFLINE',x+pad+12,ty);
+  ty+=h*0.115;
+
+  // Track title — wrap to 2 lines
+  var title=window.radioTrack||'Tune in to Pumpo';
+  ctx.font=Math.round(w*0.085)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,120,200,0.92)';
+  var words=title.split(' '), line='', lines=[];
+  for(var wi=0;wi<words.length;wi++){
+    var test=line+(line?' ':'')+words[wi];
+    if(ctx.measureText(test).width>w-pad*2&&line){lines.push(line);line=words[wi];}
+    else line=test;
+  }
+  lines.push(line);
+  for(var li=0;li<Math.min(lines.length,2);li++){
+    ctx.fillText(lines[li],x+pad,ty); ty+=h*0.10;
+  }
+  ty+=h*0.02;
+
+  // Waveform bars
+  var barN=12, barW=(w-pad*2)/barN, barMaxH=h*0.18;
+  for(var b=0;b<barN;b++){
+    var bh=isOn ? barMaxH*(0.15+Math.abs(Math.sin(rTime*0.18+b*0.65))*0.85) : barMaxH*0.08;
+    var barG=ctx.createLinearGradient(0,ty+barMaxH-bh,0,ty+barMaxH);
+    barG.addColorStop(0,'#ff2d78'); barG.addColorStop(1,'#880033');
+    ctx.fillStyle=barG;
+    ctx.fillRect(x+pad+b*barW,ty+barMaxH-bh,barW-2,bh);
+  }
+  ty+=barMaxH+h*0.05;
+
+  // Tune button — drawn as a physical button with depth
+  var btnW=w-pad*2, btnH=h*0.12;
+  ctx.fillStyle=isOn?'#550022':'#1a0008';
+  rr(x+pad,ty,btnW,btnH,3); ctx.fill();
+  ctx.save(); ctx.shadowColor=isOn?'#ff0066':'transparent'; ctx.shadowBlur=isOn?8:0;
+  ctx.strokeStyle=isOn?'rgba(255,0,100,0.7)':'rgba(255,0,100,0.2)'; ctx.lineWidth=1;
+  rr(x+pad,ty,btnW,btnH,3); ctx.stroke(); ctx.restore();
+  ctx.font='bold '+Math.round(w*0.09)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='center';
+  ctx.fillStyle=isOn?'#fff':'rgba(255,60,100,0.5)';
+  ctx.fillText(isOn?'[ ON AIR ]':'[ TUNE IN ]',x+w/2,ty+btnH*0.68);
+
+  // Store button bounds for hit detection
+  window._radioBtnBounds={x:x+pad,y:ty,w:btnW,h:btnH};
+
+  ctx.restore();
+}
+
+// ── CENTER CONSOLE POD ────────────────────────────────────────────────────────
+function drawCenterPod(x,y,w,h){
+  // Trapezoidal pod — wider at bottom
+  var flare=w*0.12;
+  var podGrad=ctx.createLinearGradient(x,y,x,y+h);
+  podGrad.addColorStop(0,'#2a0e48');
+  podGrad.addColorStop(1,'#0c0318');
+  ctx.fillStyle=podGrad;
   ctx.beginPath();
-  ctx.arc(0, 0, wheelRadius - 12, 0, Math.PI * 2);
+  ctx.moveTo(x-flare,y+h); ctx.lineTo(x,y);
+  ctx.lineTo(x+w,y); ctx.lineTo(x+w+flare,y+h);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(140,40,255,0.45)'; ctx.lineWidth=1.2;
   ctx.stroke();
+  // Inner dark recessed panel
+  ctx.fillStyle='#0a0116';
+  rr(x+12,y+10,w-24,h-18,4); ctx.fill();
+  // Mode indicator light strip
+  var mc=MODE==='rush'?'#ff2d78':MODE==='cruise'?'#00ffe7':'#b24bff';
+  ctx.save(); ctx.shadowColor=mc; ctx.shadowBlur=14;
+  ctx.fillStyle=mc+'44';
+  ctx.fillRect(x+w*0.2,y+h*0.35,w*0.6,4);
+  ctx.fillStyle=mc;
+  ctx.fillRect(x+w*0.2,y+h*0.35,w*0.6,2);
+  ctx.restore();
+  // Mode text
+  ctx.save(); ctx.textAlign='center';
+  ctx.font='bold '+Math.round(w*0.12)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle=mc+'bb';
+  ctx.fillText(MODE.toUpperCase(),x+w/2,y+h*0.68);
+  ctx.restore();
+}
 
-  // Structural Steering Spokes Bars Configuration lines frames
-  ctx.fillStyle = '#0e041c';
-  ctx.fillRect(-wheelRadius, -10, wheelRadius * 2, 20); // Horizontal Main Frame Alignment bar structure
-  ctx.fillRect(-15, 0, 30, wheelRadius); // Center base column branch line block
+// ── BAR METER ─────────────────────────────────────────────────────────────────
+function drawBar(x,y,w,h,pct,c1,c2){
+  ctx.fillStyle='rgba(255,255,255,0.05)'; rr(x,y,w,h,2); ctx.fill();
+  var bw=w*Math.max(0,Math.min(1,pct));
+  if(bw>0){
+    var g=ctx.createLinearGradient(x,0,x+w,0);
+    g.addColorStop(0,c1); g.addColorStop(1,c2);
+    ctx.fillStyle=g; rr(x,y,bw,h,2); ctx.fill();
+    ctx.save(); ctx.shadowColor=c2; ctx.shadowBlur=6;
+    ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fillRect(x+bw-2,y,2,h);
+    ctx.restore();
+  }
+}
 
-  // Wheel Hub Center Shell core capsule casing element block
-  var centerHubGrad = ctx.createRadialGradient(0, 0, 5, 0, 0, 45);
-  centerHubGrad.addColorStop(0, '#2d0d54');
-  centerHubGrad.addColorStop(1, '#07010f');
-  ctx.fillStyle = centerHubGrad;
-  ctx.beginPath();
-  ctx.arc(0, 0, 40, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.strokeStyle = '#ff007c';
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
+// ── STEERING WHEEL ────────────────────────────────────────────────────────────
+function drawWheel(cx,cy,r){
+  ctx.save();
+  ctx.translate(cx,cy);
+  ctx.rotate(car.wheel*Math.PI/180);
 
+  // Outer drop shadow for physical depth
+  ctx.shadowColor='rgba(0,0,0,0.85)'; ctx.shadowBlur=40; ctx.shadowOffsetY=-8;
+
+  // Rim — thick, dark, physical plastic
+  ctx.strokeStyle='#0c0318'; ctx.lineWidth=r*0.155;
+  ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.stroke();
+  ctx.shadowBlur=0; ctx.shadowOffsetY=0;
+
+  // Rim top highlight
+  ctx.strokeStyle='rgba(160,60,255,0.38)'; ctx.lineWidth=r*0.018;
+  ctx.beginPath(); ctx.arc(0,0,r-r*0.055,0,Math.PI*2); ctx.stroke();
+
+  // Rim outer edge accent
+  ctx.save(); ctx.shadowColor='#9933ff'; ctx.shadowBlur=8;
+  ctx.strokeStyle='rgba(140,40,255,0.55)'; ctx.lineWidth=r*0.014;
+  ctx.beginPath(); ctx.arc(0,0,r+r*0.04,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+
+  // Spokes — 4-spoke layout, thick
+  var spokes=[[0,-1],[1,0],[0,1],[-1,0]];
+  // But only draw as an H-bar + vertical down (classic 70s/80s wheel)
+  ctx.fillStyle='#0c0318';
+  // Horizontal bar
+  ctx.fillRect(-r*0.92,-r*0.08,r*1.84,r*0.16);
+  // Bottom stem
+  ctx.fillRect(-r*0.10,0,r*0.20,r*0.88);
+  // Spoke highlight lines
+  ctx.fillStyle='rgba(140,40,255,0.28)';
+  ctx.fillRect(-r*0.92,-r*0.008,r*1.84,r*0.016);
+  ctx.fillRect(-r*0.010,0,r*0.020,r*0.88);
+
+  // Hub
+  var hg=ctx.createRadialGradient(0,-r*0.04,0,0,0,r*0.22);
+  hg.addColorStop(0,'#2d0a52'); hg.addColorStop(1,'#080112');
+  ctx.fillStyle=hg;
+  ctx.beginPath(); ctx.arc(0,0,r*0.22,0,Math.PI*2); ctx.fill();
+  ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=10;
+  ctx.strokeStyle='rgba(255,45,120,0.65)'; ctx.lineWidth=r*0.016;
+  ctx.beginPath(); ctx.arc(0,0,r*0.22,0,Math.PI*2); ctx.stroke();
+  ctx.restore();
+
+  // Hub inner ring
+  ctx.strokeStyle='rgba(160,60,255,0.4)'; ctx.lineWidth=r*0.01;
+  ctx.beginPath(); ctx.arc(0,0,r*0.14,0,Math.PI*2); ctx.stroke();
+
+  // Center dot
+  ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=12;
+  ctx.fillStyle='#ff2d78';
+  ctx.beginPath(); ctx.arc(0,0,r*0.045,0,Math.PI*2); ctx.fill();
   ctx.restore();
 
   ctx.restore();
 }
 
-// Map screen button bounds onto viewport space configuration parameters adjustments dynamically
-function updateHitboxBoundingRectPositions() {
-  var btn = document.getElementById('btn-tune-hitbox');
-  if(!btn) return;
-  // Overlay anchors calculated values mirror drawing parameters coordinate spaces configurations matrix
-  btn.style.bottom = '4vh';
-  btn.style.right = '14vw';
-}
-window.addEventListener('resize', updateHitboxBoundingRectPositions);
-updateHitboxBoundingRectPositions();
+// ── MENU ──────────────────────────────────────────────────────────────────────
+document.getElementById('btn-cr').addEventListener('click',function(){
+  var m=document.getElementById('menu');
+  m.style.opacity='0';
+  setTimeout(function(){m.style.display='none';},450);
+  startGame('cruise');
+});
+document.getElementById('btn-ru').addEventListener('click',function(){
+  var m=document.getElementById('menu');
+  m.style.opacity='0';
+  setTimeout(function(){m.style.display='none';},450);
+  startGame('rush');
+});
 
-// Screen interactions buttons hooks assignment maps
-document.getElementById('btn-cruise').addEventListener('click', function() { startActiveGame('cruise'); });
-document.getElementById('btn-rush').addEventListener('click', function() { startActiveGame('rush'); });
+// ── RADIO TUNE BUTTON (canvas hit detection) ──────────────────────────────────
 
-// Boot loop pass runtime initializers engine
+
+// ── BOOT ──────────────────────────────────────────────────────────────────────
 initRoad();
-lastTs = performance.now();
+startGame('idle'); // attract mode on load
+lastTs=performance.now();
 requestAnimationFrame(loop);
 
-// ============================================================
-//  RADIO AUDIO PLAYER INTERFACE LOGIC
-// ============================================================
-window.isRadioActivePlaying = false;
-window.currentRadioTrackTitle = "Offline Engine";
+})(); // END GAME IIFE
 
-(function RADIO_ENGINE() {
-  var FALLBACK_PLAYLIST = [
-    { file: 'https://radiopumpo.github.io/songs/pumpofantastique.mp3', title: 'Fantastique Glide' },
-    { file: 'https://radiopumpo.github.io/songs/pumpoelectrolatino.mp3', title: 'Tirate Un Pumpo' },
-    { file: 'https://radiopumpo.github.io/songs/housepumpo.mp3', title: 'House Rhythm Pumpo' },
-    { file: 'https://radiopumpo.github.io/songs/dnbpumpo.mp3', title: 'Neon Overdrive DNB' }
+
+// ════════════════════════════════════════════════════════════════════════════════
+//  RADIO PUMPO — full UTC manifest sync
+// ════════════════════════════════════════════════════════════════════════════════
+(function RADIO(){
+  window.radioIsOn    = false;
+  window.radioTrack   = 'Tune in to Pumpo';
+  window.radioToggle  = toggle;
+
+  var MANIFEST = '/radio-manifest.json';
+  var manifest = null, audio = null, seq = null, syncTick = null, fbIdx = 0;
+
+  var FALLBACK=[
+    {file:'https://radiopumpo.github.io/songs/pumpofantastique.mp3',   title:'Pumpo est Fantastique'},
+    {file:'https://radiopumpo.github.io/songs/pumpoelectrolatino.mp3', title:'Tirate un Pumpo'},
+    {file:'https://radiopumpo.github.io/songs/pumpophonkbr.mp3',       title:'A ora do Pumpo'},
+    {file:'https://radiopumpo.github.io/songs/housepumpo.mp3',         title:'House Pumpo'},
+    {file:'https://radiopumpo.github.io/songs/dnbpumpo.mp3',           title:'DNB Pumpo'},
+    {file:'https://radiopumpo.github.io/songs/pumponostalgiaphonk.mp3',title:'Pumpo Nostalgia Phonk'},
+    {file:'https://radiopumpo.github.io/songs/pumpophonkbr2.mp3',      title:'A ora do Pumpo Dois'}
   ];
-  
-  var trackIdx = 0;
-  var audioInstance = null;
 
-  function toggleRadio() {
-    if(!audioInstance) {
-      audioInstance = new Audio();
-      audioInstance.crossOrigin = "anonymous";
-      audioInstance.addEventListener('ended', function() {
-        trackIdx = (trackIdx + 1) % FALLBACK_PLAYLIST.length;
-        playCurrentTrack();
-      });
+  function utcSec(){var n=new Date();return n.getUTCHours()*3600+n.getUTCMinutes()*60+n.getUTCSeconds();}
+  function dp(){var h=new Date().getUTCHours();return h>=6&&h<12?'breakfast':h>=12&&h<19?'afternoons':'latenight';}
+  function seed(){var d=new Date();return parseInt(''+d.getUTCFullYear()+(d.getUTCMonth()<9?'0':'')+(d.getUTCMonth()+1)+(d.getUTCDate()<10?'0':'')+d.getUTCDate());}
+  function shuffle(arr,s){
+    var a=arr.slice(),sd=s>>>0;
+    function rnd(){sd=(Math.imul(1664525,sd)+1013904223)>>>0;return sd/0x100000000;}
+    for(var i=a.length-1;i>0;i--){var j=Math.floor(rnd()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;}
+    return a;
+  }
+  function buildSeq(){
+    var d=dp(),s=seed();
+    var sf=manifest.scheduling.segment_frequency;
+    var sidf=manifest.scheduling.station_id_frequency;
+    var wrap=manifest.segments.show_wrappers;
+    var segs=manifest.segments[d];
+    var sids=manifest.segments.station_ids;
+    var pool=manifest.tracks.filter(function(t){return t.dayparts.indexOf(d)>=0;});
+    var sh=shuffle(pool,s);
+    var out=[],tot=0,ti=0,segi=0,sidi=0,tc=0;
+    var intro=wrap[d+'_intro'];
+    out.push({file:intro.file,dur:intro.duration,title:manifest.dayparts[d].label});
+    tot+=intro.duration;
+    while(tot<86400){
+      var tr2=sh[ti%sh.length];
+      out.push({file:tr2.file,dur:tr2.duration,title:tr2.title});
+      tot+=tr2.duration; ti++; tc++;
+      if(tc%sf===0){var sg=segs[segi%segs.length];out.push({file:sg.file,dur:sg.duration,title:manifest.station.host});tot+=sg.duration;segi++;}
+      if(tc%sidf===0&&tc%sf!==0){var sid=sids[sidi%sids.length];out.push({file:sid.file,dur:sid.duration,title:'Radio Pumpo'});tot+=sid.duration;sidi++;}
     }
-
-    if(window.isRadioActivePlaying) {
-      audioInstance.pause();
-      window.isRadioActivePlaying = false;
-      window.currentRadioTrackTitle = "Radio Static Muted";
-    } else {
-      window.isRadioActivePlaying = true;
-      playCurrentTrack();
+    return out;
+  }
+  function curPos(s){
+    var t=utcSec(),e=0;
+    for(var i=0;i<s.length;i++){if(e+s[i].dur>t)return{item:s[i],pos:t-e};e+=s[i].dur;}
+    return{item:s[0],pos:0};
+  }
+  function setTrack(item){
+    window.radioTrack=item.title||'Radio Pumpo';
+  }
+  function ea(){
+    if(!audio){
+      audio=new Audio(); audio.preload='auto';
+      audio.addEventListener('ended',function(){if(window.radioIsOn){if(seq)pfp();else pfb();}});
     }
   }
-
-  function playCurrentTrack() {
-    var item = FALLBACK_PLAYLIST[trackIdx];
-    audioInstance.src = item.file;
-    window.currentRadioTrackTitle = item.title;
-    audioInstance.play().catch(function(err){
-      console.log("Audio contexts trigger block safety handled safely: ", err);
-    });
+  function pfp(){
+    var cp=curPos(seq);
+    audio.src=cp.item.file; audio.currentTime=cp.pos;
+    audio.play().catch(function(){});
+    setTrack(cp.item);
   }
-
-  document.getElementById('btn-tune-hitbox').addEventListener('click', function(e) {
-    e.stopPropagation();
-    toggleRadio();
-  });
-})();
-
+  function pfb(){
+    var t=FALLBACK[fbIdx%FALLBACK.length]; fbIdx++;
+    audio.src=t.file; audio.play().catch(function(){});
+    window.radioTrack=t.title;
+  }
+  function startSync(){
+    if(syncTick) clearInterval(syncTick);
+    syncTick=setInterval(function(){
+      if(!window.radioIsOn||!seq) return;
+      var cp=curPos(seq);
+      var cur=(audio.src||'').split('/').pop();
+      var exp=(cp.item.file||'').split('/').pop();
+      if(cur!==exp) pfp();
+      else if(Math.abs((audio.currentTime||0)-cp.pos)>8) audio.currentTime=cp.pos;
+    },15000);
+  }
+  function toggle(){
+    ea();
+    if(window.radioIsOn){
+      window.radioIsOn=false; audio.pause();
+      if(syncTick){clearInterval(syncTick);syncTick=null;}
+      window.radioTrack='Tuned out';
+      return;
+    }
+    window.radioIsOn=true;
+    if(manifest){seq=buildSeq();pfp();startSync();}
+    else{
+      fetch(MANIFEST).then(function(r){return r.ok?r.json():null;})
+        .then(function(m){
+          if(m){manifest=m;seq=buildSeq();pfp();startSync();}
+          else pfb();
+        }).catch(function(){pfb();});
+    }
+  }
+  // Pre-cache manifest silently
+  fetch(MANIFEST).then(function(r){return r.ok?r.json():null;})
+    .then(function(m){if(m) manifest=m;}).catch(function(){});
 })();
 </script>
 </body>
