@@ -750,37 +750,80 @@ function drawObs(hy){
     var o=obs[i];
     if(o.depth<0.04||o.depth>1.02) continue;
     var p=proj(o.depth);
-    var lt=(o.lane+0.5)/LANES;
-    // Apply same camera shift as road
     var camShift=car.laneX*W*0.055;
-    var roadLeft = W/2 + camShift*(1-o.depth) - p.hw;
-    var ox = roadLeft + lt * p.hw * 2;
-    var sc2=0.45+o.depth*3.6;
-    var ow=Math.min(p.hw*0.56,52*sc2*(W/820));
-    var oh=ow*0.50;
+    // Exact same road-center formula as drawRoad segments
+    var roadCX = W/2 + camShift*(1-o.depth);
+    var roadLeft = roadCX - p.hw;
+    var lt=(o.lane+0.5)/LANES;
+    var ox=roadLeft+lt*p.hw*2;
+    // Car dimensions scale with perspective
+    var laneW = p.hw*2/LANES;
+    var cw=Math.min(laneW*0.78, p.hw*0.55);
+    var ch=cw*0.50;
+    cw=Math.max(7,cw); ch=Math.max(4,ch);
+    var cy=p.y;
 
-    ctx.save();
-    ctx.globalAlpha=o.hit?0.12:1;
+    ctx.save(); ctx.globalAlpha=o.hit?0.12:1;
 
-    // Neon glow shadow under car
-    ctx.save();
-    ctx.shadowColor=o.color; ctx.shadowBlur=ow*0.38;
-    ctx.fillStyle=o.color+'33';
-    ctx.beginPath(); ctx.ellipse(ox,p.y+oh*0.12,ow*0.46,oh*0.14,0,0,Math.PI*2); ctx.fill();
+    // Ground glow
+    ctx.save(); ctx.shadowColor=o.color; ctx.shadowBlur=cw*0.45;
+    ctx.fillStyle=o.color+'1a';
+    ctx.beginPath(); ctx.ellipse(ox,cy+ch*0.09,cw*0.50,ch*0.11,0,0,Math.PI*2); ctx.fill();
     ctx.restore();
 
     // Body
-    ctx.fillStyle=o.color; rr(ox-ow/2,p.y-oh,ow,oh,Math.max(2,oh*0.1)); ctx.fill();
+    var bg=ctx.createLinearGradient(ox-cw/2,cy-ch*1.05,ox+cw/2,cy);
+    bg.addColorStop(0,shade(o.color,+25)); bg.addColorStop(0.45,o.color); bg.addColorStop(1,shade(o.color,-38));
+    ctx.fillStyle=bg; rr(ox-cw/2,cy-ch,cw,ch,Math.max(2,ch*0.08)); ctx.fill();
+
     // Roof
-    ctx.fillStyle=shade(o.color,-38); rr(ox-ow*0.28,p.y-oh*1.44,ow*0.56,oh*0.46,Math.max(1,oh*0.07)); ctx.fill();
-    // Windshield
-    ctx.fillStyle='rgba(80,220,255,0.38)'; rr(ox-ow*0.24,p.y-oh*1.35,ow*0.48,oh*0.30,2); ctx.fill();
+    var rW=cw*0.60,rH=ch*0.46,rY=cy-ch-rH*0.85;
+    var rg=ctx.createLinearGradient(0,rY,0,rY+rH);
+    rg.addColorStop(0,shade(o.color,+10)); rg.addColorStop(1,shade(o.color,-52));
+    ctx.fillStyle=rg;
+    ctx.beginPath();
+    ctx.moveTo(ox-rW*0.50,rY+rH); ctx.lineTo(ox-rW*0.36,rY);
+    ctx.lineTo(ox+rW*0.36,rY);    ctx.lineTo(ox+rW*0.50,rY+rH);
+    ctx.closePath(); ctx.fill();
+
+    // Rear windshield
+    ctx.fillStyle='rgba(55,190,255,0.26)';
+    ctx.beginPath();
+    ctx.moveTo(ox-rW*0.42,rY+rH*0.94); ctx.lineTo(ox-rW*0.28,rY+rH*0.10);
+    ctx.lineTo(ox+rW*0.28,rY+rH*0.10); ctx.lineTo(ox+rW*0.42,rY+rH*0.94);
+    ctx.closePath(); ctx.fill();
+
+    // Side windows
+    ctx.fillStyle='rgba(35,170,255,0.18)';
+    ctx.beginPath(); // left
+    ctx.moveTo(ox-cw*0.47,cy-ch*0.70); ctx.lineTo(ox-rW*0.48,rY+rH*0.94);
+    ctx.lineTo(ox-rW*0.30,rY+rH*0.10); ctx.lineTo(ox-cw*0.27,cy-ch*0.74);
+    ctx.closePath(); ctx.fill();
+    ctx.beginPath(); // right
+    ctx.moveTo(ox+cw*0.47,cy-ch*0.70); ctx.lineTo(ox+rW*0.48,rY+rH*0.94);
+    ctx.lineTo(ox+rW*0.30,rY+rH*0.10); ctx.lineTo(ox+cw*0.27,cy-ch*0.74);
+    ctx.closePath(); ctx.fill();
+
+    // Trunk
+    ctx.fillStyle=shade(o.color,-22);
+    rr(ox-cw*0.46,cy-ch*0.26,cw*0.92,ch*0.26,Math.max(1,ch*0.05)); ctx.fill();
+
     // Brake lights
-    ctx.save(); ctx.shadowColor='#ff0055'; ctx.shadowBlur=ow*0.28;
-    ctx.fillStyle='#ff0055';
-    ctx.fillRect(ox-ow/2+2,p.y-oh*0.22,ow*0.16,oh*0.10);
-    ctx.fillRect(ox+ow/2-ow*0.18,p.y-oh*0.22,ow*0.16,oh*0.10);
+    ctx.save(); ctx.shadowColor='#ff0044'; ctx.shadowBlur=cw*0.30;
+    ctx.fillStyle='#ff0044';
+    ctx.fillRect(ox-cw/2+2,       cy-ch*0.23,cw*0.17,ch*0.10);
+    ctx.fillRect(ox+cw/2-cw*0.19, cy-ch*0.23,cw*0.17,ch*0.10);
     ctx.restore();
+
+    // Bumper
+    ctx.fillStyle=shade(o.color,-55);
+    ctx.fillRect(ox-cw*0.44,cy-ch*0.08,cw*0.88,ch*0.08);
+
+    // Wheel arches
+    ctx.fillStyle='rgba(0,0,0,0.50)';
+    var wr2=cw*0.15, waY=cy-ch*0.07;
+    ctx.beginPath(); ctx.ellipse(ox-cw*0.29,waY,wr2,wr2*0.36,0,Math.PI,Math.PI*2); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(ox+cw*0.29,waY,wr2,wr2*0.36,0,Math.PI,Math.PI*2); ctx.fill();
 
     ctx.restore();
   }
@@ -810,279 +853,552 @@ function drawParticles(){
 // ═══════════════════════════════════════════════════════════════════════════════
 function drawCockpit(hy){
   ctx.save();
+  var dashY = H * 0.625;
+  var dashH = H - dashY;
 
-  // Dashboard top edge sits at ~63% of screen height
-  var dashY  = H * 0.625;
-  var dashH  = H - dashY;
-
-  // ── 1. A-PILLARS ──────────────────────────────────────────────────────────
-  // Left pillar — dark trapezoid from top-left corner narrowing to dashY
-  ctx.fillStyle='#07020e';
+  // ── REAR-VIEW MIRROR ──
+  var mw=W*0.14, mh=H*0.045;
+  var mx=(W-mw)/2, my=H*0.022;
+  // Mirror housing
+  ctx.fillStyle='#0a0118';
   ctx.beginPath();
-  ctx.moveTo(0,0); ctx.lineTo(W*0.10,0);
-  ctx.lineTo(W*0.018,dashY); ctx.lineTo(0,dashY);
+  ctx.moveTo(mx-mw*0.04,my); ctx.lineTo(mx+mw+mw*0.04,my);
+  ctx.lineTo(mx+mw,my+mh); ctx.lineTo(mx,my+mh);
   ctx.closePath(); ctx.fill();
-  // Right pillar
+  ctx.strokeStyle='rgba(140,60,255,0.5)'; ctx.lineWidth=1;
+  ctx.stroke();
+  // Mirror glass reflection
+  var mg=ctx.createLinearGradient(mx,my,mx,my+mh);
+  mg.addColorStop(0,'rgba(30,10,60,0.85)');
+  mg.addColorStop(1,'rgba(10,5,25,0.95)');
+  ctx.fillStyle=mg;
+  rr(mx+2,my+2,mw-4,mh-4,2); ctx.fill();
+  // Road reflection inside mirror (simple gradient)
+  var mrg=ctx.createLinearGradient(mx,my,mx,my+mh);
+  mrg.addColorStop(0,'rgba(60,20,100,0.3)');
+  mrg.addColorStop(0.5,'rgba(100,0,80,0.15)');
+  mrg.addColorStop(1,'rgba(20,0,40,0.4)');
+  ctx.fillStyle=mrg; rr(mx+2,my+2,mw-4,mh-4,2); ctx.fill();
+  // Mirror mount stem
+  ctx.fillStyle='#0d0220';
+  ctx.fillRect(W/2-3,my+mh,6,H*0.016);
+
+  // ── A-PILLARS ──
+  ctx.fillStyle='#06010d';
   ctx.beginPath();
-  ctx.moveTo(W,0); ctx.lineTo(W*0.90,0);
-  ctx.lineTo(W*0.982,dashY); ctx.lineTo(W,dashY);
+  ctx.moveTo(0,0); ctx.lineTo(W*0.082,0);
+  ctx.lineTo(W*0.040,dashY); ctx.lineTo(0,dashY);
   ctx.closePath(); ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(W,0); ctx.lineTo(W*0.918,0);
+  ctx.lineTo(W*0.960,dashY); ctx.lineTo(W,dashY);
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle='rgba(120,40,220,0.28)'; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(W*0.082,0); ctx.lineTo(W*0.040,dashY); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(W*0.918,0); ctx.lineTo(W*0.960,dashY); ctx.stroke();
 
-  // Pillar inner chrome edge — subtle neon line
-  ctx.strokeStyle='rgba(160,60,255,0.35)'; ctx.lineWidth=1.5;
-  ctx.beginPath(); ctx.moveTo(W*0.10,0); ctx.lineTo(W*0.018,dashY); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(W*0.90,0); ctx.lineTo(W*0.982,dashY); ctx.stroke();
+  // ── WINDSHIELD WIPERS ──
+  var wiperY = dashY - H*0.008;
+  var wiperLen = W*0.22;
+  // Wiper pivot points near bottom of windshield
+  var lPivX = W*0.28, rPivX = W*0.72;
+  // Slow sweep animation
+  var wiperAngle = Math.sin(rTime*0.018)*0.38 - 0.12; // -0.5 to +0.26 rad
+  ctx.save();
+  ctx.strokeStyle='rgba(80,40,120,0.55)'; ctx.lineWidth=Math.max(1.5,W*0.004);
+  ctx.lineCap='round';
+  // Left wiper
+  ctx.beginPath();
+  ctx.moveTo(lPivX, wiperY);
+  ctx.lineTo(lPivX + Math.cos(Math.PI*0.65+wiperAngle)*wiperLen,
+             wiperY - Math.sin(Math.PI*0.65+wiperAngle)*wiperLen*0.55);
+  ctx.stroke();
+  // Right wiper (mirror)
+  ctx.beginPath();
+  ctx.moveTo(rPivX, wiperY);
+  ctx.lineTo(rPivX - Math.cos(Math.PI*0.65+wiperAngle)*wiperLen,
+             wiperY - Math.sin(Math.PI*0.65+wiperAngle)*wiperLen*0.55);
+  ctx.stroke();
+  // Wiper blade (slightly thicker end)
+  ctx.lineWidth=Math.max(2,W*0.005);
+  ctx.strokeStyle='rgba(100,60,160,0.4)';
+  ctx.beginPath();
+  ctx.moveTo(lPivX + Math.cos(Math.PI*0.65+wiperAngle)*wiperLen*0.15,
+             wiperY - Math.sin(Math.PI*0.65+wiperAngle)*wiperLen*0.08);
+  ctx.lineTo(lPivX + Math.cos(Math.PI*0.65+wiperAngle)*wiperLen,
+             wiperY - Math.sin(Math.PI*0.65+wiperAngle)*wiperLen*0.55);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(rPivX - Math.cos(Math.PI*0.65+wiperAngle)*wiperLen*0.15,
+             wiperY - Math.sin(Math.PI*0.65+wiperAngle)*wiperLen*0.08);
+  ctx.lineTo(rPivX - Math.cos(Math.PI*0.65+wiperAngle)*wiperLen,
+             wiperY - Math.sin(Math.PI*0.65+wiperAngle)*wiperLen*0.55);
+  ctx.stroke();
+  ctx.restore();
 
-  // ── 2. DASH BODY ──────────────────────────────────────────────────────────
-  // Main surface — slightly curved top edge for physical depth illusion
-  // Draw as a quad with a bezier top edge
+  // ── DASHBOARD BODY ──
   var bodyGrad=ctx.createLinearGradient(0,dashY,0,H);
-  bodyGrad.addColorStop(0,'#1e0a36');
-  bodyGrad.addColorStop(0.12,'#140524');
-  bodyGrad.addColorStop(0.5,'#0d031a');
-  bodyGrad.addColorStop(1,'#050010');
+  bodyGrad.addColorStop(0,'#1c0832');
+  bodyGrad.addColorStop(0.12,'#120424');
+  bodyGrad.addColorStop(0.55,'#0c031a');
+  bodyGrad.addColorStop(1,'#040010');
   ctx.fillStyle=bodyGrad;
   ctx.beginPath();
-  // Curved top edge — bows slightly downward at center (concave from above)
   ctx.moveTo(0,dashY);
-  ctx.bezierCurveTo(W*0.25,dashY+dashH*0.06, W*0.75,dashY+dashH*0.06, W,dashY);
+  ctx.bezierCurveTo(W*0.25,dashY+dashH*0.055, W*0.75,dashY+dashH*0.055, W,dashY);
   ctx.lineTo(W,H); ctx.lineTo(0,H); ctx.closePath(); ctx.fill();
-
-  // Dash surface texture — subtle horizontal vent lines in upper third
-  ctx.save(); ctx.globalAlpha=0.25;
-  for(var vi=0;vi<6;vi++){
-    var vy=dashY+dashH*0.04+vi*(dashH*0.04);
-    ctx.fillStyle='rgba(0,0,0,0.6)';
-    ctx.fillRect(W*0.05,vy,W*0.9,dashH*0.018);
+  // Vent lines
+  ctx.save(); ctx.globalAlpha=0.20;
+  for(var vi=0;vi<5;vi++){
+    ctx.fillStyle='rgba(0,0,0,0.7)';
+    ctx.fillRect(W*0.04, dashY+dashH*0.05+vi*dashH*0.036, W*0.92, dashH*0.015);
   }
   ctx.restore();
 
-  // ── 3. NEON SEAM — top edge of dash ───────────────────────────────────────
+  // ── NEON SEAM ──
   ctx.save();
-  ctx.shadowColor='#ff0088'; ctx.shadowBlur=18;
-  ctx.strokeStyle='#ff0088'; ctx.lineWidth=2.5;
+  ctx.shadowColor='#ff0088'; ctx.shadowBlur=16;
+  ctx.strokeStyle='#ee0077'; ctx.lineWidth=2.2;
   ctx.beginPath();
-  ctx.moveTo(W*0.018,dashY);
-  ctx.bezierCurveTo(W*0.25,dashY+dashH*0.06, W*0.75,dashY+dashH*0.06, W*0.982,dashY);
+  ctx.moveTo(W*0.040,dashY);
+  ctx.bezierCurveTo(W*0.25,dashY+dashH*0.055,W*0.75,dashY+dashH*0.055,W*0.960,dashY);
   ctx.stroke();
-  // Second pass — inner bright core
-  ctx.shadowBlur=6; ctx.lineWidth=1;
-  ctx.strokeStyle='rgba(255,120,200,0.7)'; ctx.stroke();
-  ctx.restore();
+  ctx.shadowBlur=4; ctx.lineWidth=0.8; ctx.strokeStyle='rgba(255,100,200,0.5)';
+  ctx.stroke(); ctx.restore();
 
-  // ── 4. INSTRUMENT SCREENS ─────────────────────────────────────────────────
-  // Screens are embedded INSIDE the dash surface — slightly inset, perspective-angled
-  // Screen dimensions relative to dashboard
-  var scH   = dashH * 0.58;
-  var scW   = W * 0.24;
-  var scTop = dashY + dashH * 0.11;
+  // ── INSTRUMENT CLUSTER (LEFT) ──
+  var clW=W*0.27, clH=dashH*0.85;
+  var clX=W*0.022, clY=dashY+dashH*0.05;
+  drawGaugeCluster(clX,clY,clW,clH);
 
-  // Left screen: 8% from left edge
-  var lsX = W * 0.038;
-  drawScreen_Left(lsX, scTop, scW, scH);
+  // ── RADIO (RIGHT) ──
+  var rsW=W*0.27, rsH=dashH*0.85;
+  var rsX=W-W*0.022-rsW, rsY=dashY+dashH*0.05;
+  drawRadioUnit(rsX,rsY,rsW,rsH);
 
-  // Right screen: mirrored
-  var rsX = W - W*0.038 - scW;
-  drawScreen_Right(rsX, scTop, scW, scH);
-
-  // ── 5. CENTER CONSOLE POD ─────────────────────────────────────────────────
-  var podW=W*0.30, podH=dashH*0.42;
-  var podX=(W-podW)/2, podY=dashY+dashH*0.14;
+  // ── CENTER CONSOLE ──
+  var podW=W*0.26, podH=dashH*0.55;
+  var podX=(W-podW)/2, podY=dashY+dashH*0.10;
   drawCenterPod(podX,podY,podW,podH);
 
-  // ── 6. STEERING WHEEL ─────────────────────────────────────────────────────
-  // Bottom-center, only top ~58% visible (protrudes from below)
-  var wr = Math.min(W,H)*0.26;
-  var wx = W*0.5;
-  var wy = H + wr*0.38; // center is below screen bottom — only top arc visible
-  drawWheel(wx, wy, wr);
+  // ── STEERING WHEEL — raised so hub is fully visible ──
+  var wr=Math.min(W*0.38, H*0.34);
+  drawWheel(W*0.5, H+wr*0.12, wr);
 
   ctx.restore();
 }
 
 // ── LEFT SCREEN: telemetry ────────────────────────────────────────────────────
-function drawScreen_Left(x,y,w,h){
-  // Bezel / inset shadow
-  ctx.fillStyle='#000'; rr(x-3,y-3,w+6,h+6,7); ctx.fill();
-
-  // Screen glass
-  ctx.fillStyle='#02000a'; rr(x,y,w,h,5); ctx.fill();
-
-  // CRT scanline tint
-  ctx.save(); ctx.globalAlpha=0.06;
-  ctx.fillStyle='#00ffcc';
-  for(var si=0;si<h;si+=4){ ctx.fillRect(x,y+si,w,2); }
+function drawScreen_Left(x,y,w,h){ drawGaugeCluster(x,y,w,h); }
+function drawGaugeCluster(x,y,w,h){
+  // Panel bezel + background
+  ctx.fillStyle='#000'; rr(x-4,y-4,w+8,h+8,8); ctx.fill();
+  var pg=ctx.createLinearGradient(x,y,x,y+h);
+  pg.addColorStop(0,'#090216'); pg.addColorStop(1,'#020008');
+  ctx.fillStyle=pg; rr(x,y,w,h,6); ctx.fill();
+  // Scanlines
+  ctx.save(); ctx.globalAlpha=0.04; ctx.fillStyle='#00ffcc';
+  for(var si=0;si<h;si+=3) ctx.fillRect(x,y+si,w,1.5);
   ctx.restore();
-
   // Border glow
-  ctx.save(); ctx.shadowColor='#00ddff'; ctx.shadowBlur=10;
-  ctx.strokeStyle='rgba(0,200,255,0.55)'; ctx.lineWidth=1.2;
-  rr(x,y,w,h,5); ctx.stroke();
+  ctx.save(); ctx.shadowColor='#0099ff'; ctx.shadowBlur=10;
+  ctx.strokeStyle='rgba(0,180,255,0.45)'; ctx.lineWidth=1.2;
+  rr(x,y,w,h,6); ctx.stroke(); ctx.restore();
+
+  // Layout: two gauges side by side in upper 58%, then odo, fuel arc, indicators below
+  var gaugeRowH = h*0.50;
+  var gR = Math.min(w*0.22, gaugeRowH*0.44); // gauge radius
+  var gY  = y + gaugeRowH*0.50;              // gauge center Y
+
+  // Speed gauge — left
+  var spdX = x + w*0.28;
+  drawAnalogGauge(spdX, gY, gR,
+    Math.round(speed*60), 0, 220,
+    '#00ddff','#0055ff','SPD','KMH');
+
+  // RPM gauge — right
+  var rpmX = x + w*0.72;
+  var rpmVal = Math.min(8000, Math.round(speed*1600+400));
+  drawAnalogGauge(rpmX, gY, gR,
+    rpmVal, 0, 8000,
+    '#ff7700','#ff2200','RPM','x100');
+
+  // Odometer — below gauges
+  var odoY = y + gaugeRowH + h*0.03;
+  var odoH = h*0.11;
+  drawOdometer(x+w/2, odoY, w*0.88, odoH);
+
+  // Fuel arc gauge — bottom left quadrant
+  var fuelR = Math.min(w*0.16, h*0.14);
+  var fuelX = x+w*0.25, fuelY = odoY+odoH+h*0.04+fuelR;
+  drawFuelArc(fuelX, fuelY, fuelR);
+
+  // Temp arc gauge (engine temp) — bottom right quadrant
+  var tmpX = x+w*0.75, tmpY = fuelY;
+  drawTempArc(tmpX, tmpY, fuelR);
+
+  // Indicator lights row — very bottom
+  var indY = y+h-h*0.10;
+  drawIndicators(x+w*0.04, indY, w*0.92, h*0.08);
+}
+
+function drawAnalogGauge(cx,cy,r,val,mn,mx,c1,c2,label,unit){
+  ctx.save();
+  // Face
+  var fg=ctx.createRadialGradient(cx,cy,0,cx,cy,r);
+  fg.addColorStop(0,'#0e0024'); fg.addColorStop(1,'#040010');
+  ctx.fillStyle=fg; ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+  // Outer bezel
+  ctx.strokeStyle='rgba(255,255,255,0.07)'; ctx.lineWidth=r*0.10;
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.stroke();
+  // Outer glow ring
+  ctx.save(); ctx.shadowColor=c1; ctx.shadowBlur=r*0.18;
+  ctx.strokeStyle=c1+'44'; ctx.lineWidth=r*0.018;
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.96,0,Math.PI*2); ctx.stroke();
   ctx.restore();
 
-  // Content
-  var pad=w*0.08, row=h*0.155, ty=y+h*0.14;
-  ctx.save();
-  ctx.font='bold '+Math.round(w*0.09)+'px "Share Tech Mono",monospace';
-  ctx.textAlign='left';
+  var startA=Math.PI*0.76, endA=Math.PI*2.24;
+  var pct=Math.max(0,Math.min(1,(val-mn)/(mx-mn)));
 
-  // Header
-  ctx.fillStyle='rgba(0,180,255,0.45)';
-  ctx.fillText('SYS.DATA',x+pad,ty);
-  ty+=row*0.7;
+  // Track
+  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=r*0.10; ctx.lineCap='butt';
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.76,startA,endA); ctx.stroke();
 
-  // Divider
-  ctx.fillStyle='rgba(0,180,255,0.18)';
-  ctx.fillRect(x+pad,ty,w-pad*2,1);
-  ty+=row*0.5;
+  // Filled arc
+  var ag=ctx.createLinearGradient(cx-r,cy,cx+r,cy);
+  ag.addColorStop(0,c1); ag.addColorStop(1,c2);
+  ctx.strokeStyle=ag; ctx.lineWidth=r*0.10;
+  ctx.save(); ctx.shadowColor=c1; ctx.shadowBlur=r*0.22;
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.76,startA,startA+pct*(endA-startA)); ctx.stroke();
+  ctx.restore();
 
-  // Speed
-  var kmh=Math.round(speed*60);
-  ctx.fillStyle='rgba(0,160,255,0.4)'; ctx.font='bold '+Math.round(w*0.074)+'px "Share Tech Mono",monospace';
-  ctx.fillText('SPD',x+pad,ty);
-  ctx.fillStyle='#00ddff'; ctx.font='bold '+Math.round(w*0.16)+'px "Share Tech Mono",monospace';
-  ctx.textAlign='right';
-  ctx.fillText((kmh<10?'00':kmh<100?'0':'')+kmh,x+w-pad,ty);
-  ctx.textAlign='left';
-  ty+=row*0.5;
-  // Speed bar
-  drawBar(x+pad,ty,w-pad*2,h*0.04,Math.min(1,kmh/180),'#0088ff','#00ffcc');
-  ty+=row*0.65;
+  // Tick marks
+  for(var ti=0;ti<=10;ti++){
+    var ta=startA+ti*(endA-startA)/10;
+    var maj=ti%2===0;
+    ctx.strokeStyle=maj?'rgba(255,255,255,0.50)':'rgba(255,255,255,0.22)';
+    ctx.lineWidth=maj?r*0.028:r*0.016;
+    ctx.lineCap='round';
+    ctx.beginPath();
+    ctx.moveTo(cx+Math.cos(ta)*r*(maj?0.62:0.67),cy+Math.sin(ta)*r*(maj?0.62:0.67));
+    ctx.lineTo(cx+Math.cos(ta)*r*0.80,cy+Math.sin(ta)*r*0.80);
+    ctx.stroke();
+  }
 
-  // Distance
-  ctx.fillStyle='rgba(0,160,255,0.4)'; ctx.font='bold '+Math.round(w*0.074)+'px "Share Tech Mono",monospace';
-  ctx.textAlign='left'; ctx.fillText('DST',x+pad,ty);
-  ctx.fillStyle='#00ddff'; ctx.font='bold '+Math.round(w*0.13)+'px "Share Tech Mono",monospace';
-  ctx.textAlign='right'; ctx.fillText(dist.toFixed(2),x+w-pad,ty);
-  ctx.textAlign='left';
-  ty+=row*0.5;
-  drawBar(x+pad,ty,w-pad*2,h*0.04,Math.min(1,dist/10),'#5500ff','#cc00ff');
-  ty+=row*0.65;
+  // Needle
+  var na=startA+pct*(endA-startA);
+  ctx.save(); ctx.translate(cx,cy); ctx.rotate(na);
+  ctx.save(); ctx.shadowColor=c1; ctx.shadowBlur=r*0.25;
+  ctx.fillStyle=c1;
+  ctx.beginPath();
+  ctx.moveTo(-r*0.022, r*0.12);
+  ctx.lineTo(-r*0.010,-r*0.70);
+  ctx.lineTo( r*0.010,-r*0.70);
+  ctx.lineTo( r*0.022, r*0.12);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  ctx.restore();
 
-  // Combo
-  ctx.fillStyle='rgba(255,60,160,0.4)'; ctx.font='bold '+Math.round(w*0.074)+'px "Share Tech Mono",monospace';
-  ctx.textAlign='left'; ctx.fillText('CMB',x+pad,ty);
-  ctx.fillStyle=combo>0?'#ff80cc':'rgba(255,80,160,0.3)';
-  ctx.font='bold '+Math.round(w*0.14)+'px "Share Tech Mono",monospace';
-  ctx.textAlign='right'; ctx.fillText(combo>0?('x'+combo):'--',x+w-pad,ty);
-  ctx.textAlign='left';
+  // Center hub
+  var hg=ctx.createRadialGradient(cx,cy,0,cx,cy,r*0.10);
+  hg.addColorStop(0,'#ffffff'); hg.addColorStop(0.4,c1); hg.addColorStop(1,'#000');
+  ctx.fillStyle=hg;
+  ctx.save(); ctx.shadowColor=c1; ctx.shadowBlur=r*0.15;
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.09,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+
+  // Labels inside
+  ctx.textAlign='center';
+  ctx.fillStyle='rgba(255,255,255,0.38)';
+  ctx.font='bold '+Math.round(r*0.20)+'px "Share Tech Mono",monospace';
+  ctx.fillText(label,cx,cy+r*0.28);
+  ctx.fillStyle=c1;
+  ctx.font='bold '+Math.round(r*0.30)+'px "Share Tech Mono",monospace';
+  var disp=(val<10?'00':val<100?'0':'')+val;
+  ctx.fillText(disp,cx,cy+r*0.54);
+  ctx.fillStyle='rgba(255,255,255,0.25)';
+  ctx.font=Math.round(r*0.16)+'px "Share Tech Mono",monospace';
+  ctx.fillText(unit,cx,cy+r*0.70);
 
   ctx.restore();
 }
 
+function drawOdometer(cx,y,w,h){
+  // Drum-style odometer
+  var digits=('000000'+Math.floor(dist*10)).slice(-6);
+  var dw=w/digits.length, dh=h;
+  ctx.fillStyle='#0a0020';
+  rr(cx-w/2,y,w,dh,3); ctx.fill();
+  ctx.strokeStyle='rgba(0,180,255,0.3)'; ctx.lineWidth=0.8;
+  rr(cx-w/2,y,w,dh,3); ctx.stroke();
+  ctx.save(); ctx.font='bold '+Math.round(dh*0.68)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(var di=0;di<digits.length;di++){
+    var dx=cx-w/2+di*dw+dw/2;
+    // Alternating slight hue: last digit brighter (tenths of km)
+    ctx.fillStyle=di===digits.length-1?'rgba(255,200,0,0.9)':'rgba(0,220,255,0.85)';
+    ctx.fillText(digits[di],dx,y+dh*0.55);
+    // Divider
+    if(di<digits.length-1){ctx.fillStyle='rgba(255,255,255,0.08)';ctx.fillRect(cx-w/2+(di+1)*dw-0.5,y+dh*0.1,1,dh*0.8);}
+  }
+  // Label
+  ctx.fillStyle='rgba(0,180,255,0.4)';
+  ctx.font=Math.round(dh*0.28)+'px "Share Tech Mono",monospace';
+  ctx.fillText('ODO  KM',cx,y-dh*0.25);
+  ctx.restore();
+}
+
+function drawFuelGauge(x,y,w,h){ drawFuelArc(x+w/2,y+h/2,Math.min(w,h)*0.45); }
+
+function drawFuelArc(cx,cy,r){
+  var fuelPct=Math.max(0.05, Math.min(1, 1-(dist*0.004)));
+  var startA=Math.PI*0.80, endA=Math.PI*2.20;
+  // Face
+  ctx.save();
+  ctx.fillStyle='#070015';
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=r*0.08;
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.76,startA,endA); ctx.stroke();
+  // Color: green->orange->red
+  var fc=fuelPct>0.5?'#00ff88':fuelPct>0.25?'#ff8800':'#ff2200';
+  ctx.save(); ctx.shadowColor=fc; ctx.shadowBlur=r*0.3;
+  ctx.strokeStyle=fc; ctx.lineWidth=r*0.09; ctx.lineCap='round';
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.76,startA,startA+fuelPct*(endA-startA)); ctx.stroke();
+  ctx.restore();
+  // E/F labels
+  ctx.fillStyle='rgba(255,255,255,0.35)';
+  ctx.font='bold '+Math.round(r*0.28)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='center';
+  ctx.fillText('E',cx+Math.cos(startA)*r*0.55,cy+Math.sin(startA)*r*0.55+r*0.08);
+  ctx.fillText('F',cx+Math.cos(endA)*r*0.55,cy+Math.sin(endA)*r*0.55+r*0.08);
+  // Icon
+  ctx.fillStyle=fc; ctx.font=Math.round(r*0.38)+'px Arial';
+  ctx.fillText('\u26FD',cx,cy+r*0.18);
+  // Pct label
+  ctx.fillStyle=fc; ctx.font='bold '+Math.round(r*0.26)+'px "Share Tech Mono",monospace';
+  ctx.fillText(Math.round(fuelPct*100)+'%',cx,cy+r*0.52);
+  ctx.restore();
+}
+
+function drawTempArc(cx,cy,r){
+  // Engine temp — rises slowly with speed
+  var tmpPct=Math.min(0.90, 0.40+speed*0.06);
+  var startA=Math.PI*0.80, endA=Math.PI*2.20;
+  ctx.save();
+  ctx.fillStyle='#070015';
+  ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fill();
+  ctx.strokeStyle='rgba(255,255,255,0.06)'; ctx.lineWidth=r*0.08;
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.76,startA,endA); ctx.stroke();
+  var tc=tmpPct>0.80?'#ff2200':tmpPct>0.60?'#ff8800':'#00ccff';
+  ctx.save(); ctx.shadowColor=tc; ctx.shadowBlur=r*0.25;
+  ctx.strokeStyle=tc; ctx.lineWidth=r*0.09; ctx.lineCap='round';
+  ctx.beginPath(); ctx.arc(cx,cy,r*0.76,startA,startA+tmpPct*(endA-startA)); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle='rgba(255,255,255,0.35)';
+  ctx.font='bold '+Math.round(r*0.28)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='center';
+  ctx.fillText('C',cx+Math.cos(startA)*r*0.55,cy+Math.sin(startA)*r*0.55+r*0.08);
+  ctx.fillText('H',cx+Math.cos(endA)*r*0.55,cy+Math.sin(endA)*r*0.55+r*0.08);
+  ctx.fillStyle=tc; ctx.font=Math.round(r*0.38)+'px Arial';
+  ctx.fillText('\uD83C\uDF21',cx,cy+r*0.14); // thermometer
+  ctx.fillStyle=tc; ctx.font='bold '+Math.round(r*0.26)+'px "Share Tech Mono",monospace';
+  ctx.fillText(Math.round(tmpPct*110+60)+'\u00B0',cx,cy+r*0.52);
+  ctx.restore();
+}
+
+function drawIndicators(x,y,w,h){
+  ctx.save();
+  var blink = Math.floor(rTime*0.08)%2===0;
+  var items=[
+    {sym:'◄', col:'#ff9900', on: car.laneXTarget<-0.35 && blink},
+    {sym:'►', col:'#ff9900', on: car.laneXTarget>0.35  && blink},
+    {sym:'!', col:'#ffcc00', on: MODE==='rush'&&speed>3.2},
+    {sym:'F', col:'#ff3300', on: dist>7},
+    {sym:'P', col:'#00aaff', on: !inGame},
+    {sym:'R', col:'#ff2d78', on: window.radioIsOn||false}
+  ];
+  var iw=w/items.length;
+  ctx.font='bold '+Math.round(h*0.72)+'px "Share Tech Mono",monospace';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(var ii=0;ii<items.length;ii++){
+    var itm=items[ii], ix=x+ii*iw+iw/2, iy=y+h*0.5;
+    ctx.globalAlpha=itm.on?1.0:0.14;
+    if(itm.on){ctx.shadowColor=itm.col;ctx.shadowBlur=h*0.9;}
+    ctx.fillStyle=itm.col;
+    ctx.fillText(itm.sym,ix,iy);
+    ctx.shadowBlur=0;
+  }
+  ctx.textBaseline='alphabetic'; ctx.restore();
+}
+
 // ── RIGHT SCREEN: radio ───────────────────────────────────────────────────────
-function drawScreen_Right(x,y,w,h){
-  ctx.fillStyle='#000'; rr(x-3,y-3,w+6,h+6,7); ctx.fill();
-  ctx.fillStyle='#040008'; rr(x,y,w,h,5); ctx.fill();
-
-  ctx.save(); ctx.globalAlpha=0.06;
-  ctx.fillStyle='#ff00aa';
-  for(var si=0;si<h;si+=4){ ctx.fillRect(x,y+si,w,2); }
+function drawScreen_Right(x,y,w,h){ drawRadioUnit(x,y,w,h); }
+function drawRadioUnit(x,y,w,h){
+  // Panel
+  ctx.fillStyle='#000'; rr(x-4,y-4,w+8,h+8,8); ctx.fill();
+  var pg=ctx.createLinearGradient(x,y,x,y+h);
+  pg.addColorStop(0,'#10030a'); pg.addColorStop(1,'#040008');
+  ctx.fillStyle=pg; rr(x,y,w,h,6); ctx.fill();
+  // Scanlines
+  ctx.save(); ctx.globalAlpha=0.05; ctx.fillStyle='#ff00aa';
+  for(var si=0;si<h;si+=3){ ctx.fillRect(x,y+si,w,1.5); }
   ctx.restore();
+  // Border
+  ctx.save(); ctx.shadowColor='#ff0099'; ctx.shadowBlur=12;
+  ctx.strokeStyle='rgba(255,0,150,0.45)'; ctx.lineWidth=1.2;
+  rr(x,y,w,h,6); ctx.stroke(); ctx.restore();
 
-  ctx.save(); ctx.shadowColor='#ff0099'; ctx.shadowBlur=10;
-  ctx.strokeStyle='rgba(255,0,150,0.5)'; ctx.lineWidth=1.2;
-  rr(x,y,w,h,5); ctx.stroke();
-  ctx.restore();
-
-  var pad=w*0.08, ty=y+h*0.14;
-  ctx.save(); ctx.textAlign='left';
-
-  // Header
-  ctx.font='bold '+Math.round(w*0.085)+'px "Share Tech Mono",monospace';
-  ctx.fillStyle='rgba(255,0,140,0.45)';
-  ctx.fillText('RADIO.FM',x+pad,ty);
-  ty+=h*0.09;
-  ctx.fillStyle='rgba(255,0,140,0.18)';
-  ctx.fillRect(x+pad,ty,w-pad*2,1);
-  ty+=h*0.07;
-
-  // Live dot + status
   var isOn=window.radioIsOn||false;
-  ctx.fillStyle=isOn?'#ff2d78':'#330011';
-  ctx.beginPath(); ctx.arc(x+pad+4,ty-3,4,0,Math.PI*2); ctx.fill();
-  if(isOn){ ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=8; ctx.fill(); ctx.restore(); }
-  ctx.font='bold '+Math.round(w*0.072)+'px "Share Tech Mono",monospace';
-  ctx.fillStyle=isOn?'#ff6699':'rgba(255,50,100,0.3)';
-  ctx.fillText(isOn?'ON AIR':'OFFLINE',x+pad+12,ty);
-  ty+=h*0.115;
+  var pad=w*0.07;
+  var sectionH=h/4.2;
 
-  // Track title — wrap to 2 lines
+  // ── TOP BAR: station name + ON AIR indicator ──
+  var topBarH=sectionH*0.72;
+  ctx.fillStyle='rgba(255,0,80,0.12)';
+  ctx.fillRect(x,y,w,topBarH);
+  // ON AIR light
+  ctx.save();
+  ctx.fillStyle=isOn?'#ff2d78':'#220008';
+  if(isOn){ctx.shadowColor='#ff2d78';ctx.shadowBlur=10;}
+  ctx.beginPath(); ctx.arc(x+pad+5,y+topBarH*0.52,5,0,Math.PI*2); ctx.fill();
+  ctx.restore();
+  ctx.font='bold '+Math.round(w*0.095)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle=isOn?'#ff6699':'rgba(255,60,100,0.35)';
+  ctx.textAlign='left';
+  ctx.fillText(isOn?'ON AIR':'OFFLINE',x+pad+14,y+topBarH*0.68);
+  ctx.font=Math.round(w*0.08)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,80,140,0.38)';
+  ctx.textAlign='right';
+  ctx.fillText('FM',x+w-pad,y+topBarH*0.68);
+
+  // ── FREQUENCY DISPLAY ──
+  var freqY=y+topBarH+sectionH*0.08;
+  var freqH=sectionH*0.88;
+  ctx.fillStyle='#000';
+  rr(x+pad,freqY,w-pad*2,freqH,3); ctx.fill();
+  ctx.save(); ctx.shadowColor='#ff0088'; ctx.shadowBlur=6;
+  ctx.strokeStyle='rgba(255,0,100,0.35)'; ctx.lineWidth=0.8;
+  rr(x+pad,freqY,w-pad*2,freqH,3); ctx.stroke(); ctx.restore();
+  // Frequency value — fake FM station display
+  ctx.font='bold '+Math.round(freqH*0.56)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='#ff4499';
+  ctx.textAlign='center';
+  ctx.fillText('98.7',x+w*0.42,freqY+freqH*0.72);
+  ctx.font=Math.round(freqH*0.32)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,60,120,0.45)';
+  ctx.fillText('MHz',x+w*0.78,freqY+freqH*0.70);
+
+  // ── FM BAND SCALE ──
+  var scaleY=freqY+freqH+sectionH*0.05;
+  var scaleH=sectionH*0.40;
+  var scaleX=x+pad, scaleW=w-pad*2;
+  ctx.fillStyle='rgba(255,0,80,0.06)';
+  ctx.fillRect(scaleX,scaleY,scaleW,scaleH);
+  // Band marks 88–108 MHz
+  var bands=['88','92','96','100','104','108'];
+  ctx.font=Math.round(scaleH*0.45)+'px "Share Tech Mono",monospace';
+  for(var bi=0;bi<bands.length;bi++){
+    var bx=scaleX+bi*(scaleW/(bands.length-1));
+    ctx.fillStyle='rgba(255,60,120,0.4)';
+    ctx.fillRect(bx-0.5,scaleY,1,scaleH*0.55);
+    ctx.textAlign='center'; ctx.fillText(bands[bi],bx,scaleY+scaleH*0.95);
+  }
+  // Tuner needle at 98.7 position
+  var needlePct=(98.7-88)/(108-88);
+  var needleX=scaleX+needlePct*scaleW;
+  ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=6;
+  ctx.fillStyle='#ff2d78';
+  ctx.fillRect(needleX-1,scaleY-scaleH*0.1,2,scaleH*0.7);
+  ctx.restore();
+
+  // ── TRACK TITLE ──
+  var trackY=scaleY+scaleH+sectionH*0.10;
+  var trackH=sectionH*0.80;
   var title=window.radioTrack||'Tune in to Pumpo';
-  ctx.font=Math.round(w*0.085)+'px "Share Tech Mono",monospace';
-  ctx.fillStyle='rgba(255,120,200,0.92)';
-  var words=title.split(' '), line='', lines=[];
+  ctx.font=Math.round(w*0.083)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,120,190,0.88)';
+  ctx.textAlign='left';
+  // Word wrap
+  var words=title.split(' '), line='', tlines=[];
   for(var wi=0;wi<words.length;wi++){
     var test=line+(line?' ':'')+words[wi];
-    if(ctx.measureText(test).width>w-pad*2&&line){lines.push(line);line=words[wi];}
+    if(ctx.measureText(test).width>w-pad*2&&line){tlines.push(line);line=words[wi];}
     else line=test;
   }
-  lines.push(line);
-  for(var li=0;li<Math.min(lines.length,2);li++){
-    ctx.fillText(lines[li],x+pad,ty); ty+=h*0.10;
+  tlines.push(line);
+  var tly=trackY+w*0.06;
+  for(var li=0;li<Math.min(tlines.length,2);li++){
+    ctx.fillText(tlines[li],x+pad,tly); tly+=w*0.10;
   }
-  ty+=h*0.02;
 
-  // Waveform bars
-  var barN=12, barW=(w-pad*2)/barN, barMaxH=h*0.18;
+  // ── WAVEFORM ──
+  var waveY=trackY+trackH*0.45;
+  var waveH=sectionH*0.55, waveW=w-pad*2;
+  var barN=14, bw2=(waveW)/barN;
   for(var b=0;b<barN;b++){
-    var bh=isOn ? barMaxH*(0.15+Math.abs(Math.sin(rTime*0.18+b*0.65))*0.85) : barMaxH*0.08;
-    var barG=ctx.createLinearGradient(0,ty+barMaxH-bh,0,ty+barMaxH);
-    barG.addColorStop(0,'#ff2d78'); barG.addColorStop(1,'#880033');
-    ctx.fillStyle=barG;
-    ctx.fillRect(x+pad+b*barW,ty+barMaxH-bh,barW-2,bh);
+    var bh2=isOn?waveH*(0.12+Math.abs(Math.sin(rTime*0.20+b*0.62))*0.88):waveH*0.07;
+    var wg=ctx.createLinearGradient(0,waveY+waveH-bh2,0,waveY+waveH);
+    wg.addColorStop(0,'#ff2d78'); wg.addColorStop(1,'#660022');
+    ctx.fillStyle=wg;
+    ctx.fillRect(x+pad+b*bw2,waveY+waveH-bh2,bw2-2,bh2);
   }
-  ty+=barMaxH+h*0.05;
 
-  // Tune button — drawn as a physical button with depth
-  var btnW=w-pad*2, btnH=h*0.12;
-  ctx.fillStyle=isOn?'#550022':'#1a0008';
-  rr(x+pad,ty,btnW,btnH,3); ctx.fill();
-  ctx.save(); ctx.shadowColor=isOn?'#ff0066':'transparent'; ctx.shadowBlur=isOn?8:0;
-  ctx.strokeStyle=isOn?'rgba(255,0,100,0.7)':'rgba(255,0,100,0.2)'; ctx.lineWidth=1;
-  rr(x+pad,ty,btnW,btnH,3); ctx.stroke(); ctx.restore();
-  ctx.font='bold '+Math.round(w*0.09)+'px "Share Tech Mono",monospace';
+  // ── TUNE BUTTON ──
+  var btnY=waveY+waveH+sectionH*0.08;
+  var btnH2=sectionH*0.55, btnW2=w-pad*2;
+  // Button physical depth — raised appearance
+  ctx.fillStyle=isOn?'rgba(80,0,30,0.9)':'rgba(25,0,10,0.9)';
+  rr(x+pad,btnY+2,btnW2,btnH2,4); ctx.fill(); // shadow
+  ctx.fillStyle=isOn?'#6a0028':'#220010';
+  rr(x+pad,btnY,btnW2,btnH2,4); ctx.fill();
+  ctx.save(); ctx.shadowColor=isOn?'#ff0066':'rgba(255,0,80,0.2)'; ctx.shadowBlur=isOn?10:3;
+  ctx.strokeStyle=isOn?'rgba(255,0,80,0.8)':'rgba(255,0,80,0.18)'; ctx.lineWidth=1;
+  rr(x+pad,btnY,btnW2,btnH2,4); ctx.stroke(); ctx.restore();
+  ctx.font='bold '+Math.round(w*0.092)+'px "Share Tech Mono",monospace';
   ctx.textAlign='center';
-  ctx.fillStyle=isOn?'#fff':'rgba(255,60,100,0.5)';
-  ctx.fillText(isOn?'[ ON AIR ]':'[ TUNE IN ]',x+w/2,ty+btnH*0.68);
-
-  // Store button bounds for hit detection
-  window._radioBtnBounds={x:x+pad,y:ty,w:btnW,h:btnH};
-
-  ctx.restore();
+  ctx.fillStyle=isOn?'#fff':'rgba(255,60,100,0.45)';
+  ctx.fillText(isOn?'[ ON AIR ]':'[ TUNE IN ]',x+w/2,btnY+btnH2*0.66);
+  window._radioBtnBounds={x:x+pad,y:btnY,w:btnW2,h:btnH2};
 }
 
 // ── CENTER CONSOLE POD ────────────────────────────────────────────────────────
 function drawCenterPod(x,y,w,h){
-  // Trapezoidal pod — wider at bottom
-  var flare=w*0.12;
-  var podGrad=ctx.createLinearGradient(x,y,x,y+h);
-  podGrad.addColorStop(0,'#2a0e48');
-  podGrad.addColorStop(1,'#0c0318');
-  ctx.fillStyle=podGrad;
+  var flare=w*0.08;
+  var pg=ctx.createLinearGradient(x,y,x,y+h);
+  pg.addColorStop(0,'#260c40'); pg.addColorStop(1,'#0a0218');
+  ctx.fillStyle=pg;
   ctx.beginPath();
   ctx.moveTo(x-flare,y+h); ctx.lineTo(x,y);
   ctx.lineTo(x+w,y); ctx.lineTo(x+w+flare,y+h);
   ctx.closePath(); ctx.fill();
-  ctx.strokeStyle='rgba(140,40,255,0.45)'; ctx.lineWidth=1.2;
-  ctx.stroke();
-  // Inner dark recessed panel
-  ctx.fillStyle='#0a0116';
-  rr(x+12,y+10,w-24,h-18,4); ctx.fill();
-  // Mode indicator light strip
+  ctx.strokeStyle='rgba(120,35,220,0.38)'; ctx.lineWidth=1.2; ctx.stroke();
+  ctx.fillStyle='#080114';
+  rr(x+8,y+7,w-16,h-14,4); ctx.fill();
+
   var mc=MODE==='rush'?'#ff2d78':MODE==='cruise'?'#00ffe7':'#b24bff';
-  ctx.save(); ctx.shadowColor=mc; ctx.shadowBlur=14;
-  ctx.fillStyle=mc+'44';
-  ctx.fillRect(x+w*0.2,y+h*0.35,w*0.6,4);
-  ctx.fillStyle=mc;
-  ctx.fillRect(x+w*0.2,y+h*0.35,w*0.6,2);
+  // Mode label — top
+  ctx.save(); ctx.shadowColor=mc; ctx.shadowBlur=10;
+  ctx.font='bold '+Math.round(w*0.115)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle=mc; ctx.textAlign='center';
+  ctx.fillText(MODE.toUpperCase(),x+w/2,y+h*0.30);
   ctx.restore();
-  // Mode text
-  ctx.save(); ctx.textAlign='center';
-  ctx.font='bold '+Math.round(w*0.12)+'px "Share Tech Mono",monospace';
-  ctx.fillStyle=mc+'bb';
-  ctx.fillText(MODE.toUpperCase(),x+w/2,y+h*0.68);
-  ctx.restore();
+
+  // Separator line
+  ctx.fillStyle=mc+'33'; ctx.fillRect(x+w*0.15,y+h*0.38,w*0.70,1);
+
+  // Gear — correct formula: 1-6 based on speed range
+  var gear;
+  if(!inGame){ gear='P'; }
+  else {
+    var g=Math.floor(speed*0.9);
+    gear=Math.max(1,Math.min(6,g))+'';
+  }
+  ctx.font='bold '+Math.round(w*0.28)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,255,255,0.80)'; ctx.textAlign='center';
+  ctx.fillText(gear,x+w/2,y+h*0.68);
+  ctx.font=Math.round(w*0.085)+'px "Share Tech Mono",monospace';
+  ctx.fillStyle='rgba(255,255,255,0.22)';
+  ctx.fillText('GEAR',x+w/2,y+h*0.82);
 }
 
 // ── BAR METER ─────────────────────────────────────────────────────────────────
@@ -1105,55 +1421,85 @@ function drawWheel(cx,cy,r){
   ctx.translate(cx,cy);
   ctx.rotate(car.wheel*Math.PI/180);
 
-  // Outer drop shadow for physical depth
-  ctx.shadowColor='rgba(0,0,0,0.85)'; ctx.shadowBlur=40; ctx.shadowOffsetY=-8;
+  // Drop shadow
+  ctx.shadowColor='rgba(0,0,0,0.95)'; ctx.shadowBlur=r*0.45; ctx.shadowOffsetY=-r*0.04;
 
-  // Rim — thick, dark, physical plastic
-  ctx.strokeStyle='#0c0318'; ctx.lineWidth=r*0.155;
+  // Rim — thick dark plastic
+  ctx.strokeStyle='#0a0116'; ctx.lineWidth=r*0.16;
   ctx.beginPath(); ctx.arc(0,0,r,0,Math.PI*2); ctx.stroke();
   ctx.shadowBlur=0; ctx.shadowOffsetY=0;
 
-  // Rim top highlight
-  ctx.strokeStyle='rgba(160,60,255,0.38)'; ctx.lineWidth=r*0.018;
-  ctx.beginPath(); ctx.arc(0,0,r-r*0.055,0,Math.PI*2); ctx.stroke();
-
-  // Rim outer edge accent
-  ctx.save(); ctx.shadowColor='#9933ff'; ctx.shadowBlur=8;
-  ctx.strokeStyle='rgba(140,40,255,0.55)'; ctx.lineWidth=r*0.014;
+  // Rim outer glow
+  ctx.save(); ctx.shadowColor='#7722ee'; ctx.shadowBlur=r*0.14;
+  ctx.strokeStyle='rgba(110,35,220,0.55)'; ctx.lineWidth=r*0.018;
   ctx.beginPath(); ctx.arc(0,0,r+r*0.04,0,Math.PI*2); ctx.stroke();
   ctx.restore();
 
-  // Spokes — 4-spoke layout, thick
-  var spokes=[[0,-1],[1,0],[0,1],[-1,0]];
-  // But only draw as an H-bar + vertical down (classic 70s/80s wheel)
-  ctx.fillStyle='#0c0318';
-  // Horizontal bar
-  ctx.fillRect(-r*0.92,-r*0.08,r*1.84,r*0.16);
-  // Bottom stem
-  ctx.fillRect(-r*0.10,0,r*0.20,r*0.88);
-  // Spoke highlight lines
-  ctx.fillStyle='rgba(140,40,255,0.28)';
-  ctx.fillRect(-r*0.92,-r*0.008,r*1.84,r*0.016);
-  ctx.fillRect(-r*0.010,0,r*0.020,r*0.88);
+  // Rim inner highlight arc (top only)
+  ctx.strokeStyle='rgba(150,60,255,0.30)'; ctx.lineWidth=r*0.013;
+  ctx.beginPath(); ctx.arc(0,0,r-r*0.06,Math.PI*1.1,Math.PI*1.9); ctx.stroke();
 
-  // Hub
-  var hg=ctx.createRadialGradient(0,-r*0.04,0,0,0,r*0.22);
-  hg.addColorStop(0,'#2d0a52'); hg.addColorStop(1,'#080112');
+  // Grip texture (dashed arc top)
+  ctx.strokeStyle='rgba(70,20,120,0.55)'; ctx.lineWidth=r*0.055;
+  ctx.setLineDash([r*0.07,r*0.045]);
+  ctx.beginPath(); ctx.arc(0,0,r,Math.PI*1.08,Math.PI*1.92); ctx.stroke();
+  ctx.setLineDash([]);
+
+  // ── SPOKES ──
+  ctx.fillStyle='#0a0116';
+  // Horizontal bar
+  ctx.fillRect(-r*0.88,-r*0.076,r*1.76,r*0.152);
+  // Bottom stem
+  ctx.fillRect(-r*0.085,r*0.0,r*0.17,r*0.82);
+  // Brace fill (left)
+  ctx.save(); ctx.globalAlpha=0.30;
+  ctx.fillStyle='#110225';
+  ctx.beginPath();
+  ctx.moveTo(-r*0.88,-r*0.076); ctx.lineTo(-r*0.55,-r*0.076);
+  ctx.lineTo(-r*0.085,r*0.32);  ctx.lineTo(-r*0.085,r*0.06);
+  ctx.closePath(); ctx.fill();
+  // (right)
+  ctx.beginPath();
+  ctx.moveTo(r*0.88,-r*0.076); ctx.lineTo(r*0.55,-r*0.076);
+  ctx.lineTo(r*0.085,r*0.32);  ctx.lineTo(r*0.085,r*0.06);
+  ctx.closePath(); ctx.fill();
+  ctx.restore();
+  // Spoke highlight lines
+  ctx.fillStyle='rgba(110,40,200,0.22)';
+  ctx.fillRect(-r*0.88,-r*0.009,r*1.76,r*0.018);
+  ctx.fillRect(-r*0.009,0,r*0.018,r*0.82);
+
+  // ── HUB ──
+  var hg=ctx.createRadialGradient(0,-r*0.03,0,0,0,r*0.26);
+  hg.addColorStop(0,'#2a0848'); hg.addColorStop(0.55,'#160330'); hg.addColorStop(1,'#06010e');
   ctx.fillStyle=hg;
-  ctx.beginPath(); ctx.arc(0,0,r*0.22,0,Math.PI*2); ctx.fill();
-  ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=10;
-  ctx.strokeStyle='rgba(255,45,120,0.65)'; ctx.lineWidth=r*0.016;
-  ctx.beginPath(); ctx.arc(0,0,r*0.22,0,Math.PI*2); ctx.stroke();
+  ctx.beginPath(); ctx.arc(0,0,r*0.26,0,Math.PI*2); ctx.fill();
+  ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=r*0.15;
+  ctx.strokeStyle='rgba(255,45,120,0.65)'; ctx.lineWidth=r*0.020;
+  ctx.beginPath(); ctx.arc(0,0,r*0.26,0,Math.PI*2); ctx.stroke();
   ctx.restore();
 
-  // Hub inner ring
-  ctx.strokeStyle='rgba(160,60,255,0.4)'; ctx.lineWidth=r*0.01;
-  ctx.beginPath(); ctx.arc(0,0,r*0.14,0,Math.PI*2); ctx.stroke();
+  // ── AIRBAG COVER PLATE ──
+  var apW=r*0.36, apH=r*0.22;
+  ctx.fillStyle='#100222';
+  rr(-apW/2,-apH/2,apW,apH,r*0.045); ctx.fill();
+  // Plate seam border
+  ctx.strokeStyle='rgba(130,50,240,0.40)'; ctx.lineWidth=r*0.014;
+  rr(-apW/2,-apH/2,apW,apH,r*0.045); ctx.stroke();
+  // Horizontal seam
+  ctx.strokeStyle='rgba(130,50,240,0.22)'; ctx.lineWidth=r*0.009;
+  ctx.beginPath(); ctx.moveTo(-apW*0.40,0); ctx.lineTo(apW*0.40,0); ctx.stroke();
+  // Vertical seam (short center line)
+  ctx.beginPath(); ctx.moveTo(0,-apH*0.35); ctx.lineTo(0,apH*0.35); ctx.stroke();
+
+  // Inner hub ring
+  ctx.strokeStyle='rgba(150,55,255,0.35)'; ctx.lineWidth=r*0.013;
+  ctx.beginPath(); ctx.arc(0,0,r*0.15,0,Math.PI*2); ctx.stroke();
 
   // Center dot
-  ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=12;
+  ctx.save(); ctx.shadowColor='#ff2d78'; ctx.shadowBlur=r*0.18;
   ctx.fillStyle='#ff2d78';
-  ctx.beginPath(); ctx.arc(0,0,r*0.045,0,Math.PI*2); ctx.fill();
+  ctx.beginPath(); ctx.arc(0,0,r*0.052,0,Math.PI*2); ctx.fill();
   ctx.restore();
 
   ctx.restore();
@@ -1295,6 +1641,8 @@ requestAnimationFrame(loop);
   fetch(MANIFEST).then(function(r){return r.ok?r.json():null;})
     .then(function(m){if(m) manifest=m;}).catch(function(){});
 })();
+
+
 </script>
 </body>
 </html>
