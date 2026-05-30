@@ -79,7 +79,7 @@
       border: 1px solid rgba(255,0,128,0.2);
       border-radius: 16px;
       padding: 1.4rem 1.5rem;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem; /* Slight layout shift for image breathing room */
       position: relative;
       overflow: hidden;
     }
@@ -93,6 +93,16 @@
     .spartan-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: .2em; text-transform: uppercase; color: var(--pink); margin-bottom: .6rem; }
     .spartan-title { font-family: 'Black Ops One', cursive; font-size: 18px; color: var(--text); letter-spacing: .5px; margin-bottom: .5rem; }
     .spartan-text { font-size: 13px; color: var(--muted); line-height: 1.7; font-weight: 600; }
+
+    /* NEW SPARTAN IMAGE CONTAINER */
+    .spartan-img {
+      width: 100%;
+      height: auto;
+      display: block;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 2rem;
+    }
 
     /* PLATFORM CARDS */
     .platforms { display: flex; flex-direction: column; gap: 12px; margin-bottom: 2rem; }
@@ -184,7 +194,6 @@
 
     <div class="hdivider"></div>
 
-    <!-- 300 Spartans block -->
     <div class="spartan-block">
       <div class="spartan-label">The founding cohort</div>
       <div class="spartan-title">Pumpo's 300 Spartans</div>
@@ -196,10 +205,10 @@
       </p>
     </div>
 
-    <!-- Platform cards -->
+    <img src="assets/300.PNG" alt="Pumpo 300 Spartans" class="spartan-img">
+
     <div class="platforms">
 
-      <!-- ⚠️ Replace # with your actual Instagram URL -->
       <a href="https://www.instagram.com/pumpocrew/" target="_blank" rel="noopener" class="platform-card instagram">
         <div class="platform-icon">📸</div>
         <div class="platform-info">
@@ -209,7 +218,6 @@
         <span class="platform-tag active">ACTIVE</span>
       </a>
 
-      <!-- ⚠️ Replace # with your actual X/Twitter URL -->
       <a href="https://x.com/pumpocrew" target="_blank" rel="noopener" class="platform-card twitter">
         <div class="platform-icon" style="color:#fff;font-size:16px;font-weight:900;">𝕏</div>
         <div class="platform-info">
@@ -219,7 +227,6 @@
         <span class="platform-tag active">ACTIVE</span>
       </a>
 
-      <!-- ⚠️ Replace # with your actual Telegram URL -->
       <a href="https://t.me/+4MvwbGQiREBlZTJk" target="_blank" rel="noopener" class="platform-card telegram">
         <div class="platform-icon">✈️</div>
         <div class="platform-info">
@@ -274,7 +281,5 @@
 
   </div>
 
-  <!-- PUMPO BAR — paste shared snippet here -->
-
-</body>
+  </body>
 </html>
