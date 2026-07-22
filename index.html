@@ -4,8 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Radio Pumpo 24/7</title>
-  <link rel="apple-touch-icon" href="radiopumpologo.PNG">
-  <link rel="icon" type="image/png" href="radiopumpologo.PNG">
+  <link rel="apple-touch-icon" href="radiopumpologo.jpg">
+  <link rel="icon" type="image/png" href="radiopumpologo.jpg">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -126,7 +126,7 @@
   <div class="hero-inner">
     <div class="logo-orbit-wrap">
       <canvas id="orbitCanvas" class="orbit-canvas"></canvas>
-      <img src="radiopumpologo.PNG" alt="Radio Pumpo" class="hero-logo">
+      <img src="radiopumpologo.jpg" alt="Radio Pumpo" class="hero-logo">
     </div>
     <div class="live-badge">● LIVE 24/7</div>
     <p class="hero-story">
@@ -538,7 +538,7 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     const badge=t.url===c?'<span class="pumpo-track-now">▶ NOW</span>':'';
     row.appendChild(chk);row.appendChild(nm);if(t.url===c){const b=document.createElement('span');b.className='pumpo-track-now';b.textContent='▶ NOW';row.appendChild(b);}
     // Row click (not on checkbox) → open song drawer
-    row.onclick=(e)=>{if(e.target===chk||chk.contains(e.target))return;openSongDrawer(t,i);};
+    row.onclick=(e)=>{if(e.target===chk||chk.contains(e.target))return;e.stopPropagation();openSongDrawer(t,i,e);};
     list.appendChild(row);});}
   document.getElementById('pumpoSelectAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(true);buildList();};
   document.getElementById('pumpoClearAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(false);buildList();};
@@ -559,7 +559,8 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
   // ── SONG DRAWER ──
   let sdAudio=null, sdPlaying=false, sdWaveAnim=null, sdCurrentTrack=null;
 
-  window.openSongDrawer=function(track,idx){
+  window.openSongDrawer=function(track,idx,evt){
+    if(evt) evt.stopPropagation();
     sdCurrentTrack=track;
     document.getElementById('songDrawerName').textContent=track.name;
     document.getElementById('songDrawerSub').textContent='Radio Pumpo · 24/7';
@@ -568,7 +569,6 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     if(isMain){
       sdAudio=audio; sdPlaying=!audio.paused;
     } else {
-      // Create a separate audio instance for preview
       if(sdAudio&&sdAudio!==audio){sdAudio.pause();}
       sdAudio=new Audio(track.url);
       sdAudio.onended=()=>{sdPlaying=false;document.getElementById('sdPlayBtn').textContent='▶ PLAY';};
@@ -576,13 +576,17 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     }
     document.getElementById('sdPlayBtn').textContent=sdPlaying?'⏸ PAUSE':'▶ PLAY';
     startWaveAnim();
-    // Open drawer, close others
+    // Close other drawers first
     document.getElementById('pumpoPlaylistDrawer').classList.remove('open');
     document.getElementById('pumpoAIDrawer').classList.remove('open');
     document.getElementById('pumpoAIBtn').classList.remove('active');
     pumpoPlaylistOpen=false; aiOpen=false;
-    document.getElementById('songDrawer').classList.add('open');
-    updateH();
+    // Defer open slightly so document click handler (which closes) fires first and is ignored
+    sdJustOpened=true;
+    requestAnimationFrame(()=>{
+      document.getElementById('songDrawer').classList.add('open');
+      updateH();
+    });
   };
 
   window.closeSongDrawer=function(){
@@ -645,9 +649,12 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
   }
 
   // Close song drawer on outside click
+  // Use a flag to prevent the triggering click from immediately closing the drawer
+  let sdJustOpened=false;
   document.addEventListener('click',e=>{
     const sd=document.getElementById('songDrawer');
-    if(sd.classList.contains('open')&&!sd.contains(e.target)&&e.target.id!=='pumpoPlaylistBtn'){
+    if(sdJustOpened){sdJustOpened=false;return;}
+    if(sd.classList.contains('open')&&!sd.contains(e.target)){
       closeSongDrawer();
     }
   });
