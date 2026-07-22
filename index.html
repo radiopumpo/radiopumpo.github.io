@@ -4,9 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>Radio Pumpo 24/7</title>
-  <link rel="apple-touch-icon" href="radiopumpologo.jpg">
-  <link rel="icon" type="image/png" href="radiopumpologo.jpg">
-  <meta name="mobile-web-app-capable" content="yes">
+  <link rel="apple-touch-icon" href="radiopumpologo.PNG">
+  <link rel="icon" type="image/png" href="radiopumpologo.PNG">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -127,7 +126,7 @@
   <div class="hero-inner">
     <div class="logo-orbit-wrap">
       <canvas id="orbitCanvas" class="orbit-canvas"></canvas>
-      <img src="radiopumpologo.jpg" alt="Radio Pumpo" class="hero-logo">
+      <img src="radiopumpologo.PNG" alt="Radio Pumpo" class="hero-logo">
     </div>
     <div class="live-badge">● LIVE 24/7</div>
     <p class="hero-story">
@@ -387,6 +386,24 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
 .pumpo-ai-send:disabled{opacity:.4;cursor:not-allowed;}
 .pumpo-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:#40e0d0;color:#000;font-weight:700;padding:8px 20px;border-radius:20px;font-size:.83rem;z-index:9500;transition:transform .35s ease,opacity .35s ease;pointer-events:none;opacity:0;font-family:'Rajdhani',sans-serif;}
 .pumpo-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+/* SONG DRAWER */
+.song-drawer{position:fixed;bottom:-100%;left:0;right:0;z-index:8500;background:rgba(13,13,13,0.98);backdrop-filter:blur(24px);border-top:1px solid rgba(255,0,128,0.3);border-radius:20px 20px 0 0;padding:14px 16px 0;display:flex;flex-direction:column;transition:bottom .35s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;max-height:72vh;}
+.song-drawer.open{bottom:var(--pumpo-bar-h,72px);}
+.song-drawer-handle{width:34px;height:3px;background:#333;border-radius:2px;margin:0 auto 12px;}
+.song-drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;}
+.song-drawer-title{font-family:'Black Ops One',cursive;color:#ff0080;font-size:.85rem;letter-spacing:2px;}
+.song-drawer-close{background:none;border:1px solid #333;color:#666;padding:3px 9px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.72rem;transition:.18s;}
+.song-drawer-close:hover{border-color:#ff0080;color:#ff0080;}
+.song-drawer-body{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:max(16px,env(safe-area-inset-bottom));overflow-y:auto;}
+.song-drawer-name{font-family:'Black Ops One',cursive;font-size:1.05rem;color:#f0ede6;text-align:center;letter-spacing:.5px;line-height:1.2;}
+.song-drawer-sub{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.12em;color:#555;text-transform:uppercase;}
+#songWaveCanvas{width:100%;max-width:480px;height:72px;border-radius:8px;background:rgba(255,0,128,0.04);flex-shrink:0;}
+.song-drawer-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;}
+.sdp-btn{background:#ff0080;color:#fff;border:none;font-family:'Black Ops One',cursive;font-size:.75rem;letter-spacing:1px;padding:.55rem 1.4rem;border-radius:8px;cursor:pointer;transition:.2s;box-shadow:0 4px 14px rgba(255,0,128,.25);}
+.sdp-btn:hover{background:#cc0066;}
+.sds-btn{background:transparent;color:#40e0d0;border:1px solid rgba(64,224,208,.35);font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.55rem 1rem;border-radius:8px;cursor:pointer;transition:.2s;}
+.sds-btn:hover{border-color:#40e0d0;background:rgba(64,224,208,.08);}
 @media(max-width:480px){.pumpo-marquee-wrap{width:68%;}.pumpo-bar-btn{padding:5px 7px;font-size:.82rem;}}
 </style>
 
@@ -437,6 +454,24 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     </div>
   </div>
   <div class="pumpo-toast" id="pumpoToast"></div>
+
+  <!-- SONG DRAWER -->
+  <div class="song-drawer" id="songDrawer">
+    <div class="song-drawer-handle"></div>
+    <div class="song-drawer-header">
+      <span class="song-drawer-title">NOW PLAYING</span>
+      <button class="song-drawer-close" onclick="closeSongDrawer()">CLOSE</button>
+    </div>
+    <div class="song-drawer-body">
+      <div class="song-drawer-name" id="songDrawerName">—</div>
+      <div class="song-drawer-sub" id="songDrawerSub">Radio Pumpo</div>
+      <canvas id="songWaveCanvas"></canvas>
+      <div class="song-drawer-controls">
+        <button class="sdp-btn" id="sdPlayBtn" onclick="songDrawerTogglePlay()">▶ PLAY</button>
+        <button class="sds-btn" onclick="songDrawerShare()">↗ Share</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script>
@@ -472,9 +507,6 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     {url:'https://radiopumpo.github.io/songs/microfono-ahumado-pumpo.mp3',name:'Microfono ahumado'},
     {url:'https://radiopumpo.github.io/songs/pumpodragons.mp3',name:'Pumpo Dragons'},
     {url:'https://radiopumpo.github.io/songs/pumponostalgiaphonk.mp3',name:'Pumpo Nostalgia Phonk'},
-    {url:'https://radiopumpo.github.io/songs/pumpoclub1.mp3',name:'Pumpo Club One'},
-    {url:'https://radiopumpo.github.io/songs/pumpoclub2.mp3',name:'Pumpo Club Two'},
-    {url:'https://radiopumpo.github.io/songs/dansercommepumpo.mp3',name:'Danser comme Pumpo'},
   ];
   const saved=JSON.parse(localStorage.getItem('pumpo_radio_state')||'{}');
   let pIdx=saved.idx||0,pQueue=null,pQueuePos=0;
@@ -496,7 +528,18 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
   document.getElementById('pumpoShareBtn').onclick=()=>{const t=cur();const txt='🎵 Listening to "'+t.name+'" on Radio Pumpo 24/7! '+window.location.origin;if(navigator.share){navigator.share({title:'Radio Pumpo',text:txt,url:window.location.origin}).catch(()=>{});}else{navigator.clipboard.writeText(txt).then(()=>pumpoShowToast('Copied! 🎵')).catch(()=>{});}};
   window.pumpoTogglePlaylist=function(){plOpen=!plOpen;if(aiOpen){aiOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',plOpen);if(plOpen)buildList();};
   document.getElementById('pumpoPlaylistBtn').onclick=pumpoTogglePlaylist;
-  function buildList(){const list=document.getElementById('pumpoTrackList');list.innerHTML='';const c=cur().url;PLAYLIST.forEach((t,i)=>{const row=document.createElement('div');row.className='pumpo-track-row'+(t.url===c?' playing':'');row.innerHTML='<div class="pumpo-track-check '+(pChecked[i]?'checked':'')+'">'+( pChecked[i]?'✓':'')+'</div><span class="pumpo-track-name">'+t.name+'</span>'+(t.url===c?'<span class="pumpo-track-now">▶ NOW</span>':'');row.onclick=(e)=>{e.stopPropagation();pChecked[i]=!pChecked[i];buildList();};list.appendChild(row);});}
+  function buildList(){const list=document.getElementById('pumpoTrackList');list.innerHTML='';const c=cur().url;PLAYLIST.forEach((t,i)=>{const row=document.createElement('div');row.className='pumpo-track-row'+(t.url===c?' playing':'');
+    // Checkbox — toggles shuffle selection only
+    const chk=document.createElement('div');chk.className='pumpo-track-check '+(pChecked[i]?'checked':'');chk.innerHTML=pChecked[i]?'✓':'';
+    chk.onclick=(e)=>{e.stopPropagation();pChecked[i]=!pChecked[i];buildList();};
+    // Name
+    const nm=document.createElement('span');nm.className='pumpo-track-name';nm.textContent=t.name;
+    // Now playing badge
+    const badge=t.url===c?'<span class="pumpo-track-now">▶ NOW</span>':'';
+    row.appendChild(chk);row.appendChild(nm);if(t.url===c){const b=document.createElement('span');b.className='pumpo-track-now';b.textContent='▶ NOW';row.appendChild(b);}
+    // Row click (not on checkbox) → open song drawer
+    row.onclick=(e)=>{if(e.target===chk||chk.contains(e.target))return;openSongDrawer(t,i);};
+    list.appendChild(row);});}
   document.getElementById('pumpoSelectAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(true);buildList();};
   document.getElementById('pumpoClearAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(false);buildList();};
   document.getElementById('pumpoPlaySelected').onclick=()=>{const sel=PLAYLIST.filter((_,i)=>pChecked[i]);if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');plOpen=false;load();pumpoShowToast('▶ Shuffling '+sel.length+' track'+(sel.length>1?'s':'')+'!');};
@@ -512,6 +555,102 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
   window.pumpoShowToast=function(msg){const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);};
   if(aiKey)document.getElementById('pumpoAIKeyInput').value=aiKey;
   load();updateH();
+
+  // ── SONG DRAWER ──
+  let sdAudio=null, sdPlaying=false, sdWaveAnim=null, sdCurrentTrack=null;
+
+  window.openSongDrawer=function(track,idx){
+    sdCurrentTrack=track;
+    document.getElementById('songDrawerName').textContent=track.name;
+    document.getElementById('songDrawerSub').textContent='Radio Pumpo · 24/7';
+    // If this track is already the main audio, mirror its state
+    const isMain=(audio.src===track.url||audio.src.endsWith(track.url.split('/').pop()));
+    if(isMain){
+      sdAudio=audio; sdPlaying=!audio.paused;
+    } else {
+      // Create a separate audio instance for preview
+      if(sdAudio&&sdAudio!==audio){sdAudio.pause();}
+      sdAudio=new Audio(track.url);
+      sdAudio.onended=()=>{sdPlaying=false;document.getElementById('sdPlayBtn').textContent='▶ PLAY';};
+      sdAudio.play().then(()=>{sdPlaying=true;}).catch(()=>{sdPlaying=false;});
+    }
+    document.getElementById('sdPlayBtn').textContent=sdPlaying?'⏸ PAUSE':'▶ PLAY';
+    startWaveAnim();
+    // Open drawer, close others
+    document.getElementById('pumpoPlaylistDrawer').classList.remove('open');
+    document.getElementById('pumpoAIDrawer').classList.remove('open');
+    document.getElementById('pumpoAIBtn').classList.remove('active');
+    pumpoPlaylistOpen=false; aiOpen=false;
+    document.getElementById('songDrawer').classList.add('open');
+    updateH();
+  };
+
+  window.closeSongDrawer=function(){
+    document.getElementById('songDrawer').classList.remove('open');
+    if(sdAudio&&sdAudio!==audio){sdAudio.pause();}
+    cancelAnimationFrame(sdWaveAnim); sdPlaying=false; updateH();
+  };
+
+  window.songDrawerTogglePlay=function(){
+    if(!sdAudio) return;
+    if(sdPlaying){sdAudio.pause();sdPlaying=false;document.getElementById('sdPlayBtn').textContent='▶ PLAY';}
+    else{sdAudio.play().catch(()=>{});sdPlaying=true;document.getElementById('sdPlayBtn').textContent='⏸ PAUSE';}
+  };
+
+  window.songDrawerShare=function(){
+    if(!sdCurrentTrack) return;
+    // Extract filename without path and extension
+    const filename=sdCurrentTrack.url.split('/').pop().replace(/\.mp3$/i,'');
+    const shareUrl=window.location.origin+window.location.pathname.replace('index.html','')+'song.html?track='+encodeURIComponent(filename);
+    const text='🎵 Listening to "'+sdCurrentTrack.name+'" on Radio Pumpo. Listen here: '+shareUrl;
+    if(navigator.share){navigator.share({title:'Radio Pumpo · '+sdCurrentTrack.name,text,url:shareUrl}).catch(()=>{});}
+    else{navigator.clipboard.writeText(shareUrl).then(()=>pumpoShowToast('Link copied! 🎵')).catch(()=>pumpoShowToast(shareUrl));}
+  };
+
+  // Waveform animation
+  function startWaveAnim(){
+    cancelAnimationFrame(sdWaveAnim);
+    const canvas=document.getElementById('songWaveCanvas');
+    const ctx=canvas.getContext('2d');
+    const BAR_COUNT=48;
+    const phases=Array.from({length:BAR_COUNT},()=>Math.random()*Math.PI*2);
+    const speeds=Array.from({length:BAR_COUNT},()=>0.04+Math.random()*0.06);
+    let t=0;
+    function draw(){
+      sdWaveAnim=requestAnimationFrame(draw);
+      const W=canvas.offsetWidth, H=canvas.offsetHeight;
+      if(canvas.width!==W){canvas.width=W; canvas.height=H;}
+      ctx.clearRect(0,0,W,H);
+      const barW=W/BAR_COUNT, gap=barW*0.25;
+      const active=sdPlaying;
+      for(let i=0;i<BAR_COUNT;i++){
+        phases[i]+=active?speeds[i]:speeds[i]*0.15;
+        const amp=active?(0.25+0.75*Math.abs(Math.sin(phases[i]+i*0.4))):(0.08+0.06*Math.abs(Math.sin(phases[i])));
+        const bH=Math.max(3, amp*H*0.88);
+        const x=i*barW+gap/2;
+        const y=(H-bH)/2;
+        // Gradient bar
+        const grad=ctx.createLinearGradient(0,y,0,y+bH);
+        grad.addColorStop(0,'rgba(255,0,128,'+(active?0.9:0.3)+')');
+        grad.addColorStop(0.5,'rgba(64,224,208,'+(active?0.7:0.2)+')');
+        grad.addColorStop(1,'rgba(255,0,128,'+(active?0.9:0.3)+')');
+        ctx.fillStyle=grad;
+        ctx.beginPath();
+        ctx.roundRect(x,y,barW-gap,bH,2);
+        ctx.fill();
+      }
+      t++;
+    }
+    draw();
+  }
+
+  // Close song drawer on outside click
+  document.addEventListener('click',e=>{
+    const sd=document.getElementById('songDrawer');
+    if(sd.classList.contains('open')&&!sd.contains(e.target)&&e.target.id!=='pumpoPlaylistBtn'){
+      closeSongDrawer();
+    }
+  });
 })();
 </script>
 <script src="radio-player.js"></script>
