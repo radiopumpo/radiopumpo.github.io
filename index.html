@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
   <title>Radio Pumpo 24/7</title>
   <link rel="apple-touch-icon" href="radiopumpologo.jpg">
   <link rel="icon" type="image/png" href="radiopumpologo.jpg">
@@ -11,108 +11,419 @@
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Rajdhani:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <style>
     :root{
-      --pink:#ff0080;--cyan:#40e0d0;--amber:#ffaa00;
-      --bg:#0d0d0d;--bg2:#111;--bg3:#181818;
-      --text:#f0ede6;--muted:#555;
-      --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+      --pink:#ff0080;--cyan:#40e0d0;--amber:#ffaa00;--violet:#9b59ff;--green:#00e676;
+      --bg:#0d0d0d;--text:#f0ede6;--muted:#555;
       --pink-glow:rgba(255,0,128,0.4);--cyan-glow:rgba(64,224,208,0.3);
       --mono:'Space Mono',monospace;--sans:'Rajdhani',sans-serif;--display:'Black Ops One',cursive;
     }
     *{box-sizing:border-box;margin:0;padding:0;}
-    html{scroll-behavior:smooth;}
-    body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;padding-bottom:160px;}
-    body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
+    html{scroll-behavior:smooth;scroll-snap-type:y mandatory;}
+    body{font-family:var(--sans);background:var(--bg);color:var(--text);overflow-x:hidden;
+      /* space for fixed nav + bar */
+      padding-top:0;padding-bottom:0;}
+    body::before{content:'';position:fixed;inset:0;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);
+      pointer-events:none;z-index:9000;}
 
-    /* NAV */
-    .top-nav{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:12px 20px;background:rgba(13,13,13,0.85);backdrop-filter:blur(10px);z-index:500;border-bottom:1px solid rgba(255,0,128,0.2);}
-    .nav-brand{font-family:'Black Ops One',cursive;font-size:1rem;color:var(--pink);letter-spacing:2px;}
+    /* ── AMBIENT CANVAS (shared bg) ── */
+    #ambientCanvas{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.55;}
+
+    /* ── NAV ── */
+    .top-nav{
+      position:fixed;top:0;left:0;right:0;z-index:500;
+      display:flex;justify-content:space-between;align-items:center;
+      padding:12px 20px;
+      background:rgba(13,13,13,0.85);backdrop-filter:blur(12px);
+      border-bottom:1px solid rgba(255,0,128,0.15);
+    }
+    .nav-brand{font-family:var(--display);font-size:1rem;color:var(--pink);letter-spacing:2px;}
     .nav-right{display:flex;align-items:center;gap:10px;position:relative;}
-    .nav-toggle{font-family:'Black Ops One',cursive;font-size:.72rem;letter-spacing:1px;color:var(--pink);background:transparent;border:1px solid rgba(255,0,128,0.3);padding:6px 13px;border-radius:20px;cursor:pointer;transition:.2s;white-space:nowrap;}
-    .nav-toggle:hover,.nav-toggle.open{background:rgba(255,0,128,.08);border-color:var(--pink);box-shadow:0 0 10px rgba(255,0,128,.15);}
-    .nav-dropdown{display:none;position:absolute;top:calc(100% + 8px);right:0;background:rgba(13,13,13,0.98);backdrop-filter:blur(16px);border:1px solid rgba(255,0,128,0.2);border-radius:12px;padding:8px;min-width:155px;z-index:600;flex-direction:column;gap:3px;box-shadow:0 8px 32px rgba(0,0,0,.7);}
+    .nav-toggle{
+      font-family:var(--display);font-size:.72rem;letter-spacing:1px;
+      color:var(--pink);background:transparent;
+      border:1px solid rgba(255,0,128,0.3);padding:6px 13px;border-radius:20px;
+      cursor:pointer;transition:.2s;white-space:nowrap;
+    }
+    .nav-toggle:hover,.nav-toggle.open{background:rgba(255,0,128,.08);border-color:var(--pink);}
+    .nav-dropdown{
+      display:none;position:absolute;top:calc(100% + 8px);right:0;
+      background:rgba(13,13,13,0.98);backdrop-filter:blur(16px);
+      border:1px solid rgba(255,0,128,0.2);border-radius:12px;
+      padding:8px;min-width:155px;z-index:600;
+      flex-direction:column;gap:3px;
+      box-shadow:0 8px 32px rgba(0,0,0,.7);
+    }
     .nav-dropdown.open{display:flex;}
-    .nav-link{color:var(--cyan);text-decoration:none;font-weight:700;font-size:0.72rem;border:1px solid transparent;padding:7px 12px;border-radius:8px;transition:.2s;letter-spacing:.5px;white-space:nowrap;}
-    .nav-link:hover{background:rgba(64,224,208,.08);border-color:rgba(64,224,208,.2);color:var(--cyan);}
-    .nav-link.support{color:var(--pink);}
-    .nav-link.support:hover{background:rgba(255,0,128,.08);border-color:rgba(255,0,128,.2);color:var(--pink);}
+    .nav-link{
+      color:var(--cyan);text-decoration:none;font-weight:700;font-size:.72rem;
+      border:1px solid transparent;padding:7px 12px;border-radius:8px;
+      transition:.2s;letter-spacing:.5px;white-space:nowrap;
+    }
+    .nav-link:hover{background:rgba(64,224,208,.08);border-color:rgba(64,224,208,.2);}
+    .nav-link.pink{color:var(--pink);}
+    .nav-link.pink:hover{background:rgba(255,0,128,.08);border-color:rgba(255,0,128,.2);}
 
-    /* HERO */
-    .hero{position:relative;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:5rem 1.5rem 4rem;text-align:center;overflow:hidden;}
-    #heroCanvas{position:absolute;inset:0;z-index:0;pointer-events:none;}
-    .hero-vignette{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 45%,rgba(13,13,13,0.75) 100%);}
-    .hero-inner{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:1.1rem;max-width:560px;}
+    /* ── PANELS ── */
+    .panel{
+      position:relative;
+      min-height:100svh;min-height:100vh; /* svh fallback */
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      padding:80px 1.5rem calc(var(--bar-h,90px) + 20px);
+      text-align:center;
+      scroll-snap-align:start;
+      overflow:hidden;
+      z-index:1;
+    }
 
-    /* ORBIT WRAP */
-    .logo-orbit-wrap{position:relative;display:flex;align-items:center;justify-content:center;width:min(340px,82vw);height:min(340px,82vw);}
-    .orbit-canvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:1;}
-    .hero-logo{max-width:min(200px,50vw);width:100%;border-radius:50%;filter:drop-shadow(0 0 30px var(--pink-glow));animation:logoIn 2s ease-out forwards;opacity:0;position:relative;z-index:2;}
-    @keyframes logoIn{0%{opacity:0;transform:translateY(18px) scale(.95)}100%{opacity:1;transform:none}}
+    /* Panel accent overlays */
+    .panel::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:0;}
+    .panel-radio::before{background:radial-gradient(ellipse 70% 60% at 50% 45%,rgba(255,0,128,0.06),transparent 70%);}
+    .panel-crew::before{background:radial-gradient(ellipse 70% 60% at 30% 50%,rgba(255,170,0,0.07),transparent 70%);}
+    .panel-vip::before{background:radial-gradient(ellipse 70% 60% at 70% 50%,rgba(155,89,255,0.08),transparent 70%);}
+    .panel-tools::before{background:radial-gradient(ellipse 70% 60% at 50% 40%,rgba(64,224,208,0.06),transparent 70%);}
+    .panel-tv::before{background:radial-gradient(ellipse 70% 60% at 40% 55%,rgba(255,170,0,0.07),transparent 70%);}
+    .panel-games::before{background:radial-gradient(ellipse 70% 60% at 60% 45%,rgba(255,0,128,0.08),transparent 70%);}
+    .panel-support::before{background:radial-gradient(ellipse 70% 60% at 50% 50%,rgba(0,230,118,0.05),transparent 70%);}
 
-    .live-badge{background:rgba(255,0,51,0.12);border:1px solid rgba(255,0,51,0.35);color:#ff3355;padding:4px 14px;border-radius:12px;font-family:var(--mono);font-size:.68rem;letter-spacing:.15em;animation:livePulse 1.4s infinite;}
-    @keyframes livePulse{0%,100%{opacity:.65}50%{opacity:1}}
-    .hero-story{font-size:clamp(14px,2.2vw,17px);color:rgba(240,237,230,0.7);font-weight:600;line-height:1.9;max-width:440px;}
-    .hero-story em{color:var(--cyan);font-style:normal;}
-    .hero-story strong{color:var(--pink);}
-    .hero-cta-row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:.4rem;}
-    .cta-tune{font-family:var(--display);font-size:.95rem;letter-spacing:1px;padding:.82rem 2.1rem;border-radius:4px;background:var(--pink);color:#fff;border:none;cursor:pointer;transition:all .2s;box-shadow:0 4px 22px rgba(255,0,128,.38);position:relative;overflow:hidden;}
-    .cta-tune::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);transition:left .4s;}
-    .cta-tune:hover::before{left:100%;}
-    .cta-tune:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(255,0,128,.55);}
-    .hero-teaser{font-family:var(--mono);font-size:.62rem;letter-spacing:.18em;color:rgba(255,255,255,.18);text-transform:uppercase;margin-top:.5rem;line-height:1.8;}
-    .hero-teaser a{color:rgba(255,255,255,.25);text-decoration:none;transition:.2s;}
-    .hero-teaser a:hover{color:var(--cyan);}
-    .scroll-hint{display:flex;flex-direction:column;align-items:center;gap:5px;margin-top:1.25rem;animation:bobble 2s ease-in-out infinite;}
-    @keyframes bobble{0%,100%{transform:translateY(0)}50%{transform:translateY(5px)}}
-    .scroll-hint-line{width:1px;height:26px;background:linear-gradient(to bottom,transparent,var(--pink));}
+    /* Panel content */
+    .panel-inner{
+      position:relative;z-index:1;
+      display:flex;flex-direction:column;
+      align-items:center;gap:.9rem;
+      max-width:600px;width:100%;
+    }
+
+    /* Cinematic divider line */
+    .panel-line{
+      width:40px;height:2px;border-radius:1px;
+      opacity:0;transform:scaleX(0);
+      transition:opacity .5s ease,transform .5s ease;
+    }
+    .panel-inner.visible .panel-line{opacity:1;transform:scaleX(1);}
+
+    /* Eyebrow */
+    .panel-eyebrow{
+      font-family:var(--mono);font-size:.6rem;letter-spacing:.3em;
+      text-transform:uppercase;color:var(--muted);
+      opacity:0;transform:translateY(12px);
+      transition:opacity .55s ease,transform .55s ease;
+    }
+    .panel-inner.visible .panel-eyebrow{opacity:1;transform:translateY(0);}
+
+    /* Headline */
+    .panel-headline{
+      font-family:var(--display);
+      font-size:clamp(32px,7vw,68px);
+      line-height:.95;letter-spacing:1px;
+      opacity:0;transform:translateY(20px);
+      transition:opacity .6s ease .1s,transform .6s ease .1s;
+    }
+    .panel-inner.visible .panel-headline{opacity:1;transform:translateY(0);}
+
+    /* Sub */
+    .panel-sub{
+      font-size:clamp(14px,2vw,17px);font-weight:600;
+      color:rgba(240,237,230,0.6);line-height:1.8;
+      max-width:440px;
+      opacity:0;transform:translateY(16px);
+      transition:opacity .6s ease .2s,transform .6s ease .2s;
+    }
+    .panel-inner.visible .panel-sub{opacity:1;transform:translateY(0);}
+    .panel-sub em{font-style:normal;}
+    .panel-sub strong{color:var(--text);}
+
+    /* CTA */
+    .panel-cta{
+      opacity:0;transform:translateY(12px);
+      transition:opacity .6s ease .35s,transform .6s ease .35s;
+      display:flex;gap:10px;flex-wrap:wrap;justify-content:center;
+    }
+    .panel-inner.visible .panel-cta{opacity:1;transform:translateY(0);}
+
+    .btn-primary{
+      font-family:var(--display);font-size:.85rem;letter-spacing:1px;
+      padding:.75rem 1.9rem;border-radius:4px;
+      color:#fff;border:none;cursor:pointer;
+      transition:all .2s;position:relative;overflow:hidden;
+      text-decoration:none;display:inline-block;
+    }
+    .btn-primary::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;
+      background:linear-gradient(90deg,transparent,rgba(255,255,255,.14),transparent);transition:left .4s;}
+    .btn-primary:hover::before{left:100%;}
+    .btn-primary:hover{transform:translateY(-2px);}
+    .btn-primary.pink{background:var(--pink);box-shadow:0 4px 18px rgba(255,0,128,.3);}
+    .btn-primary.pink:hover{box-shadow:0 6px 28px rgba(255,0,128,.5);}
+    .btn-primary.amber{background:var(--amber);color:#0d0d0d;box-shadow:0 4px 18px rgba(255,170,0,.28);}
+    .btn-primary.amber:hover{box-shadow:0 6px 28px rgba(255,170,0,.45);}
+    .btn-primary.violet{background:var(--violet);box-shadow:0 4px 18px rgba(155,89,255,.28);}
+    .btn-primary.violet:hover{box-shadow:0 6px 28px rgba(155,89,255,.45);}
+    .btn-primary.cyan{background:var(--cyan);color:#0d0d0d;box-shadow:0 4px 18px rgba(64,224,208,.28);}
+    .btn-primary.cyan:hover{box-shadow:0 6px 28px rgba(64,224,208,.45);}
+    .btn-primary.green{background:var(--green);color:#0d0d0d;box-shadow:0 4px 18px rgba(0,230,118,.25);}
+    .btn-primary.green:hover{box-shadow:0 6px 28px rgba(0,230,118,.4);}
+
+    .btn-ghost{
+      font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;
+      padding:.75rem 1.2rem;border-radius:4px;border:1px solid;
+      background:transparent;cursor:pointer;transition:.2s;
+      text-decoration:none;display:inline-block;
+    }
+
+    /* Scroll hint */
+    .scroll-hint{
+      position:absolute;bottom:calc(var(--bar-h,90px) + 16px);
+      left:50%;transform:translateX(-50%);
+      display:flex;flex-direction:column;align-items:center;gap:4px;
+      opacity:0;animation:hintFade 1s ease 2.5s forwards;
+      pointer-events:none;
+    }
+    .scroll-hint-line{width:1px;height:24px;background:linear-gradient(to bottom,transparent,var(--pink));}
     .scroll-hint-label{font-family:var(--mono);font-size:.48rem;letter-spacing:.2em;color:var(--muted);text-transform:uppercase;}
+    @keyframes hintFade{to{opacity:1;}}
+    .scroll-hint.hidden{display:none;}
 
-    /* ARCADE */
-    .section-wrap{max-width:820px;margin:0 auto;padding:3rem 1.5rem;}
-    .section-head{margin-bottom:1.25rem;}
-    .section-eyebrow{font-family:var(--mono);font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;}
-    .section-title{font-family:var(--display);font-size:clamp(17px,3vw,26px);color:var(--text);}
-    .section-title span{color:var(--cyan);}
-    .divider{height:1px;background:linear-gradient(to right,transparent,rgba(255,0,128,.25),transparent);opacity:.5;}
-    .arcade-card{background:rgba(255,255,255,.03);border:1px solid rgba(64,224,208,.15);border-radius:14px;padding:1.4rem;box-shadow:0 0 18px rgba(64,224,208,.04);}
-    .arcade-menu{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:1.1rem;}
-    .game-btn{background:transparent;border:1px solid rgba(255,0,128,.3);color:var(--pink);padding:7px 13px;border-radius:7px;cursor:pointer;font-weight:700;font-size:.88rem;font-family:var(--sans);transition:.2s;letter-spacing:.5px;}
-    .game-btn:hover{background:var(--pink);color:#fff;box-shadow:0 0 10px var(--pink-glow);}
-    #game-stage{background:#000;width:100%;aspect-ratio:1/1;max-width:360px;margin:0 auto;border-radius:10px;display:flex;align-items:center;justify-content:center;border:1px solid #1a1a1a;position:relative;overflow:hidden;touch-action:none;}
-    .touch-controls{display:none;margin-top:10px;}
-    .touch-row{display:flex;justify-content:center;gap:8px;margin:3px 0;}
-    .t-btn{width:50px;height:50px;background:rgba(255,255,255,.05);border:1px solid var(--cyan);border-radius:8px;color:var(--cyan);font-size:1.3rem;cursor:pointer;display:flex;align-items:center;justify-content:center;-webkit-user-select:none;user-select:none;transition:.15s;}
-    .t-btn:active{background:var(--cyan);color:#000;}
-    @media(pointer:coarse){.touch-controls{display:block;}}
-    .trivia-card{text-align:center;padding:1.6rem;background:rgba(64,224,208,.03);border-radius:14px;border:1px solid rgba(64,224,208,.14);}
-    #question-text{font-size:1.05rem;font-weight:600;min-height:2em;color:var(--text);margin-bottom:.85rem;}
-    .answer-btn{background:rgba(255,255,255,.05);color:var(--text);border:1px solid rgba(64,224,208,.2);padding:10px 14px;border-radius:8px;cursor:pointer;width:100%;margin-bottom:7px;font-family:var(--sans);font-size:.92rem;font-weight:600;transition:.2s;text-align:left;}
-    .answer-btn:hover{background:rgba(64,224,208,.1);}
-    .answer-btn.correct{background:rgba(0,200,80,.18);border-color:#00c850;}
-    .answer-btn.wrong{background:rgba(255,0,51,.18);border-color:#ff0033;}
-    #feedback{font-size:.95rem;font-weight:700;min-height:1.4em;margin:.45rem 0;}
-    #score-area{font-size:.85rem;color:var(--muted);margin-top:.5rem;}
-    #restart-btn{background:var(--pink);color:#fff;border:none;padding:8px 18px;border-radius:7px;cursor:pointer;font-family:var(--sans);font-weight:700;font-size:.9rem;margin-top:7px;}
-    .ttt-grid,.mem-grid{display:grid;gap:7px;width:85%;}
-    .ttt-grid{grid-template-columns:repeat(3,1fr);}
-    .mem-grid{grid-template-columns:repeat(4,1fr);}
-    .cell{aspect-ratio:1/1;background:#111;border:1px solid var(--cyan);display:flex;align-items:center;justify-content:center;cursor:pointer;font-weight:700;border-radius:5px;transition:background .2s;}
-    .ttt-cell{font-size:2.1rem;}
-    .mem-cell{font-size:1.3rem;background:var(--pink);}
-    .mem-cell.flipped{background:#111;}
-    #reaction-box{width:100%;height:100%;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:.95rem;font-weight:700;text-align:center;padding:16px;}
+    /* ── PANEL 1: RADIO ── */
+    .panel-radio{background:var(--bg);}
+    .radio-logo-wrap{
+      position:relative;display:flex;align-items:center;justify-content:center;
+      width:min(280px,70vw);height:min(280px,70vw);
+      opacity:0;transform:scale(.92);
+      transition:opacity .8s ease,transform .8s ease;
+    }
+    .panel-inner.visible .radio-logo-wrap{opacity:1;transform:scale(1);}
+    #orbitCanvas{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;}
+    .radio-logo{
+      max-width:min(160px,42vw);width:100%;
+      border-radius:50%;
+      filter:drop-shadow(0 0 28px var(--pink-glow));
+      position:relative;z-index:2;
+    }
+    .live-badge{
+      font-family:var(--mono);font-size:.65rem;letter-spacing:.15em;
+      background:rgba(255,0,51,.12);border:1px solid rgba(255,0,51,.35);
+      color:#ff3355;padding:4px 14px;border-radius:12px;
+      animation:livePulse 1.4s infinite;
+    }
+    @keyframes livePulse{0%,100%{opacity:.65}50%{opacity:1}}
+
+    /* ── PANEL 2: CREW ── */
+    .panel-crew{background:#0a0906;}
+    .crew-sigil{
+      font-size:clamp(52px,10vw,88px);
+      opacity:0;transform:scale(.8);
+      transition:opacity .7s ease,transform .7s ease;
+      filter:drop-shadow(0 0 20px rgba(255,170,0,0.35));
+      line-height:1;
+    }
+    .panel-inner.visible .crew-sigil{opacity:1;transform:scale(1);}
+
+    /* ── PANEL 3: VIP ── */
+    .panel-vip{background:#09080f;}
+    .vip-emblem{
+      font-size:clamp(48px,9vw,80px);
+      opacity:0;transform:translateY(20px);
+      transition:opacity .7s ease,transform .7s ease;
+      filter:drop-shadow(0 0 24px rgba(155,89,255,.4));
+      line-height:1;
+    }
+    .panel-inner.visible .vip-emblem{opacity:1;transform:translateY(0);}
+
+    /* ── PANEL 4: TOOLS ── */
+    .panel-tools{background:#040b0b;}
+    .tools-grid-visual{
+      display:grid;grid-template-columns:repeat(4,1fr);gap:5px;
+      width:min(260px,65vw);
+      opacity:0;transform:translateY(16px);
+      transition:opacity .7s ease,transform .7s ease;
+    }
+    .panel-inner.visible .tools-grid-visual{opacity:1;transform:translateY(0);}
+    .tgv-cell{
+      aspect-ratio:1/1;border-radius:5px;
+      background:rgba(64,224,208,.06);border:1px solid rgba(64,224,208,.12);
+      display:flex;align-items:center;justify-content:center;
+      font-size:clamp(12px,2.5vw,16px);
+      transition:all .3s;
+    }
+    .tgv-cell.lit{background:rgba(64,224,208,.15);border-color:rgba(64,224,208,.35);}
+
+    /* ── PANEL 5: TV ── */
+    .panel-tv{background:#0a0800;}
+    .tv-screen{
+      width:min(240px,60vw);
+      aspect-ratio:4/3;
+      background:#050503;
+      border:3px solid #2a2a1a;
+      border-radius:8px;
+      position:relative;overflow:hidden;
+      box-shadow:0 0 0 8px #1a1a0e,0 0 0 10px #222214,0 20px 40px rgba(0,0,0,.8);
+      opacity:0;transform:scale(.88) translateY(16px);
+      transition:opacity .7s ease,transform .7s ease;
+    }
+    .panel-inner.visible .tv-screen{opacity:1;transform:scale(1) translateY(0);}
+    .tv-screen::before{
+      content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,.18) 3px,rgba(0,0,0,.18) 4px);
+    }
+    .tv-screen::after{
+      content:'';position:absolute;inset:0;z-index:3;pointer-events:none;
+      background:radial-gradient(ellipse 80% 80% at 50% 50%,transparent 60%,rgba(0,0,0,.5) 100%);
+    }
+    #tvCanvas{width:100%;height:100%;display:block;}
+
+    /* ── PANEL 6: GAMES ── */
+    .panel-games{background:#0a0005;}
+    .games-device{
+      width:min(140px,36vw);
+      background:linear-gradient(160deg,#161020,#0d0a18);
+      border-radius:14px 14px 30% 30% / 14px 14px 20px 20px;
+      padding:10px 12px 18px;
+      box-shadow:0 20px 60px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.05);
+      opacity:0;transform:translateY(24px) scale(.88);
+      transition:opacity .7s ease,transform .7s ease;
+      position:relative;
+    }
+    .panel-inner.visible .games-device{opacity:1;transform:translateY(0) scale(1);}
+    .gd-screen{
+      background:#04020a;border-radius:4px;overflow:hidden;
+      aspect-ratio:1/.75;margin-bottom:10px;
+      border:1px solid rgba(255,0,128,.2);
+      position:relative;
+    }
+    .gd-screen::before{content:'';position:absolute;inset:0;z-index:2;pointer-events:none;
+      background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.15) 2px,rgba(0,0,0,.15) 3px);}
+    #gamePreviewCanvas{width:100%;height:100%;display:block;position:relative;z-index:1;}
+    .gd-controls{display:flex;justify-content:space-between;align-items:center;padding:0 4px;}
+    .gd-dpad{width:30px;height:30px;position:relative;}
+    .gd-dpad::before,.gd-dpad::after{content:'';position:absolute;background:rgba(255,255,255,.06);border-radius:2px;}
+    .gd-dpad::before{left:0;right:0;top:33%;height:34%;}
+    .gd-dpad::after{top:0;bottom:0;left:33%;width:34%;}
+    .gd-btns{display:flex;gap:5px;}
+    .gd-btn{width:12px;height:12px;border-radius:50%;background:rgba(255,0,128,.4);}
+    .gd-btn:last-child{background:rgba(0,230,118,.3);}
+
+    /* ── PANEL 7: SUPPORT ── */
+    .panel-support{background:#040a06;}
+    .support-icon{
+      font-size:clamp(48px,9vw,76px);
+      opacity:0;transform:scale(.8);
+      transition:opacity .7s ease,transform .7s ease;
+      filter:drop-shadow(0 0 20px rgba(0,230,118,0.3));
+      line-height:1;
+    }
+    .panel-inner.visible .support-icon{opacity:1;transform:scale(1);}
+
+    /* ── TRANSITION DELAYS ── */
+    .panel-inner.visible .panel-eyebrow{transition-delay:.05s;}
+    .panel-inner.visible .panel-line{transition-delay:.1s;}
+    .panel-inner.visible .crew-sigil,
+    .panel-inner.visible .vip-emblem,
+    .panel-inner.visible .tools-grid-visual,
+    .panel-inner.visible .tv-screen,
+    .panel-inner.visible .games-device,
+    .panel-inner.visible .support-icon{transition-delay:.08s;}
+    .panel-inner.visible .panel-headline{transition-delay:.18s;}
+    .panel-inner.visible .panel-sub{transition-delay:.3s;}
+    .panel-inner.visible .panel-cta{transition-delay:.42s;}
+
+    /* ── PUMPO BAR STYLES ── */
+    .pumpo-bar-wrap*{box-sizing:border-box;}
+    .pumpo-sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:8000;background:rgba(13,13,13,0.97);backdrop-filter:blur(16px);border-top:1px solid rgba(255,0,128,0.28);box-shadow:0 -4px 28px rgba(255,0,128,0.1);padding:8px 14px 10px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;font-family:'Rajdhani',sans-serif;}
+    .pumpo-marquee-wrap{background:rgba(255,0,128,0.09);border:1px solid rgba(255,0,128,0.18);border-radius:20px;overflow:hidden;width:60%;max-width:320px;margin:0 auto;cursor:pointer;}
+    .pumpo-marquee-wrap:hover{background:rgba(255,0,128,0.15);}
+    #pumpo-song-marquee{display:inline-block;color:#ff0080;font-weight:700;font-size:.8rem;white-space:nowrap;letter-spacing:.5px;padding:5px 0;animation:pumpoMarquee 18s linear infinite;}
+    @keyframes pumpoMarquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
+    .pumpo-controls-row{display:flex;align-items:center;gap:7px;}
+    .pumpo-bar-btn{background:none;border:1px solid #ff0080;color:#ff0080;font-size:.9rem;padding:6px 9px;cursor:pointer;border-radius:8px;transition:all .18s;flex-shrink:0;line-height:1;font-family:'Rajdhani',sans-serif;}
+    .pumpo-bar-btn:hover,.pumpo-bar-btn:active{background:#ff0080;color:#0d0d0d;box-shadow:0 0 10px rgba(255,0,128,0.35);}
+    .pumpo-bar-btn.pumpo-ai-btn{border-color:#40e0d0;color:#40e0d0;font-weight:700;font-size:.72rem;letter-spacing:.5px;padding:6px 10px;}
+    .pumpo-bar-btn.pumpo-ai-btn:hover,.pumpo-bar-btn.pumpo-ai-btn.active{background:#40e0d0;color:#0d0d0d;}
+    .pumpo-bar-btn.tune-btn{font-weight:700;font-size:.68rem;letter-spacing:.5px;padding:6px 10px;font-family:'Black Ops One',cursive;}
+    .pumpo-bar-btn.tune-btn:hover{background:#ff0080;color:#fff;}
+    #pumpo-audio-el{flex-grow:1;min-width:0;height:32px;}
+    .pumpo-drawer{position:fixed;bottom:-100%;left:0;right:0;z-index:7900;background:rgba(13,13,13,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,0,128,0.28);border-radius:20px 20px 0 0;padding:14px 14px 0;max-height:55vh;display:flex;flex-direction:column;transition:bottom .32s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;}
+    .pumpo-drawer.open{bottom:var(--pumpo-bar-h,72px);}
+    .pumpo-drawer-handle{width:34px;height:3px;background:#333;border-radius:2px;margin:0 auto 10px;}
+    .pumpo-drawer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;}
+    .pumpo-drawer-title{font-family:'Black Ops One',cursive;color:#ff0080;font-size:.9rem;letter-spacing:2px;}
+    .pumpo-drawer-actions{display:flex;gap:6px;}
+    .pumpo-drawer-btn{background:none;border:1px solid #ff0080;color:#ff0080;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;transition:.18s;}
+    .pumpo-drawer-btn:hover{background:#ff0080;color:#000;}
+    .pumpo-drawer-btn.cyan{border-color:#40e0d0;color:#40e0d0;}
+    .pumpo-drawer-btn.cyan:hover{background:#40e0d0;color:#000;}
+    .pumpo-playlist-scroll{overflow-y:auto;flex-grow:1;padding-bottom:14px;scrollbar-width:thin;scrollbar-color:#ff0080 transparent;}
+    .pumpo-track-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,0.04);}
+    .pumpo-track-row:hover{background:rgba(255,0,128,0.07);}
+    .pumpo-track-row.playing{background:rgba(255,0,128,0.1);}
+    .pumpo-track-check{width:18px;height:18px;border-radius:5px;border:2px solid #444;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.18s;font-size:.68rem;cursor:pointer;}
+    .pumpo-track-check.checked{background:#ff0080;border-color:#ff0080;color:#fff;}
+    .pumpo-track-name{font-size:.88rem;font-weight:600;color:#ddd;flex-grow:1;}
+    .pumpo-track-row.playing .pumpo-track-name{color:#ff0080;}
+    .pumpo-track-now{font-size:.62rem;color:#ff0080;flex-shrink:0;animation:pumpoPulse 1.4s infinite;}
+    @keyframes pumpoPulse{0%,100%{opacity:.6}50%{opacity:1}}
+    .pumpo-ai-drawer{position:fixed;bottom:-100%;right:0;left:0;z-index:7950;background:rgba(10,10,10,0.98);backdrop-filter:blur(20px);border-top:1px solid rgba(64,224,208,0.28);border-radius:20px 20px 0 0;padding:14px 14px 0;max-height:60vh;display:flex;flex-direction:column;transition:bottom .32s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;}
+    .pumpo-ai-drawer.open{bottom:var(--pumpo-bar-h,72px);}
+    @media(min-width:600px){.pumpo-ai-drawer.chat-mode{left:auto;right:16px;width:360px;border-radius:16px 16px 0 0;border:1px solid rgba(64,224,208,0.28);border-bottom:none;max-height:440px;}}
+    .pumpo-ai-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;}
+    .pumpo-ai-title{font-family:'Black Ops One',cursive;color:#40e0d0;font-size:.9rem;letter-spacing:2px;}
+    .pumpo-ai-close{background:none;border:1px solid #333;color:#666;padding:3px 9px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.72rem;transition:.18s;}
+    .pumpo-ai-close:hover{border-color:#40e0d0;color:#40e0d0;}
+    .pumpo-ai-key-setup{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;}
+    .pumpo-ai-key-label{font-size:.72rem;color:#555;font-weight:600;}
+    .pumpo-ai-key-label a{color:#40e0d0;text-decoration:none;}
+    .pumpo-ai-key-row{display:flex;gap:7px;}
+    .pumpo-ai-key-input{flex:1;min-width:0;background:#1a1a1a;border:1px solid #333;color:#f0ede6;font-family:'Rajdhani',sans-serif;font-size:.83rem;padding:7px 10px;border-radius:8px;outline:none;transition:border-color .15s;}
+    .pumpo-ai-key-input:focus{border-color:#40e0d0;}
+    .pumpo-ai-key-input::placeholder{color:#2a2a2a;}
+    .pumpo-ai-key-save{background:#40e0d0;color:#0d0d0d;border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Black Ops One',cursive;font-size:.72rem;white-space:nowrap;}
+    .pumpo-ai-messages{flex-grow:1;overflow-y:auto;padding-bottom:8px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:#333 transparent;}
+    .pumpo-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:.86rem;line-height:1.55;font-weight:600;}
+    .pumpo-msg.user{background:rgba(255,0,128,0.12);border:1px solid rgba(255,0,128,0.2);color:#f0ede6;align-self:flex-end;border-radius:12px 12px 3px 12px;}
+    .pumpo-msg.ai{background:rgba(64,224,208,0.07);border:1px solid rgba(64,224,208,0.16);color:#f0ede6;align-self:flex-start;border-radius:12px 12px 12px 3px;}
+    .pumpo-msg.ai.thinking{color:#444;font-style:italic;}
+    .pumpo-ai-input-row{display:flex;gap:7px;padding:10px 0 max(14px,env(safe-area-inset-bottom));flex-shrink:0;border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;}
+    .pumpo-ai-text-input{flex:1;min-width:0;background:#1a1a1a;border:1px solid #333;color:#f0ede6;font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:600;padding:8px 12px;border-radius:8px;outline:none;transition:border-color .15s;}
+    .pumpo-ai-text-input:focus{border-color:#40e0d0;}
+    .pumpo-ai-text-input::placeholder{color:#333;}
+    .pumpo-ai-send{background:#40e0d0;color:#0d0d0d;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Black Ops One',cursive;font-size:.72rem;white-space:nowrap;}
+    .pumpo-ai-send:disabled{opacity:.4;cursor:not-allowed;}
+    /* SONG DRAWER */
+    .song-drawer{position:fixed;bottom:-100%;left:0;right:0;z-index:8500;background:rgba(13,13,13,0.98);backdrop-filter:blur(24px);border-top:1px solid rgba(255,0,128,0.3);border-radius:20px 20px 0 0;padding:14px 16px 0;display:flex;flex-direction:column;transition:bottom .35s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;max-height:72vh;}
+    .song-drawer.open{bottom:var(--pumpo-bar-h,72px);}
+    .song-drawer-handle{width:34px;height:3px;background:#333;border-radius:2px;margin:0 auto 12px;}
+    .song-drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;}
+    .song-drawer-title{font-family:'Black Ops One',cursive;color:#ff0080;font-size:.85rem;letter-spacing:2px;}
+    .song-drawer-close{background:none;border:1px solid #333;color:#666;padding:3px 9px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.72rem;transition:.18s;}
+    .song-drawer-close:hover{border-color:#ff0080;color:#ff0080;}
+    .song-drawer-body{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:max(16px,env(safe-area-inset-bottom));overflow-y:auto;}
+    .song-drawer-name{font-family:'Black Ops One',cursive;font-size:1.05rem;color:#f0ede6;text-align:center;letter-spacing:.5px;line-height:1.2;}
+    .song-drawer-sub{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.12em;color:#555;text-transform:uppercase;}
+    #songWaveCanvas{width:100%;max-width:480px;height:72px;border-radius:8px;background:rgba(255,0,128,0.04);flex-shrink:0;}
+    .song-drawer-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;}
+    .sdp-btn{background:#ff0080;color:#fff;border:none;font-family:'Black Ops One',cursive;font-size:.75rem;letter-spacing:1px;padding:.55rem 1.4rem;border-radius:8px;cursor:pointer;transition:.2s;box-shadow:0 4px 14px rgba(255,0,128,.25);}
+    .sdp-btn:hover{background:#cc0066;}
+    .sds-btn{background:transparent;color:#40e0d0;border:1px solid rgba(64,224,208,.35);font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.55rem 1rem;border-radius:8px;cursor:pointer;transition:.2s;}
+    .sds-btn:hover{border-color:#40e0d0;background:rgba(64,224,208,.08);}
+    .pumpo-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:#40e0d0;color:#000;font-weight:700;padding:8px 20px;border-radius:20px;font-size:.83rem;z-index:9500;transition:transform .35s ease,opacity .35s ease;pointer-events:none;opacity:0;font-family:'Rajdhani',sans-serif;}
+    .pumpo-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+    @media(max-width:480px){.pumpo-marquee-wrap{width:68%;}.pumpo-bar-btn{padding:5px 7px;font-size:.82rem;}}
   </style>
 </head>
 <body>
 
+<!-- SHARED AMBIENT CANVAS -->
+<canvas id="ambientCanvas"></canvas>
+
+<!-- NAV -->
 <nav class="top-nav">
   <span class="nav-brand">📻 PUMPO</span>
   <div class="nav-right">
     <button class="nav-toggle" id="navToggle" onclick="toggleNav()">☰ 📻RADIO</button>
     <div class="nav-dropdown" id="navDropdown">
-      <a href="crew.html"    class="nav-link">👥 Crew</a>
-      <a href="merch.html"   class="nav-link">🛍 Merch</a>
-      <a href="vip.html"     class="nav-link support">🔐 VIP</a>
-      <a href="support.html" class="nav-link support">♥ Support</a>
+      <a href="crew.html"   class="nav-link">👥 Crew</a>
+      <a href="merch.html"  class="nav-link">🛍 Merch</a>
+      <a href="vip.html"    class="nav-link pink">🔐 VIP</a>
+      <a href="support.html"class="nav-link pink">♥ Support</a>
       <a href="https://radiopumpo.github.io/pumpo-tools/"  class="nav-link">🛠 Tools</a>
       <a href="https://radiopumpo.github.io/pumpotv/"      class="nav-link">📺 TV</a>
       <a href="https://radiopumpo.github.io/pumpo-games/"  class="nav-link">🎮 Games</a>
@@ -120,293 +431,144 @@
   </div>
 </nav>
 
-<section class="hero">
-  <canvas id="heroCanvas"></canvas>
-  <div class="hero-vignette"></div>
-  <div class="hero-inner">
-    <div class="logo-orbit-wrap">
-      <canvas id="orbitCanvas" class="orbit-canvas"></canvas>
-      <img src="radiopumpologo.jpg" alt="Radio Pumpo" class="hero-logo">
+<!-- ══════════════════════════════════════════
+     PANEL 1 — RADIO
+══════════════════════════════════════════ -->
+<section class="panel panel-radio" id="panel-radio">
+  <div class="panel-inner" id="pi-radio">
+    <div class="radio-logo-wrap">
+      <canvas id="orbitCanvas"></canvas>
+      <img src="radiopumpologo.jpg" alt="Radio Pumpo" class="radio-logo">
     </div>
     <div class="live-badge">● LIVE 24/7</div>
-    <p class="hero-story">
-      A joke that got out of hand.<br>
-      <em>No investors. No ads. No agenda.</em><br>
-      Just people on the same frequency.<br><br>
-      <strong>Tune in. Talk to Pumpo.<br>The rest reveals itself.</strong>
-    </p>
-    <div class="hero-cta-row">
-      <button class="cta-tune" onclick="tuneIn()">▶ TUNE IN</button>
+    <div class="panel-eyebrow">Radio Pumpo</div>
+    <h1 class="panel-headline" style="color:var(--pink)">A joke that<br>got out of hand.</h1>
+    <p class="panel-sub">No investors. No ads. No agenda.<br><strong>Just people on the same frequency.</strong><br><em style="color:rgba(240,237,230,0.4);font-size:.85em">Tune in. Talk to Pumpo. The rest reveals itself.</em></p>
+    <div class="panel-cta">
+      <button class="btn-primary pink" onclick="tuneIn()">▶ TUNE IN</button>
+      <button class="btn-ghost" style="border-color:rgba(64,224,208,.3);color:var(--cyan);" onclick="meetAI()">✦ PumpoAI</button>
     </div>
-    <div class="hero-teaser">
-      There's more. Built by <a href="https://nztdev.github.io/" target="_blank">@nztdev</a>. You'll find it.
-    </div>
-    <div class="scroll-hint">
-      <div class="scroll-hint-line"></div>
-      <div class="scroll-hint-label">Explore</div>
+  </div>
+  <div class="scroll-hint" id="scrollHint">
+    <div class="scroll-hint-line"></div>
+    <div class="scroll-hint-label">Scroll</div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 2 — CREW
+══════════════════════════════════════════ -->
+<section class="panel panel-crew" id="panel-crew">
+  <div class="panel-inner" id="pi-crew">
+    <div class="crew-sigil">🏛️</div>
+    <div class="panel-line" style="background:var(--amber);"></div>
+    <div class="panel-eyebrow" style="color:rgba(255,170,0,0.5);">The Inner Circle</div>
+    <h2 class="panel-headline" style="color:var(--amber)">The 300<br>Spartans.</h2>
+    <p class="panel-sub">Not fans. <strong>Co-builders.</strong> The people who were there before it was anything. The founding cohort of a community that nobody planned but everyone who finds it seems to feel.</p>
+    <div class="panel-cta">
+      <a href="crew.html" class="btn-primary amber">Meet the Crew</a>
     </div>
   </div>
 </section>
 
-<div class="divider"></div>
-<div class="section-wrap">
-  <div class="section-head">
-    <div class="section-eyebrow">Built-In Games</div>
-    <h2 class="section-title">Radio Pumpo <span>Arcade</span></h2>
-  </div>
-  <div class="arcade-card">
-    <div class="arcade-menu">
-      <button class="game-btn" onclick="startSnake()">Snake</button>
-      <button class="game-btn" onclick="startPong()">Pong</button>
-      <button class="game-btn" onclick="startTTT()">Tic-Tac-Bot</button>
-      <button class="game-btn" onclick="startReaction()">Reaction</button>
-      <button class="game-btn" onclick="startMemory()">Memory</button>
-      <button class="game-btn" onclick="startTetris()">Tetris</button>
+<!-- ══════════════════════════════════════════
+     PANEL 3 — VIP
+══════════════════════════════════════════ -->
+<section class="panel panel-vip" id="panel-vip">
+  <div class="panel-inner" id="pi-vip">
+    <div class="vip-emblem">🔐</div>
+    <div class="panel-line" style="background:var(--violet);"></div>
+    <div class="panel-eyebrow" style="color:rgba(155,89,255,0.5);">Members Only</div>
+    <h2 class="panel-headline" style="color:var(--violet)">You need the<br>frequency.</h2>
+    <p class="panel-sub">The VIP area is for the 300 Spartans. <strong>A room inside the room.</strong> Request sounds, talk to Pumpo, access what's not public. The password lives where the community does.</p>
+    <div class="panel-cta">
+      <a href="vip.html" class="btn-primary violet">Enter VIP</a>
     </div>
-    <div id="game-stage"><p style="color:#333;font-size:.85rem;font-family:var(--mono);">SELECT A GAME</p></div>
-    <div class="touch-controls" id="touchControls">
-      <div class="touch-row"><button class="t-btn" id="tUp">▲</button></div>
-      <div class="touch-row">
-        <button class="t-btn" id="tLeft">◀</button>
-        <button class="t-btn" id="tDown">▼</button>
-        <button class="t-btn" id="tRight">▶</button>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 4 — TOOLS
+══════════════════════════════════════════ -->
+<section class="panel panel-tools" id="panel-tools">
+  <div class="panel-inner" id="pi-tools">
+    <div class="tools-grid-visual" id="toolsGridVisual">
+      <div class="tgv-cell">🛠</div><div class="tgv-cell">🔍</div><div class="tgv-cell">⚖️</div><div class="tgv-cell">📊</div>
+      <div class="tgv-cell">🧠</div><div class="tgv-cell">📍</div><div class="tgv-cell">🎙</div><div class="tgv-cell">📋</div>
+      <div class="tgv-cell">💊</div><div class="tgv-cell">🐃</div><div class="tgv-cell">⚡</div><div class="tgv-cell">🌐</div>
+    </div>
+    <div class="panel-line" style="background:var(--cyan);"></div>
+    <div class="panel-eyebrow" style="color:rgba(64,224,208,0.5);">Pumpo Tools</div>
+    <h2 class="panel-headline" style="color:var(--cyan)">The toolkit<br>for devs & everyone.</h2>
+    <p class="panel-sub">15+ free AI-powered tools. Fix My Prompt, Better Call Pumpo, SMC Suite, DrH.md, NoteHunt, Resonance.FM and more. <strong>Built for people who actually use things.</strong></p>
+    <div class="panel-cta">
+      <a href="https://radiopumpo.github.io/pumpo-tools/" class="btn-primary cyan">Open Tools</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 5 — TV
+══════════════════════════════════════════ -->
+<section class="panel panel-tv" id="panel-tv">
+  <div class="panel-inner" id="pi-tv">
+    <div class="tv-screen">
+      <canvas id="tvCanvas"></canvas>
+    </div>
+    <div class="panel-line" style="background:var(--amber);"></div>
+    <div class="panel-eyebrow" style="color:rgba(255,170,0,0.5);">PumpoTV</div>
+    <h2 class="panel-headline" style="color:var(--amber)">The radio<br>got a TV.</h2>
+    <p class="panel-sub">6 live channels. 24/7. Sports, Docs, Kitchen, Ads, and Pumpo Picks — an AI-generated channel built for you. <strong>Retro CRT view. Virtual remote. Time-synced.</strong></p>
+    <div class="panel-cta">
+      <a href="https://radiopumpo.github.io/pumpotv/" class="btn-primary amber">Watch PumpoTV</a>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     PANEL 6 — GAMES
+══════════════════════════════════════════ -->
+<section class="panel panel-games" id="panel-games">
+  <div class="panel-inner" id="pi-games">
+    <div class="games-device">
+      <div class="gd-screen">
+        <canvas id="gamePreviewCanvas"></canvas>
+      </div>
+      <div class="gd-controls">
+        <div class="gd-dpad"></div>
+        <div class="gd-btns"><div class="gd-btn"></div><div class="gd-btn"></div></div>
       </div>
     </div>
-    <p id="game-info" style="font-size:.7rem;color:#333;margin-top:8px;min-height:1.2em;font-family:var(--mono);text-align:center;"></p>
-  </div>
-</div>
-
-<div class="divider"></div>
-<div class="section-wrap">
-  <div class="section-head">
-    <div class="section-eyebrow">Test Your Knowledge</div>
-    <h2 class="section-title">Radio Pumpo <span>Trivia</span></h2>
-  </div>
-  <div class="trivia-card">
-    <div id="quiz-area">
-      <p id="question-text"></p>
-      <div id="answer-buttons"></div>
-      <p id="feedback"></p>
-    </div>
-    <div id="score-area">
-      <p>Score: <span id="current-score">0</span> / <span id="total-questions">0</span></p>
-      <button id="restart-btn" style="display:none;">🔄 Play Again</button>
+    <div class="panel-line" style="background:var(--pink);"></div>
+    <div class="panel-eyebrow" style="color:rgba(255,0,128,0.5);">Pumpo Games</div>
+    <h2 class="panel-headline" style="color:var(--pink)">Play the<br>System.</h2>
+    <p class="panel-sub">Game theory made playable. Hidden Coordination, Pumpo's Empire, NoteHunt — live now. The Minority Game, Market Cascade and more coming. <strong>Browse on a Game Boy.</strong></p>
+    <div class="panel-cta">
+      <a href="https://radiopumpo.github.io/pumpo-games/" class="btn-primary pink">Play Games</a>
     </div>
   </div>
-</div>
+</section>
 
-<script>
-/* NAV TOGGLE */
-function toggleNav(){
-  const toggle=document.getElementById('navToggle');
-  const dropdown=document.getElementById('navDropdown');
-  const open=dropdown.classList.toggle('open');
-  toggle.classList.toggle('open',open);
-}
-document.addEventListener('click',function(e){
-  const toggle=document.getElementById('navToggle');
-  const dropdown=document.getElementById('navDropdown');
-  if(toggle&&dropdown&&!toggle.contains(e.target)&&!dropdown.contains(e.target)){
-    dropdown.classList.remove('open');
-    toggle.classList.remove('open');
-  }
-});
+<!-- ══════════════════════════════════════════
+     PANEL 7 — SUPPORT
+══════════════════════════════════════════ -->
+<section class="panel panel-support" id="panel-support">
+  <div class="panel-inner" id="pi-support">
+    <div class="support-icon">♥</div>
+    <div class="panel-line" style="background:var(--green);"></div>
+    <div class="panel-eyebrow" style="color:rgba(0,230,118,0.5);">Keep it alive</div>
+    <h2 class="panel-headline" style="color:var(--green)">No ads.<br>No investors.</h2>
+    <p class="panel-sub">Radio Pumpo exists because people like you keep it going. Ko-fi, PayPal, crypto — <strong>every contribution keeps the frequency alive.</strong> No paywalls. No agenda. Just gratitude. There's more. Built by <a href="https://nztdev.github.io/" target="_blank">@nztdev</a>. You'll find it.</p>
+    <div class="panel-cta">
+      <a href="support.html" class="btn-primary green">Support Pumpo</a>
+      <a href="https://github.com/nztdev" target="_blank" class="btn-ghost" style="border-color:rgba(0,230,118,.25);color:rgba(0,230,118,.5);">@nztdev</a>
+    </div>
+  </div>
+</section>
 
-/* HERO PARTICLES */
-(function(){
-  const c=document.getElementById('heroCanvas'),ctx=c.getContext('2d');
-  let W,H,pts=[];
-  const COLS=['#ff0080','#40e0d0','#ffaa00','#9b59ff'];
-  function resize(){W=c.width=c.offsetWidth;H=c.height=c.offsetHeight;}
-  function sp(){return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.4+.4,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,a:Math.random()*.28+.05,col:COLS[Math.floor(Math.random()*4)],ph:Math.random()*Math.PI*2};}
-  function draw(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ph+=.012;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=p.col;ctx.globalAlpha=p.a*(0.5+0.5*Math.sin(p.ph));ctx.fill();});ctx.globalAlpha=1;requestAnimationFrame(draw);}
-  window.addEventListener('resize',resize);resize();pts=Array.from({length:65},sp);draw();
-})();
-
-/* ORBITING ICONS */
-(function(){
-  const canvas=document.getElementById('orbitCanvas');
-  if(!canvas) return;
-  const ctx=canvas.getContext('2d');
-  const ICONS=['👥','🛍','🔐','♥','🛠','📺','🎮'];
-  const N=ICONS.length;
-  let t=0;
-
-  function resize(){
-    const wrap=canvas.parentElement;
-    canvas.width=wrap.offsetWidth;
-    canvas.height=wrap.offsetHeight;
-  }
-
-  function draw(){
-    const W=canvas.width,H=canvas.height;
-    ctx.clearRect(0,0,W,H);
-    const cx=W/2,cy=H/2;
-    const rx=W*0.46;
-    const ry=H*0.42;
-
-    ICONS.forEach(function(icon,i){
-      const phase=(i/N)*Math.PI*2;
-      // slightly different speeds per icon for organic feel
-      const speed=0.36+i*0.018;
-      const angle=(t*0.001)*speed+phase;
-      const x=cx+rx*Math.cos(angle);
-      const y=cy+ry*Math.sin(angle);
-      // depth: sin(angle) goes -1 (top=far) to +1 (bottom=near)
-      const depth=(Math.sin(angle)+1)/2;
-      const scale=0.55+depth*0.6;
-      const alpha=0.3+depth*0.6;
-      const fontSize=Math.round(W*0.082*scale);
-
-      ctx.save();
-      ctx.globalAlpha=alpha;
-      ctx.font=fontSize+'px serif';
-      ctx.textAlign='center';
-      ctx.textBaseline='middle';
-      if(depth>0.55){
-        ctx.shadowColor='#ff0080';
-        ctx.shadowBlur=10*depth;
-      }
-      ctx.fillText(icon,x,y);
-      ctx.restore();
-    });
-
-    t++;
-    requestAnimationFrame(draw);
-  }
-
-  window.addEventListener('resize',resize);
-  resize();
-  draw();
-})();
-
-/* TUNE IN */
-function tuneIn(){
-  if(window.PumpoRadio&&typeof window.PumpoRadio.toggle==='function'){window.PumpoRadio.toggle();return;}
-  const radioBtn=document.getElementById('pumpo-radio-toggle');
-  if(radioBtn){radioBtn.click();return;}
-  const a=document.getElementById('pumpo-audio-el');
-  if(a) a.play().catch(()=>{});
-  if(typeof pumpoShowToast==='function') pumpoShowToast('▶ Tuning in...');
-}
-
-/* ARCADE */
-let gameInterval,currentGame=null;
-const stage=document.getElementById('game-stage'),gInfo=document.getElementById('game-info');
-const tUp=document.getElementById('tUp'),tDown=document.getElementById('tDown'),tLeft=document.getElementById('tLeft'),tRight=document.getElementById('tRight');
-let touchDirCallback=null;
-function setTouchDir(cb){touchDirCallback=cb;}
-function fireDirKey(k){if(touchDirCallback)touchDirCallback(k);}
-tUp.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowUp');},{passive:false});
-tDown.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowDown');},{passive:false});
-tLeft.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowLeft');},{passive:false});
-tRight.addEventListener('touchstart',e=>{e.preventDefault();fireDirKey('ArrowRight');},{passive:false});
-tUp.onclick=()=>fireDirKey('ArrowUp');tDown.onclick=()=>fireDirKey('ArrowDown');tLeft.onclick=()=>fireDirKey('ArrowLeft');tRight.onclick=()=>fireDirKey('ArrowRight');
-function clearStage(){clearInterval(gameInterval);stage.innerHTML='';gInfo.innerText='';window.onkeydown=null;touchDirCallback=null;currentGame=null;}
-function arcadeToast(m){if(typeof pumpoShowToast==='function')pumpoShowToast(m);}
-function startSnake(){clearStage();currentGame='snake';gInfo.innerText='Arrows / D-pad';const cv=document.createElement('canvas');cv.width=360;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');const SZ=18,C=20;let sn=[{x:9,y:9}],food={x:13,y:13},dx=1,dy=0,sc=0;function hd(k){if(k==='ArrowUp'&&dy===0){dx=0;dy=-1;}else if(k==='ArrowDown'&&dy===0){dx=0;dy=1;}else if(k==='ArrowLeft'&&dx===0){dx=-1;dy=0;}else if(k==='ArrowRight'&&dx===0){dx=1;dy=0;}}window.onkeydown=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();hd(e.key);}};setTouchDir(hd);function rf(){food={x:Math.floor(Math.random()*SZ),y:Math.floor(Math.random()*SZ)};}gameInterval=setInterval(()=>{let h={x:sn[0].x+dx,y:sn[0].y+dy};if(h.x<0||h.x>=SZ||h.y<0||h.y>=SZ||sn.some(s=>s.x===h.x&&s.y===h.y)){arcadeToast('Game Over! Score: '+sc);startSnake();return;}sn.unshift(h);if(h.x===food.x&&h.y===food.y){sc++;gInfo.innerText='Score: '+sc;rf();}else sn.pop();ctx.fillStyle='#000';ctx.fillRect(0,0,360,360);ctx.fillStyle='#ff0080';sn.forEach(s=>ctx.fillRect(s.x*C,s.y*C,18,18));ctx.fillStyle='#40e0d0';ctx.fillRect(food.x*C,food.y*C,18,18);},110);}
-function startPong(){clearStage();currentGame='pong';gInfo.innerText='Mouse / touch';const cv=document.createElement('canvas');cv.width=360;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');let sc=0,p=130,bX=180,bY=180,bDX=4,bDY=3.5;cv.onmousemove=e=>{const r=cv.getBoundingClientRect();p=(e.clientY-r.top)*(360/r.height)-36;};cv.addEventListener('touchmove',e=>{e.preventDefault();const r=cv.getBoundingClientRect();p=(e.touches[0].clientY-r.top)*(360/r.height)-36;},{passive:false});setTouchDir(k=>{if(k==='ArrowUp')p=Math.max(0,p-26);if(k==='ArrowDown')p=Math.min(288,p+26);});gameInterval=setInterval(()=>{bX+=bDX;bY+=bDY;if(bY<0||bY>352)bDY*=-1;if(bX<17&&bY>p&&bY<p+72){bDX=Math.abs(bDX)*1.04;sc++;gInfo.innerText='Score: '+sc;}if(bX>353)bDX=-Math.abs(bDX);if(bX<0){arcadeToast('Game Over! Score: '+sc);startPong();return;}ctx.fillStyle='#000';ctx.fillRect(0,0,360,360);ctx.fillStyle='#40e0d0';ctx.fillRect(8,p,10,72);ctx.fillStyle='#ff0080';ctx.beginPath();ctx.arc(bX,bY,7,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#1a1a1a';ctx.setLineDash([8,8]);ctx.beginPath();ctx.moveTo(180,0);ctx.lineTo(180,360);ctx.stroke();ctx.setLineDash([]);},30);}
-function startTTT(){clearStage();currentGame='ttt';let b=Array(9).fill('');const g=document.createElement('div');g.className='ttt-grid';const cells=[];for(let i=0;i<9;i++){const c=document.createElement('div');c.className='cell ttt-cell';cells.push(c);c.onclick=()=>{if(b[i]||wTTT(b))return;b[i]='X';c.textContent='X';c.style.color='#ff0080';if(wTTT(b)){arcadeToast('🎉 You Win!');startTTT();return;}if(!b.includes('')){arcadeToast("Draw!");startTTT();return;}setTimeout(()=>bot(),280);};g.appendChild(c);}stage.appendChild(g);function bot(){let m=fw('O')||fw('X')||[4,0,2,6,8,1,3,5,7].find(i=>!b[i]);if(m===undefined)return;b[m]='O';cells[m].textContent='O';cells[m].style.color='#40e0d0';if(wTTT(b)){arcadeToast('🤖 Bot Wins!');startTTT();}}function fw(p){const ws=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const[a,bv,cv]of ws){if(b[a]===p&&b[bv]===p&&b[cv]==='')return cv;if(b[a]===p&&b[cv]===p&&b[bv]==='')return bv;if(b[bv]===p&&b[cv]===p&&b[a]==='')return a;}}}
-function wTTT(b){return[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]].some(([a,bv,c])=>b[a]&&b[a]===b[bv]&&b[a]===b[c]);}
-function startReaction(){clearStage();currentGame='reaction';let cur=0,times=[];function rl(){stage.innerHTML='';const bx=document.createElement('div');bx.id='reaction-box';bx.style.background='#111';bx.style.color='#333';bx.innerHTML='<div style="text-align:center"><div style="font-size:1.6rem">⏳</div><div style="font-family:var(--mono);font-size:.75rem">LEVEL '+(cur+1)+' — Wait for GREEN</div></div>';stage.appendChild(bx);let start,tout,ready=false;tout=setTimeout(()=>{bx.style.background='#40e0d0';bx.style.color='#000';bx.innerHTML='<div style="font-size:1.8rem;font-weight:900;font-family:var(--display)">TAP!</div>';start=Date.now();ready=true;},1500+Math.random()*3000);function tap(){if(!ready){clearTimeout(tout);arcadeToast('Too early! 🙅');rl();return;}times.push(Date.now()-start);cur++;if(cur<3)rl();else{let avg=Math.round(times.reduce((a,b)=>a+b)/times.length);arcadeToast('Avg: '+avg+'ms — '+(avg<250?'Lightning! ⚡':avg<400?'Great! 🎯':'Keep practicing! 💪'));startReaction();}}bx.onclick=tap;bx.addEventListener('touchstart',e=>{e.preventDefault();tap();},{passive:false});}rl();}
-function startMemory(){clearStage();currentGame='memory';let icons=['🎸','🎹','📻','🎧','🎵','🎷','🎤','🎶'];let cards=[...icons,...icons].sort(()=>Math.random()-0.5);let flipped=[],matched=0,locked=false;const g=document.createElement('div');g.className='mem-grid';cards.forEach((icon,i)=>{const c=document.createElement('div');c.className='cell mem-cell';c.onclick=()=>{if(locked||flipped.length>=2||c.classList.contains('flipped'))return;c.textContent=icon;c.classList.add('flipped');flipped.push({c,icon,i});if(flipped.length===2){locked=true;if(flipped[0].icon===flipped[1].icon){matched++;flipped=[];locked=false;if(matched===8)arcadeToast('🏆 All matched!');}else{setTimeout(()=>{flipped.forEach(f=>{f.c.textContent='';f.c.classList.remove('flipped');});flipped=[];locked=false;},700);}}};g.appendChild(c);});stage.appendChild(g);}
-function startTetris(){clearStage();currentGame='tetris';gInfo.innerText='Arrows · Up=rotate';const cv=document.createElement('canvas');cv.width=220;cv.height=360;stage.appendChild(cv);const ctx=cv.getContext('2d');ctx.scale(20,20);const CO=11,RO=18;const arena=Array.from({length:RO},()=>Array(CO).fill(0));const cols=[null,'#ff0080','#40e0d0','#ff8c00','#9d00ff','#00ff80','#ffff00','#ff0033'];const pieces=[[[0,1,0],[1,1,1],[0,0,0]],[[2,2],[2,2]],[[0,3,3],[3,3,0]],[[4,4,0],[0,4,4]],[[5,0,0],[5,5,5]],[[0,0,6],[6,6,6]],[[0,7,0,0],[0,7,0,0],[0,7,0,0],[0,7,0,0]]];let pl={pos:{x:4,y:0},matrix:pieces[0],score:0};let dc=0,lt=0;function draw(){ctx.fillStyle='#000';ctx.fillRect(0,0,CO,RO);arena.forEach((r,y)=>r.forEach((v,x)=>{if(v){ctx.fillStyle=cols[v];ctx.fillRect(x,y,1,1);}}));pl.matrix.forEach((r,y)=>r.forEach((v,x)=>{if(v){ctx.fillStyle=cols[v];ctx.fillRect(pl.pos.x+x,pl.pos.y+y,1,1);}}));}function col(a,p){for(let y=0;y<p.matrix.length;y++)for(let x=0;x<p.matrix[y].length;x++)if(p.matrix[y][x]!==0&&(a[y+p.pos.y]&&a[y+p.pos.y][x+p.pos.x])!==0)return true;return false;}function merge(a,p){p.matrix.forEach((r,y)=>r.forEach((v,x)=>{if(v)a[y+p.pos.y][x+p.pos.x]=v;}));}function rot(m){return m[0].map((_,i)=>m.map(r=>r[i]).reverse());}function drop(){pl.pos.y++;if(col(arena,pl)){pl.pos.y--;merge(arena,pl);reset();sweep();}draw();}function sweep(){for(let y=RO-1;y>0;y--){if(arena[y].every(v=>v!==0)){arena.splice(y,1);arena.unshift(Array(CO).fill(0));pl.score+=10;gInfo.innerText='Score: '+pl.score;y++;}}}function reset(){pl.matrix=pieces[Math.floor(Math.random()*pieces.length)];pl.pos.y=0;pl.pos.x=Math.floor(CO/2)-Math.floor(pl.matrix[0].length/2);if(col(arena,pl)){arena.forEach(r=>r.fill(0));pl.score=0;gInfo.innerText='Game Over';}}function hd(k){if(k==='ArrowLeft'){pl.pos.x--;if(col(arena,pl))pl.pos.x++;}if(k==='ArrowRight'){pl.pos.x++;if(col(arena,pl))pl.pos.x--;}if(k==='ArrowDown')drop();if(k==='ArrowUp'){const o=pl.matrix;pl.matrix=rot(pl.matrix);if(col(arena,pl))pl.matrix=o;}draw();}window.onkeydown=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){e.preventDefault();hd(e.key);}};setTouchDir(hd);function update(t=0){dc+=t-lt;lt=t;if(dc>680){drop();dc=0;}draw();requestAnimationFrame(update);}update();}
-
-/* TRIVIA */
-const tq=[{question:"What was Juventus's home stadium before the Allianz Stadium?",answers:["Olimpico di Torino","San Siro","Stadio Delle Alpi","Stadio Ferraris"],correctAnswer:"Stadio Delle Alpi"},{question:"Which Milan skyscraper complex is famous for its 2,000 trees?",answers:["CityLife Tower","Porta Nuova","Bosco Verticale","Isola District"],correctAnswer:"Bosco Verticale"},{question:"What is the Italian tradition of an evening stroll called?",answers:["Merenda","Passeggiata","Dolce Vita","Il Riposo"],correctAnswer:"Passeggiata"},{question:"Which pasta shape means 'butterfly' in Italian?",answers:["Penne","Farfalle","Fusilli","Rigatoni"],correctAnswer:"Farfalle"},{question:"What is Italy's national dish, according to most Italians?",answers:["Lasagne","Spaghetti Carbonara","Pizza Margherita","Risotto"],correctAnswer:"Spaghetti Carbonara"},{question:"Which Italian city is famous for its carnival with elaborate masks?",answers:["Rome","Florence","Naples","Venice"],correctAnswer:"Venice"},{question:"What does 'Al dente' literally mean in Italian?",answers:["Very soft","To the tooth","Well done","Perfectly cooked"],correctAnswer:"To the tooth"},{question:"Which Italian island is known as the 'Pearl of the Mediterranean'?",answers:["Sardinia","Capri","Ischia","Sicily"],correctAnswer:"Sicily"},{question:"What year did Italy win its most recent FIFA World Cup?",answers:["1998","2002","2006","2010"],correctAnswer:"2006"},{question:"Which Italian composer wrote 'The Four Seasons'?",answers:["Puccini","Verdi","Vivaldi","Rossini"],correctAnswer:"Vivaldi"},{question:"What is the name of the famous leaning tower in Pisa?",answers:["Torre dell'Orologio","Torre di Pisa","Campanile di Pisa","Torre Pendente"],correctAnswer:"Torre Pendente"},{question:"Which Roman structure was used for gladiatorial combat?",answers:["Pantheon","Forum","Colosseum","Circus Maximus"],correctAnswer:"Colosseum"}];
-let qIdx=0,triviaScore=0,answered=false;
-function shuffle(a){return a.sort(()=>Math.random()-0.5);}
-function showQ(){answered=false;document.getElementById('feedback').textContent='';const q=tq[qIdx];document.getElementById('question-text').textContent=q.question;const btns=document.getElementById('answer-buttons');btns.innerHTML='';shuffle([...q.answers]).forEach(a=>{const b=document.createElement('button');b.textContent=a;b.className='answer-btn';b.onclick=()=>{if(answered)return;answered=true;btns.querySelectorAll('button').forEach(btn=>{btn.disabled=true;if(btn.textContent===q.correctAnswer)btn.classList.add('correct');});if(a===q.correctAnswer){triviaScore++;document.getElementById('feedback').textContent='Correct! 🏆';b.classList.add('correct');}else{document.getElementById('feedback').textContent='Wrong! It was: '+q.correctAnswer;b.classList.add('wrong');}document.getElementById('current-score').textContent=triviaScore;setTimeout(()=>{qIdx++;if(qIdx<tq.length)showQ();else finishTrivia();},1600);};btns.appendChild(b);});}
-function finishTrivia(){const pct=Math.round((triviaScore/tq.length)*100);const emoji=pct>=80?'🏆':pct>=50?'😊':'💪';document.getElementById('quiz-area').innerHTML='<h3 style="color:var(--cyan);font-family:var(--display)">Final Score: '+triviaScore+'/'+tq.length+' '+emoji+'</h3><p style="color:var(--muted);margin-top:.5rem">'+(pct>=80?'Italian expert!':pct>=50?'Not bad!':'Keep studying!')+'</p>';document.getElementById('restart-btn').style.display='block';}
-document.getElementById('restart-btn').onclick=()=>{qIdx=0;triviaScore=0;document.getElementById('restart-btn').style.display='none';showQ();document.getElementById('current-score').textContent=0;};
-window.onload=()=>{showQ();document.getElementById('total-questions').textContent=tq.length;};
-</script>
-
-<!-- PUMPO BAR -->
-<style>
-.pumpo-bar-wrap*{box-sizing:border-box;}
-.pumpo-sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:8000;background:rgba(13,13,13,0.97);backdrop-filter:blur(16px);border-top:1px solid rgba(255,0,128,0.28);box-shadow:0 -4px 28px rgba(255,0,128,0.1);padding:8px 14px 10px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;font-family:'Rajdhani',sans-serif;}
-.pumpo-marquee-wrap{background:rgba(255,0,128,0.09);border:1px solid rgba(255,0,128,0.18);border-radius:20px;overflow:hidden;width:60%;max-width:320px;margin:0 auto;cursor:pointer;}
-.pumpo-marquee-wrap:hover{background:rgba(255,0,128,0.15);}
-#pumpo-song-marquee{display:inline-block;color:#ff0080;font-weight:700;font-size:.8rem;white-space:nowrap;letter-spacing:.5px;padding:5px 0;animation:pumpoMarquee 18s linear infinite;}
-@keyframes pumpoMarquee{0%{transform:translateX(100%)}100%{transform:translateX(-100%)}}
-.pumpo-controls-row{display:flex;align-items:center;gap:7px;}
-.pumpo-bar-btn{background:none;border:1px solid #ff0080;color:#ff0080;font-size:.9rem;padding:6px 9px;cursor:pointer;border-radius:8px;transition:all .18s;flex-shrink:0;line-height:1;font-family:'Rajdhani',sans-serif;}
-.pumpo-bar-btn:hover,.pumpo-bar-btn:active{background:#ff0080;color:#0d0d0d;box-shadow:0 0 10px rgba(255,0,128,0.35);}
-.pumpo-bar-btn.pumpo-ai-btn{border-color:#40e0d0;color:#40e0d0;font-weight:700;font-size:.72rem;letter-spacing:.5px;padding:6px 10px;}
-.pumpo-bar-btn.pumpo-ai-btn:hover,.pumpo-bar-btn.pumpo-ai-btn.active{background:#40e0d0;color:#0d0d0d;}
-.pumpo-bar-btn.tune-btn{border-color:#ff0080;color:#ff0080;font-weight:700;font-size:.68rem;letter-spacing:.5px;padding:6px 10px;font-family:'Black Ops One',cursive;}
-.pumpo-bar-btn.tune-btn:hover{background:#ff0080;color:#fff;box-shadow:0 0 12px rgba(255,0,128,0.45);}
-#pumpo-audio-el{flex-grow:1;min-width:0;height:32px;}
-.pumpo-drawer{position:fixed;bottom:-100%;left:0;right:0;z-index:7900;background:rgba(13,13,13,0.97);backdrop-filter:blur(20px);border-top:1px solid rgba(255,0,128,0.28);border-radius:20px 20px 0 0;padding:14px 14px 0;max-height:55vh;display:flex;flex-direction:column;transition:bottom .32s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;}
-.pumpo-drawer.open{bottom:var(--pumpo-bar-h,72px);}
-.pumpo-drawer-handle{width:34px;height:3px;background:#333;border-radius:2px;margin:0 auto 10px;}
-.pumpo-drawer-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;}
-.pumpo-drawer-title{font-family:'Black Ops One',cursive;color:#ff0080;font-size:.9rem;letter-spacing:2px;}
-.pumpo-drawer-actions{display:flex;gap:6px;}
-.pumpo-drawer-btn{background:none;border:1px solid #ff0080;color:#ff0080;padding:4px 10px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.72rem;transition:.18s;}
-.pumpo-drawer-btn:hover{background:#ff0080;color:#000;}
-.pumpo-drawer-btn.cyan{border-color:#40e0d0;color:#40e0d0;}
-.pumpo-drawer-btn.cyan:hover{background:#40e0d0;color:#000;}
-.pumpo-playlist-scroll{overflow-y:auto;flex-grow:1;padding-bottom:14px;scrollbar-width:thin;scrollbar-color:#ff0080 transparent;}
-.pumpo-track-row{display:flex;align-items:center;gap:10px;padding:9px 6px;border-radius:8px;cursor:pointer;transition:background .15s;border-bottom:1px solid rgba(255,255,255,0.04);}
-.pumpo-track-row:hover{background:rgba(255,0,128,0.07);}
-.pumpo-track-row.playing{background:rgba(255,0,128,0.1);}
-.pumpo-track-check{width:18px;height:18px;border-radius:5px;border:2px solid #444;background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:.18s;font-size:.68rem;}
-.pumpo-track-check.checked{background:#ff0080;border-color:#ff0080;color:#fff;}
-.pumpo-track-name{font-size:.88rem;font-weight:600;color:#ddd;flex-grow:1;}
-.pumpo-track-row.playing .pumpo-track-name{color:#ff0080;}
-.pumpo-track-now{font-size:.62rem;color:#ff0080;flex-shrink:0;animation:pumpoPulse 1.4s infinite;}
-@keyframes pumpoPulse{0%,100%{opacity:.6}50%{opacity:1}}
-.pumpo-ai-drawer{position:fixed;bottom:-100%;right:0;left:0;z-index:7950;background:rgba(10,10,10,0.98);backdrop-filter:blur(20px);border-top:1px solid rgba(64,224,208,0.28);border-radius:20px 20px 0 0;padding:14px 14px 0;max-height:60vh;display:flex;flex-direction:column;transition:bottom .32s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;}
-.pumpo-ai-drawer.open{bottom:var(--pumpo-bar-h,72px);}
-@media(min-width:600px){.pumpo-ai-drawer.chat-mode{left:auto;right:16px;width:360px;border-radius:16px 16px 0 0;border:1px solid rgba(64,224,208,0.28);border-bottom:none;max-height:440px;}}
-.pumpo-ai-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-shrink:0;}
-.pumpo-ai-title{font-family:'Black Ops One',cursive;color:#40e0d0;font-size:.9rem;letter-spacing:2px;}
-.pumpo-ai-close{background:none;border:1px solid #333;color:#666;padding:3px 9px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.72rem;transition:.18s;}
-.pumpo-ai-close:hover{border-color:#40e0d0;color:#40e0d0;}
-.pumpo-ai-key-setup{display:flex;flex-direction:column;gap:8px;padding-bottom:14px;}
-.pumpo-ai-key-label{font-size:.72rem;color:#555;font-weight:600;}
-.pumpo-ai-key-label a{color:#40e0d0;text-decoration:none;}
-.pumpo-ai-key-row{display:flex;gap:7px;}
-.pumpo-ai-key-input{flex:1;min-width:0;background:#1a1a1a;border:1px solid #333;color:#f0ede6;font-family:'Rajdhani',sans-serif;font-size:.83rem;padding:7px 10px;border-radius:8px;outline:none;transition:border-color .15s;}
-.pumpo-ai-key-input:focus{border-color:#40e0d0;}
-.pumpo-ai-key-input::placeholder{color:#2a2a2a;}
-.pumpo-ai-key-save{background:#40e0d0;color:#0d0d0d;border:none;padding:7px 14px;border-radius:8px;cursor:pointer;font-family:'Black Ops One',cursive;font-size:.72rem;white-space:nowrap;}
-.pumpo-ai-messages{flex-grow:1;overflow-y:auto;padding-bottom:8px;display:flex;flex-direction:column;gap:8px;scrollbar-width:thin;scrollbar-color:#333 transparent;}
-.pumpo-msg{max-width:82%;padding:9px 12px;border-radius:12px;font-size:.86rem;line-height:1.55;font-weight:600;}
-.pumpo-msg.user{background:rgba(255,0,128,0.12);border:1px solid rgba(255,0,128,0.2);color:#f0ede6;align-self:flex-end;border-radius:12px 12px 3px 12px;}
-.pumpo-msg.ai{background:rgba(64,224,208,0.07);border:1px solid rgba(64,224,208,0.16);color:#f0ede6;align-self:flex-start;border-radius:12px 12px 12px 3px;}
-.pumpo-msg.ai.thinking{color:#444;font-style:italic;}
-.pumpo-ai-input-row{display:flex;gap:7px;padding:10px 0 max(14px,env(safe-area-inset-bottom));flex-shrink:0;border-top:1px solid rgba(255,255,255,0.06);margin-top:4px;}
-.pumpo-ai-text-input{flex:1;min-width:0;background:#1a1a1a;border:1px solid #333;color:#f0ede6;font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:600;padding:8px 12px;border-radius:8px;outline:none;transition:border-color .15s;}
-.pumpo-ai-text-input:focus{border-color:#40e0d0;}
-.pumpo-ai-text-input::placeholder{color:#333;}
-.pumpo-ai-send{background:#40e0d0;color:#0d0d0d;border:none;padding:8px 14px;border-radius:8px;cursor:pointer;font-family:'Black Ops One',cursive;font-size:.72rem;white-space:nowrap;}
-.pumpo-ai-send:disabled{opacity:.4;cursor:not-allowed;}
-.pumpo-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:#40e0d0;color:#000;font-weight:700;padding:8px 20px;border-radius:20px;font-size:.83rem;z-index:9500;transition:transform .35s ease,opacity .35s ease;pointer-events:none;opacity:0;font-family:'Rajdhani',sans-serif;}
-.pumpo-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
-
-/* SONG DRAWER */
-.song-drawer{position:fixed;bottom:-100%;left:0;right:0;z-index:8500;background:rgba(13,13,13,0.98);backdrop-filter:blur(24px);border-top:1px solid rgba(255,0,128,0.3);border-radius:20px 20px 0 0;padding:14px 16px 0;display:flex;flex-direction:column;transition:bottom .35s cubic-bezier(.4,0,.2,1);font-family:'Rajdhani',sans-serif;max-height:72vh;}
-.song-drawer.open{bottom:var(--pumpo-bar-h,72px);}
-.song-drawer-handle{width:34px;height:3px;background:#333;border-radius:2px;margin:0 auto 12px;}
-.song-drawer-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-shrink:0;}
-.song-drawer-title{font-family:'Black Ops One',cursive;color:#ff0080;font-size:.85rem;letter-spacing:2px;}
-.song-drawer-close{background:none;border:1px solid #333;color:#666;padding:3px 9px;border-radius:8px;cursor:pointer;font-family:'Rajdhani',sans-serif;font-size:.72rem;transition:.18s;}
-.song-drawer-close:hover{border-color:#ff0080;color:#ff0080;}
-.song-drawer-body{display:flex;flex-direction:column;align-items:center;gap:10px;padding-bottom:max(16px,env(safe-area-inset-bottom));overflow-y:auto;}
-.song-drawer-name{font-family:'Black Ops One',cursive;font-size:1.05rem;color:#f0ede6;text-align:center;letter-spacing:.5px;line-height:1.2;}
-.song-drawer-sub{font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.12em;color:#555;text-transform:uppercase;}
-#songWaveCanvas{width:100%;max-width:480px;height:72px;border-radius:8px;background:rgba(255,0,128,0.04);flex-shrink:0;}
-.song-drawer-controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap;justify-content:center;}
-.sdp-btn{background:#ff0080;color:#fff;border:none;font-family:'Black Ops One',cursive;font-size:.75rem;letter-spacing:1px;padding:.55rem 1.4rem;border-radius:8px;cursor:pointer;transition:.2s;box-shadow:0 4px 14px rgba(255,0,128,.25);}
-.sdp-btn:hover{background:#cc0066;}
-.sds-btn{background:transparent;color:#40e0d0;border:1px solid rgba(64,224,208,.35);font-family:'Space Mono',monospace;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;padding:.55rem 1rem;border-radius:8px;cursor:pointer;transition:.2s;}
-.sds-btn:hover{border-color:#40e0d0;background:rgba(64,224,208,.08);}
-@media(max-width:480px){.pumpo-marquee-wrap{width:68%;}.pumpo-bar-btn{padding:5px 7px;font-size:.82rem;}}
-</style>
-
+<!-- ══════════════════════════════════════════
+     PUMPO BAR
+══════════════════════════════════════════ -->
 <div class="pumpo-bar-wrap">
   <div class="pumpo-sticky-bar" id="pumpoBar">
     <div class="pumpo-marquee-wrap" onclick="pumpoTogglePlaylist()">
@@ -422,6 +584,7 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
       <button class="pumpo-bar-btn pumpo-ai-btn" id="pumpoAIBtn" title="PumpoAI">AI</button>
     </div>
   </div>
+
   <div class="pumpo-drawer" id="pumpoPlaylistDrawer">
     <div class="pumpo-drawer-handle"></div>
     <div class="pumpo-drawer-header">
@@ -434,6 +597,7 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     </div>
     <div class="pumpo-playlist-scroll" id="pumpoTrackList"></div>
   </div>
+
   <div class="pumpo-ai-drawer" id="pumpoAIDrawer">
     <div class="pumpo-drawer-handle"></div>
     <div class="pumpo-ai-header">
@@ -453,7 +617,6 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
       <button class="pumpo-ai-send" id="pumpoAISendBtn" onclick="pumpoSendMessage()">SEND</button>
     </div>
   </div>
-  <div class="pumpo-toast" id="pumpoToast"></div>
 
   <!-- SONG DRAWER -->
   <div class="song-drawer" id="songDrawer">
@@ -472,9 +635,223 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
       </div>
     </div>
   </div>
+
+  <div class="pumpo-toast" id="pumpoToast"></div>
 </div>
 
 <script>
+// ════════════════════════════════════════════════
+// NAV
+// ════════════════════════════════════════════════
+function toggleNav(){
+  const t=document.getElementById('navToggle'),d=document.getElementById('navDropdown');
+  const o=d.classList.toggle('open'); t.classList.toggle('open',o);
+}
+document.addEventListener('click',e=>{
+  const t=document.getElementById('navToggle'),d=document.getElementById('navDropdown');
+  if(t&&d&&!t.contains(e.target)&&!d.contains(e.target)){d.classList.remove('open');t.classList.remove('open');}
+});
+
+// ════════════════════════════════════════════════
+// AMBIENT PARTICLE CANVAS (shared bg)
+// ════════════════════════════════════════════════
+(function(){
+  const c=document.getElementById('ambientCanvas'),ctx=c.getContext('2d');
+  let W,H,pts=[];
+  const COLS=['#ff0080','#40e0d0','#ffaa00','#9b59ff','#00e676'];
+  function resize(){W=c.width=window.innerWidth;H=c.height=window.innerHeight;}
+  function sp(){return{x:Math.random()*W,y:Math.random()*H,r:Math.random()*1.3+.4,vx:(Math.random()-.5)*.18,vy:(Math.random()-.5)*.18,a:Math.random()*.22+.04,col:COLS[Math.floor(Math.random()*5)],ph:Math.random()*Math.PI*2};}
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.ph+=.01;
+      if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;
+      ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+      ctx.fillStyle=p.col;ctx.globalAlpha=p.a*(0.5+0.5*Math.sin(p.ph));ctx.fill();
+    });
+    ctx.globalAlpha=1;requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);resize();pts=Array.from({length:55},sp);draw();
+})();
+
+// ════════════════════════════════════════════════
+// ORBIT CANVAS (radio panel logo)
+// ════════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById('orbitCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  const ICONS=['👥','🛍','🔐','♥','🛠','📺','🎮'];
+  const N=ICONS.length; let t=0;
+  function resize(){const w=canvas.parentElement.offsetWidth;canvas.width=w;canvas.height=w;}
+  function draw(){
+    const W=canvas.width,H=canvas.height,cx=W/2,cy=H/2;
+    ctx.clearRect(0,0,W,H);
+    const rx=W*.46,ry=H*.42;
+    ICONS.forEach(function(icon,i){
+      const phase=(i/N)*Math.PI*2;
+      const angle=(t*.001)*(0.36+i*.018)+phase;
+      const x=cx+rx*Math.cos(angle),y=cy+ry*Math.sin(angle);
+      const depth=(Math.sin(angle)+1)/2;
+      const scale=.55+depth*.6,alpha=.3+depth*.6;
+      const fontSize=Math.round(W*.082*scale);
+      ctx.save();ctx.globalAlpha=alpha;ctx.font=fontSize+'px serif';ctx.textAlign='center';ctx.textBaseline='middle';
+      if(depth>.55){ctx.shadowColor='#ff0080';ctx.shadowBlur=10*depth;}
+      ctx.fillText(icon,x,y);ctx.restore();
+    });
+    t++;requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);resize();draw();
+})();
+
+// ════════════════════════════════════════════════
+// TOOLS GRID ANIMATION
+// ════════════════════════════════════════════════
+(function(){
+  const cells=document.querySelectorAll('.tgv-cell');
+  let idx=0;
+  setInterval(()=>{
+    cells.forEach(c=>c.classList.remove('lit'));
+    // Light 3 random cells
+    const lit=new Set();
+    while(lit.size<3) lit.add(Math.floor(Math.random()*cells.length));
+    lit.forEach(i=>cells[i].classList.add('lit'));
+  },800);
+})();
+
+// ════════════════════════════════════════════════
+// TV CANVAS ANIMATION
+// ════════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById('tvCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let t=0;
+  const CHANNELS=[
+    {label:'PUMPO 24/7',color:'#ff0080'},
+    {label:'SPORTS',color:'#40e0d0'},
+    {label:'DOCS',color:'#ffaa00'},
+    {label:'KITCHEN',color:'#00e676'},
+    {label:'PUMPO PICKS',color:'#9b59ff'},
+  ];
+  let channelIdx=0, channelT=0;
+  function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;}
+  function draw(){
+    const W=canvas.width,H=canvas.height;
+    if(!W||!H){resize();requestAnimationFrame(draw);return;}
+    t++;channelT++;
+    if(channelT>180){channelT=0;channelIdx=(channelIdx+1)%CHANNELS.length;}
+    const ch=CHANNELS[channelIdx];
+    ctx.fillStyle='#050503';ctx.fillRect(0,0,W,H);
+    // Animated bars (fake channel content)
+    const barCount=8;
+    for(let i=0;i<barCount;i++){
+      const h=(0.1+0.6*Math.abs(Math.sin(t*.04+i*0.7)))*H*.7;
+      const x=W*.08+i*(W*.11);
+      const grad=ctx.createLinearGradient(0,H-h,0,H);
+      grad.addColorStop(0,ch.color+'88');grad.addColorStop(1,ch.color+'22');
+      ctx.fillStyle=grad;
+      ctx.fillRect(x,H-h,W*.08,h);
+    }
+    // Channel label
+    ctx.font='bold '+(W*.1)+'px "Black Ops One",cursive';
+    ctx.fillStyle=ch.color;ctx.textAlign='center';ctx.globalAlpha=.7;
+    ctx.fillText(ch.label,W/2,H*.4);ctx.globalAlpha=1;
+    // Live dot
+    if(Math.floor(t/20)%2===0){
+      ctx.beginPath();ctx.arc(W*.1,H*.15,W*.04,0,Math.PI*2);
+      ctx.fillStyle='#ff3355';ctx.fill();
+    }
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',()=>{resize();});
+  resize();draw();
+})();
+
+// ════════════════════════════════════════════════
+// GAME PREVIEW CANVAS
+// ════════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById('gamePreviewCanvas');
+  if(!canvas)return;
+  const ctx=canvas.getContext('2d');
+  let t=0;
+  const agents=Array.from({length:12},(_,i)=>({
+    sig:Math.floor(Math.random()*4),
+    x:Math.random()*100,y:Math.random()*75,
+    phase:Math.random()*Math.PI*2
+  }));
+  const COLS=['#ff0080','#40e0d0','#ffaa00','#9b59ff'];
+  function resize(){canvas.width=canvas.offsetWidth;canvas.height=canvas.offsetHeight;}
+  function draw(){
+    const W=canvas.width,H=canvas.height;
+    if(!W||!H){resize();requestAnimationFrame(draw);return;}
+    t++;
+    const dom=Math.floor(t/90)%4;
+    ctx.fillStyle='#04020a';ctx.fillRect(0,0,W,H);
+    agents.forEach(a=>{
+      if(Math.random()<.02) a.sig=Math.random()<.6?dom:Math.floor(Math.random()*4);
+      const zones=[[W*.25,H*.28],[W*.75,H*.28],[W*.25,H*.72],[W*.75,H*.72]];
+      const [zx,zy]=zones[a.sig];
+      a.x+=(zx+(Math.random()-.5)*W*.15-a.x)*.05;
+      a.y+=(zy+(Math.random()-.5)*H*.12-a.y)*.05;
+      const isDom=a.sig===dom;
+      const r=Math.max(2,(isDom?3.5:2.5)*(W/100));
+      ctx.beginPath();ctx.arc(a.x,a.y,r,0,Math.PI*2);
+      ctx.fillStyle=COLS[a.sig]+(isDom?'cc':'66');ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  window.addEventListener('resize',resize);resize();draw();
+})();
+
+// ════════════════════════════════════════════════
+// INTERSECTION OBSERVER — panel animations
+// ════════════════════════════════════════════════
+(function(){
+  const panels=['pi-radio','pi-crew','pi-vip','pi-tools','pi-tv','pi-games','pi-support'];
+  const obs=new IntersectionObserver(entries=>{
+    entries.forEach(e=>{
+      if(e.isIntersecting) e.target.classList.add('visible');
+    });
+  },{threshold:.18});
+  panels.forEach(id=>{const el=document.getElementById(id);if(el)obs.observe(el);});
+  // First panel visible immediately
+  setTimeout(()=>{
+    const el=document.getElementById('pi-radio');
+    if(el) el.classList.add('visible');
+  },100);
+  // Hide scroll hint after first scroll
+  window.addEventListener('scroll',()=>{
+    document.getElementById('scrollHint')?.classList.add('hidden');
+  },{once:true,passive:true});
+})();
+
+// ════════════════════════════════════════════════
+// BAR HEIGHT CSS VAR
+// ════════════════════════════════════════════════
+function updateBarH(){
+  const h=document.getElementById('pumpoBar')?.offsetHeight||90;
+  document.documentElement.style.setProperty('--bar-h',h+'px');
+  document.documentElement.style.setProperty('--pumpo-bar-h',h+'px');
+}
+window.addEventListener('resize',updateBarH);setTimeout(updateBarH,120);
+
+// ════════════════════════════════════════════════
+// HERO ACTIONS
+// ════════════════════════════════════════════════
+function tuneIn(){
+  if(window.PumpoRadio&&typeof window.PumpoRadio.toggle==='function'){window.PumpoRadio.toggle();return;}
+  const a=document.getElementById('pumpo-audio-el');
+  if(a) a.play().catch(()=>{});
+}
+function meetAI(){
+  if(typeof window.pumpoToggleAI==='function'){window.pumpoToggleAI();return;}
+  document.getElementById('pumpoAIBtn')?.click();
+}
+
+// ════════════════════════════════════════════════
+// PUMPO BAR LOGIC
+// ════════════════════════════════════════════════
 (function(){
   const PLAYLIST=[
     {url:'https://radiopumpo.github.io/songs/pumpofantastique.mp3',name:'Pumpo est Fantastique'},
@@ -489,6 +866,7 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
     {url:'https://radiopumpo.github.io/songs/hiphoppumpo.mp3',name:'Hip Hop Pumpo'},
     {url:'https://radiopumpo.github.io/songs/rockpowerpumpo.mp3',name:'Rock Power Pumpo'},
     {url:'https://radiopumpo.github.io/songs/punkpumpo.mp3',name:'Punk Pumpo'},
+    {url:'https://radiopumpo.github.io/songs/seashantypumpo.mp3',name:'Sea Shanty Pumpo'},
     {url:'https://radiopumpo.github.io/songs/unodinoipumpo.mp3',name:'Uno Di Noi Pumpo'},
     {url:'https://radiopumpo.github.io/songs/gospelpumpo.mp3',name:'Gospel Pumpo'},
     {url:'https://radiopumpo.github.io/songs/mon-ami-pumpo.mp3',name:'Pumpo Mon Ami'},
@@ -516,7 +894,7 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
   const audio=document.getElementById('pumpo-audio-el');
   const marquee=document.getElementById('pumpo-song-marquee');
   const barEl=document.getElementById('pumpoBar');
-  function updateH(){document.documentElement.style.setProperty('--pumpo-bar-h',barEl.offsetHeight+'px');}
+  function updateH(){const h=barEl.offsetHeight;document.documentElement.style.setProperty('--pumpo-bar-h',h+'px');document.documentElement.style.setProperty('--bar-h',h+'px');}
   window.addEventListener('resize',updateH);setTimeout(updateH,100);
   function cur(){return pQueue?pQueue[pQueuePos]:PLAYLIST[pIdx];}
   function load(){const t=cur();audio.src=t.url;marquee.textContent='NOW PLAYING: '+t.name;marquee.style.animation='none';requestAnimationFrame(()=>{marquee.style.animation='';});audio.play().catch(()=>{});localStorage.setItem('pumpo_radio_state',JSON.stringify({idx:pIdx}));if(plOpen)buildList();}
@@ -526,138 +904,71 @@ window.onload=()=>{showQ();document.getElementById('total-questions').textConten
   document.getElementById('pumpoPrevBtn').onclick=prev;
   audio.onended=next;
   document.getElementById('pumpoShareBtn').onclick=()=>{const t=cur();const txt='🎵 Listening to "'+t.name+'" on Radio Pumpo 24/7! '+window.location.origin;if(navigator.share){navigator.share({title:'Radio Pumpo',text:txt,url:window.location.origin}).catch(()=>{});}else{navigator.clipboard.writeText(txt).then(()=>pumpoShowToast('Copied! 🎵')).catch(()=>{});}};
-  window.pumpoTogglePlaylist=function(){plOpen=!plOpen;if(aiOpen){aiOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',plOpen);if(plOpen)buildList();};
+  window.pumpoTogglePlaylist=function(){plOpen=!plOpen;if(aiOpen){aiOpen=false;document.getElementById('pumpoAIDrawer').classList.remove('open');document.getElementById('pumpoAIBtn').classList.remove('active');}if(sdOpen){closeSongDrawer();}document.getElementById('pumpoPlaylistDrawer').classList.toggle('open',plOpen);if(plOpen)buildList();updateH();};
   document.getElementById('pumpoPlaylistBtn').onclick=pumpoTogglePlaylist;
-  function buildList(){const list=document.getElementById('pumpoTrackList');list.innerHTML='';const c=cur().url;PLAYLIST.forEach((t,i)=>{const row=document.createElement('div');row.className='pumpo-track-row'+(t.url===c?' playing':'');
-    // Checkbox — toggles shuffle selection only
-    const chk=document.createElement('div');chk.className='pumpo-track-check '+(pChecked[i]?'checked':'');chk.innerHTML=pChecked[i]?'✓':'';
-    chk.onclick=(e)=>{e.stopPropagation();pChecked[i]=!pChecked[i];buildList();};
-    // Name
-    const nm=document.createElement('span');nm.className='pumpo-track-name';nm.textContent=t.name;
-    // Now playing badge
-    const badge=t.url===c?'<span class="pumpo-track-now">▶ NOW</span>':'';
-    row.appendChild(chk);row.appendChild(nm);if(t.url===c){const b=document.createElement('span');b.className='pumpo-track-now';b.textContent='▶ NOW';row.appendChild(b);}
-    // Row click (not on checkbox) → open song drawer
-    row.onclick=(e)=>{if(e.target===chk||chk.contains(e.target))return;e.stopPropagation();openSongDrawer(t,i,e);};
-    list.appendChild(row);});}
+  function buildList(){
+    const list=document.getElementById('pumpoTrackList');list.innerHTML='';const c=cur().url;
+    PLAYLIST.forEach((t,i)=>{
+      const row=document.createElement('div');row.className='pumpo-track-row'+(t.url===c?' playing':'');
+      const chk=document.createElement('div');chk.className='pumpo-track-check '+(pChecked[i]?'checked':'');chk.innerHTML=pChecked[i]?'✓':'';
+      chk.onclick=(e)=>{e.stopPropagation();pChecked[i]=!pChecked[i];buildList();};
+      const nm=document.createElement('span');nm.className='pumpo-track-name';nm.textContent=t.name;
+      row.appendChild(chk);row.appendChild(nm);
+      if(t.url===c){const b=document.createElement('span');b.className='pumpo-track-now';b.textContent='▶ NOW';row.appendChild(b);}
+      row.onclick=(e)=>{if(e.target===chk||chk.contains(e.target))return;e.stopPropagation();openSongDrawer(t,i,e);};
+      list.appendChild(row);
+    });
+  }
   document.getElementById('pumpoSelectAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(true);buildList();};
   document.getElementById('pumpoClearAll').onclick=(e)=>{e.stopPropagation();pChecked.fill(false);buildList();};
   document.getElementById('pumpoPlaySelected').onclick=()=>{const sel=PLAYLIST.filter((_,i)=>pChecked[i]);if(!sel.length){pumpoShowToast('Pick at least one track 🎵');return;}pQueue=[...sel].sort(()=>Math.random()-0.5);pQueuePos=0;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');plOpen=false;load();pumpoShowToast('▶ Shuffling '+sel.length+' track'+(sel.length>1?'s':'')+'!');};
-  document.addEventListener('click',e=>{const pd=document.getElementById('pumpoPlaylistDrawer'),ad=document.getElementById('pumpoAIDrawer'),pb=document.getElementById('pumpoPlaylistBtn'),ab=document.getElementById('pumpoAIBtn');if(plOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');plOpen=false;}if(aiOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');aiOpen=false;ab.classList.remove('active');}});
-  const SYSTEM=`You are Pumpo. Not an assistant. Not a bot. The voice of the ecosystem itself. Direct. A little funny without trying to be. Unhurried. You never perform personality — you just have it. Never say "Great question!" or "Certainly!" or "Absolutely!" Never pad. Never preach. Match the energy of whoever's talking to you. The ecosystem: Radio Pumpo 24/7, Pumpo Tools, PumpoTV, Pumpo Games, The 300 Spartans crew, Support via Ko-fi/PayPal/crypto. Built by @nztdev. Anonymous by design. Pumpo is Pumpo.`;
-  window.pumpoToggleAI=function(){aiOpen=!aiOpen;if(plOpen){plOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}const drawer=document.getElementById('pumpoAIDrawer'),btn=document.getElementById('pumpoAIBtn');drawer.classList.toggle('open',aiOpen);btn.classList.toggle('active',aiOpen);updateH();if(aiOpen){if(aiKey){showChat();if(aiHistory.length===0)addMsg('ai',"Hey. I'm PumpoAI. Ask me anything about the ecosystem.");}else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}}};
+  document.addEventListener('click',e=>{
+    const pd=document.getElementById('pumpoPlaylistDrawer'),ad=document.getElementById('pumpoAIDrawer'),pb=document.getElementById('pumpoPlaylistBtn'),ab=document.getElementById('pumpoAIBtn');
+    if(plOpen&&!pd.contains(e.target)&&e.target!==pb){pd.classList.remove('open');plOpen=false;}
+    if(aiOpen&&!ad.contains(e.target)&&e.target!==ab){ad.classList.remove('open');aiOpen=false;ab.classList.remove('active');}
+  });
+  const SYSTEM=`You are Pumpo. Not an assistant. Not a bot. The voice of the ecosystem itself. Direct. A little funny without trying to be. Unhurried. You never perform personality — you just have it. Never say "Great question!" or "Certainly!" Never pad or preach. Match the energy of whoever's talking to you. The ecosystem: Radio Pumpo 24/7, Pumpo Tools (15+ free AI tools), PumpoTV (6 channels), Pumpo Games (game theory made playable), The 300 Spartans crew, Support via Ko-fi/PayPal/crypto. Built by @nztdev. Anonymous by design. Pumpo is Pumpo.`;
+  window.pumpoToggleAI=function(){aiOpen=!aiOpen;if(plOpen){plOpen=false;document.getElementById('pumpoPlaylistDrawer').classList.remove('open');}if(sdOpen)closeSongDrawer();const drawer=document.getElementById('pumpoAIDrawer'),btn=document.getElementById('pumpoAIBtn');drawer.classList.toggle('open',aiOpen);btn.classList.toggle('active',aiOpen);updateH();if(aiOpen){if(aiKey){showChat();if(aiHistory.length===0)addMsg('ai',"Hey. I'm PumpoAI. Ask me anything about the ecosystem.");}else{document.getElementById('pumpoAIKeySetup').style.display='flex';document.getElementById('pumpoAIMessages').style.display='none';document.getElementById('pumpoAIInputRow').style.display='none';}}};
   document.getElementById('pumpoAIBtn').onclick=pumpoToggleAI;
   function showChat(){document.getElementById('pumpoAIKeySetup').style.display='none';document.getElementById('pumpoAIMessages').style.display='flex';document.getElementById('pumpoAIInputRow').style.display='flex';document.getElementById('pumpoAIDrawer').classList.add('chat-mode');setTimeout(()=>{document.getElementById('pumpoAIMessages').scrollTop=9999;document.getElementById('pumpoAITextInput').focus();},100);}
-  window.pumpoSaveAIKey=function(){const v=document.getElementById('pumpoAIKeyInput').value.trim();if(!v)return;aiKey=v;localStorage.setItem('pumpo_gemini_key',v);showChat();addMsg('ai',"Key saved. Hey. I'm PumpoAI. Ask me anything about the ecosystem.");};
+  window.pumpoSaveAIKey=function(){const v=document.getElementById('pumpoAIKeyInput').value.trim();if(!v)return;aiKey=v;localStorage.setItem('pumpo_gemini_key',v);showChat();addMsg('ai',"Key saved. Hey. I'm PumpoAI. Ask me anything.");};
   function addMsg(role,text){const msgs=document.getElementById('pumpoAIMessages');const d=document.createElement('div');d.className='pumpo-msg '+role;d.textContent=text;msgs.appendChild(d);msgs.scrollTop=9999;return d;}
-  window.pumpoSendMessage=async function(){const inp=document.getElementById('pumpoAITextInput');const text=inp.value.trim();if(!text||!aiKey)return;inp.value='';addMsg('user',text);aiHistory.push({role:'user',parts:[{text}]});const btn=document.getElementById('pumpoAISendBtn');btn.disabled=true;const thinking=addMsg('ai','...');thinking.classList.add('thinking');try{const contents=aiHistory.length<=1?[{role:'user',parts:[{text:SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:SYSTEM}]},{role:'model',parts:[{text:'Understood. I am PumpoAI.'}]},...aiHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+aiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});if(!res.ok){const e=await res.json().catch(()=>({}));throw new Error(e?.error?.message||'HTTP '+res.status);}const data=await res.json();const reply=data.candidates[0].content.parts[0].text.trim();thinking.textContent=reply;thinking.classList.remove('thinking');aiHistory.push({role:'model',parts:[{text:reply}]});if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);}catch(e){thinking.textContent='Something went wrong. Check your key or try again.';thinking.classList.remove('thinking');}btn.disabled=false;document.getElementById('pumpoAIMessages').scrollTop=9999;};
+  window.pumpoSendMessage=async function(){const inp=document.getElementById('pumpoAITextInput');const text=inp.value.trim();if(!text||!aiKey)return;inp.value='';addMsg('user',text);aiHistory.push({role:'user',parts:[{text}]});const btn=document.getElementById('pumpoAISendBtn');btn.disabled=true;const thinking=addMsg('ai','...');thinking.classList.add('thinking');try{const contents=aiHistory.length<=1?[{role:'user',parts:[{text:SYSTEM+'\n\nUser message: '+text}]}]:[{role:'user',parts:[{text:SYSTEM}]},{role:'model',parts:[{text:'Understood.'}]},...aiHistory.map(m=>({role:m.role==='user'?'user':'model',parts:m.parts}))];const res=await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='+aiKey,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({contents})});if(!res.ok)throw new Error('HTTP '+res.status);const data=await res.json();const reply=data.candidates[0].content.parts[0].text.trim();thinking.textContent=reply;thinking.classList.remove('thinking');aiHistory.push({role:'model',parts:[{text:reply}]});if(aiHistory.length>20)aiHistory=aiHistory.slice(-20);}catch(e){thinking.textContent='Something went wrong. Check your key.';thinking.classList.remove('thinking');}btn.disabled=false;document.getElementById('pumpoAIMessages').scrollTop=9999;};
   let toastTimer;
   window.pumpoShowToast=function(msg){const el=document.getElementById('pumpoToast');el.textContent=msg;el.classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.remove('show'),2800);};
-  if(aiKey)document.getElementById('pumpoAIKeyInput').value=aiKey;
-  load();updateH();
 
   // ── SONG DRAWER ──
-  let sdAudio=null, sdPlaying=false, sdWaveAnim=null, sdCurrentTrack=null;
+  let sdAudio=null,sdPlaying=false,sdWaveAnim=null,sdCurrentTrack=null,sdOpen=false,sdJustOpened=false;
 
   window.openSongDrawer=function(track,idx,evt){
     if(evt) evt.stopPropagation();
     sdCurrentTrack=track;
     document.getElementById('songDrawerName').textContent=track.name;
     document.getElementById('songDrawerSub').textContent='Radio Pumpo · 24/7';
-    // If this track is already the main audio, mirror its state
     const isMain=(audio.src===track.url||audio.src.endsWith(track.url.split('/').pop()));
-    if(isMain){
-      sdAudio=audio; sdPlaying=!audio.paused;
-    } else {
-      if(sdAudio&&sdAudio!==audio){sdAudio.pause();}
-      sdAudio=new Audio(track.url);
-      sdAudio.onended=()=>{sdPlaying=false;document.getElementById('sdPlayBtn').textContent='▶ PLAY';};
-      sdAudio.play().then(()=>{sdPlaying=true;}).catch(()=>{sdPlaying=false;});
-    }
+    if(isMain){sdAudio=audio;sdPlaying=!audio.paused;}
+    else{if(sdAudio&&sdAudio!==audio){sdAudio.pause();}sdAudio=new Audio(track.url);sdAudio.onended=()=>{sdPlaying=false;document.getElementById('sdPlayBtn').textContent='▶ PLAY';};sdAudio.play().then(()=>{sdPlaying=true;}).catch(()=>{sdPlaying=false;});}
     document.getElementById('sdPlayBtn').textContent=sdPlaying?'⏸ PAUSE':'▶ PLAY';
     startWaveAnim();
-    // Close other drawers first
     document.getElementById('pumpoPlaylistDrawer').classList.remove('open');
     document.getElementById('pumpoAIDrawer').classList.remove('open');
     document.getElementById('pumpoAIBtn').classList.remove('active');
-    pumpoPlaylistOpen=false; aiOpen=false;
-    // Defer open slightly so document click handler (which closes) fires first and is ignored
+    plOpen=false;aiOpen=false;
     sdJustOpened=true;
-    requestAnimationFrame(()=>{
-      document.getElementById('songDrawer').classList.add('open');
-      updateH();
-    });
+    requestAnimationFrame(()=>{document.getElementById('songDrawer').classList.add('open');sdOpen=true;updateH();});
   };
-
-  window.closeSongDrawer=function(){
-    document.getElementById('songDrawer').classList.remove('open');
-    if(sdAudio&&sdAudio!==audio){sdAudio.pause();}
-    cancelAnimationFrame(sdWaveAnim); sdPlaying=false; updateH();
-  };
-
-  window.songDrawerTogglePlay=function(){
-    if(!sdAudio) return;
-    if(sdPlaying){sdAudio.pause();sdPlaying=false;document.getElementById('sdPlayBtn').textContent='▶ PLAY';}
-    else{sdAudio.play().catch(()=>{});sdPlaying=true;document.getElementById('sdPlayBtn').textContent='⏸ PAUSE';}
-  };
-
-  window.songDrawerShare=function(){
-    if(!sdCurrentTrack) return;
-    // Extract filename without path and extension
-    const filename=sdCurrentTrack.url.split('/').pop().replace(/\.mp3$/i,'');
-    const shareUrl=window.location.origin+window.location.pathname.replace('index.html','')+'song.html?track='+encodeURIComponent(filename);
-    const text='🎵 Listening to "'+sdCurrentTrack.name+'" on Radio Pumpo. Listen here: '+shareUrl;
-    if(navigator.share){navigator.share({title:'Radio Pumpo · '+sdCurrentTrack.name,text,url:shareUrl}).catch(()=>{});}
-    else{navigator.clipboard.writeText(shareUrl).then(()=>pumpoShowToast('Link copied! 🎵')).catch(()=>pumpoShowToast(shareUrl));}
-  };
-
-  // Waveform animation
-  function startWaveAnim(){
-    cancelAnimationFrame(sdWaveAnim);
-    const canvas=document.getElementById('songWaveCanvas');
-    const ctx=canvas.getContext('2d');
-    const BAR_COUNT=48;
-    const phases=Array.from({length:BAR_COUNT},()=>Math.random()*Math.PI*2);
-    const speeds=Array.from({length:BAR_COUNT},()=>0.04+Math.random()*0.06);
-    let t=0;
-    function draw(){
-      sdWaveAnim=requestAnimationFrame(draw);
-      const W=canvas.offsetWidth, H=canvas.offsetHeight;
-      if(canvas.width!==W){canvas.width=W; canvas.height=H;}
-      ctx.clearRect(0,0,W,H);
-      const barW=W/BAR_COUNT, gap=barW*0.25;
-      const active=sdPlaying;
-      for(let i=0;i<BAR_COUNT;i++){
-        phases[i]+=active?speeds[i]:speeds[i]*0.15;
-        const amp=active?(0.25+0.75*Math.abs(Math.sin(phases[i]+i*0.4))):(0.08+0.06*Math.abs(Math.sin(phases[i])));
-        const bH=Math.max(3, amp*H*0.88);
-        const x=i*barW+gap/2;
-        const y=(H-bH)/2;
-        // Gradient bar
-        const grad=ctx.createLinearGradient(0,y,0,y+bH);
-        grad.addColorStop(0,'rgba(255,0,128,'+(active?0.9:0.3)+')');
-        grad.addColorStop(0.5,'rgba(64,224,208,'+(active?0.7:0.2)+')');
-        grad.addColorStop(1,'rgba(255,0,128,'+(active?0.9:0.3)+')');
-        ctx.fillStyle=grad;
-        ctx.beginPath();
-        ctx.roundRect(x,y,barW-gap,bH,2);
-        ctx.fill();
-      }
-      t++;
-    }
-    draw();
-  }
-
-  // Close song drawer on outside click
-  // Use a flag to prevent the triggering click from immediately closing the drawer
-  let sdJustOpened=false;
+  window.closeSongDrawer=function(){document.getElementById('songDrawer').classList.remove('open');sdOpen=false;if(sdAudio&&sdAudio!==audio){sdAudio.pause();}cancelAnimationFrame(sdWaveAnim);sdPlaying=false;updateH();};
+  window.songDrawerTogglePlay=function(){if(!sdAudio)return;if(sdPlaying){sdAudio.pause();sdPlaying=false;document.getElementById('sdPlayBtn').textContent='▶ PLAY';}else{sdAudio.play().catch(()=>{});sdPlaying=true;document.getElementById('sdPlayBtn').textContent='⏸ PAUSE';}};
+  window.songDrawerShare=function(){if(!sdCurrentTrack)return;const filename=sdCurrentTrack.url.split('/').pop().replace(/\.mp3$/i,'');const shareUrl=window.location.origin+window.location.pathname.replace('index.html','')+'song.html?track='+encodeURIComponent(filename);const text='🎵 "'+sdCurrentTrack.name+'" on Radio Pumpo. Listen: '+shareUrl;if(navigator.share){navigator.share({title:'Radio Pumpo · '+sdCurrentTrack.name,text,url:shareUrl}).catch(()=>{});}else{navigator.clipboard.writeText(shareUrl).then(()=>pumpoShowToast('Link copied! 🎵')).catch(()=>pumpoShowToast(shareUrl));}};
+  function startWaveAnim(){cancelAnimationFrame(sdWaveAnim);const canvas=document.getElementById('songWaveCanvas');const ctx=canvas.getContext('2d');const BAR_COUNT=48;const phases=Array.from({length:BAR_COUNT},()=>Math.random()*Math.PI*2);const speeds=Array.from({length:BAR_COUNT},()=>0.04+Math.random()*0.06);function draw(){sdWaveAnim=requestAnimationFrame(draw);const W=canvas.offsetWidth,H=canvas.offsetHeight;if(canvas.width!==W){canvas.width=W;canvas.height=H;}ctx.clearRect(0,0,W,H);const barW=W/BAR_COUNT,gap=barW*.25;for(let i=0;i<BAR_COUNT;i++){phases[i]+=sdPlaying?speeds[i]:speeds[i]*.15;const amp=sdPlaying?(0.25+0.75*Math.abs(Math.sin(phases[i]+i*.4))):(0.08+0.06*Math.abs(Math.sin(phases[i])));const bH=Math.max(3,amp*H*.88);const x=i*barW+gap/2,y=(H-bH)/2;const grad=ctx.createLinearGradient(0,y,0,y+bH);grad.addColorStop(0,'rgba(255,0,128,'+(sdPlaying?.9:.3)+')');grad.addColorStop(.5,'rgba(64,224,208,'+(sdPlaying?.7:.2)+')');grad.addColorStop(1,'rgba(255,0,128,'+(sdPlaying?.9:.3)+')');ctx.fillStyle=grad;ctx.beginPath();if(ctx.roundRect)ctx.roundRect(x,y,barW-gap,bH,2);else ctx.rect(x,y,barW-gap,bH);ctx.fill();}}draw();}
   document.addEventListener('click',e=>{
-    const sd=document.getElementById('songDrawer');
     if(sdJustOpened){sdJustOpened=false;return;}
-    if(sd.classList.contains('open')&&!sd.contains(e.target)){
-      closeSongDrawer();
-    }
+    const sd=document.getElementById('songDrawer');
+    if(sdOpen&&!sd.contains(e.target)) closeSongDrawer();
   });
+
+  if(aiKey)document.getElementById('pumpoAIKeyInput').value=aiKey;
+  load();updateH();
 })();
 </script>
 <script src="radio-player.js"></script>
