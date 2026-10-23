@@ -52,7 +52,9 @@
     { "id": "t33", "file": "https://radiopumpo.github.io/songs/pumpoclub2.mp3",         "title": "Pumpo Club Two",          "duration": 262, "dayparts": ["afternoons","latenight"] },
     { "id": "t34", "file": "https://radiopumpo.github.io/songs/dansercommepumpo.mp3",   "title": "Danser comme Pumpo",      "duration": 180, "dayparts": ["breakfast","afternoons","latenight"] },
     { "id": "t35", "file": "https://radiopumpo.github.io/songs/pumpoonroof.mp3",        "title": "Pumpo On The Roof",       "duration": 168, "dayparts": ["afternoons","latenight"] },
-    { "id": "t36", "file": "https://radiopumpo.github.io/songs/everydaymasterpiecephonk.mp3", "title": "Everyday Masterpiece Phonk Remix",          "duration": 198, "dayparts": ["afternoons","latenight"] }
+    { "id": "t36", "file": "https://radiopumpo.github.io/songs/everydaymasterpiecephonk.mp3", "title": "Everyday Masterpiece Phonk Remix",          "duration": 198, "dayparts": ["afternoons","latenight"] },
+    { "id": "t37", "file": "https://radiopumpo.github.io/songs/clodvonpumpo.mp3",        "title": "Clod Von Pumpo",         "duration": 171, "dayparts": ["breakfast","afternoons","latenight"] },
+    { "id": "t38", "file": "https://radiopumpo.github.io/songs/pumpoatpacha.mp3",        "title": "Pumpo @ Pacha",          "duration": 222, "dayparts": ["breakfast","afternoons","latenight"] }
   ],
     
   "segments": {
