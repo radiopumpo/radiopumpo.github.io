@@ -125,7 +125,7 @@
     .btn-ghost{font-family:var(--mono);font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;padding:.72rem 1.1rem;border-radius:4px;border:1px solid;background:transparent;cursor:pointer;transition:.2s;text-decoration:none;display:inline-block;}
 
     /* PUMPO BAR */
-    .pumpo-bar-wrap*{box-sizing:border-box;}
+    .pumpo-bar-wrap *{box-sizing:border-box;}
     .pumpo-sticky-bar{position:fixed;bottom:0;left:0;right:0;z-index:8000;background:rgba(4,2,10,0.97);backdrop-filter:blur(16px);border-top:1px solid rgba(255,0,128,0.22);box-shadow:0 -4px 28px rgba(255,0,128,0.08);padding:8px 14px 10px;padding-bottom:max(10px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:6px;font-family:'Rajdhani',sans-serif;}
     .pumpo-marquee-wrap{background:rgba(255,0,128,0.08);border:1px solid rgba(255,0,128,0.15);border-radius:20px;overflow:hidden;width:60%;max-width:320px;margin:0 auto;cursor:pointer;}
     #pumpo-song-marquee{display:inline-block;color:#ff0080;font-weight:700;font-size:.8rem;white-space:nowrap;letter-spacing:.5px;padding:5px 0;animation:pumpoMarquee 18s linear infinite;}
@@ -202,6 +202,41 @@
     .pumpo-toast{position:fixed;bottom:90px;left:50%;transform:translateX(-50%) translateY(30px);background:#40e0d0;color:#000;font-weight:700;padding:8px 20px;border-radius:20px;font-size:.83rem;z-index:9500;transition:transform .35s ease,opacity .35s ease;pointer-events:none;opacity:0;font-family:'Rajdhani',sans-serif;}
     .pumpo-toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
     @media(max-width:480px){.pumpo-marquee-wrap{width:68%;}.pumpo-bar-btn{padding:5px 7px;font-size:.82rem;}}
+
+    /* ═══ NEW DROP — card + video lightbox ═══ */
+    /* The card lives top-right, under the burger menu. It starts in the page flow, so it scrolls
+       away with the hero, then pins itself (fixed) when the reader reaches the last section. */
+    .new-drop{position:absolute;top:64px;right:20px;z-index:450;display:flex;align-items:center;gap:10px;max-width:min(calc(100vw - 40px),250px);padding:6px 12px 6px 6px;border-radius:12px;border:1px solid rgba(255,0,128,.32);background:rgba(4,2,10,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);box-shadow:0 6px 24px rgba(0,0,0,.55),0 0 18px rgba(255,0,128,.12);cursor:pointer;text-align:left;color:var(--text);font-family:var(--sans);opacity:0;transform:translateY(-8px);transition:opacity .6s ease,transform .6s ease,border-color .2s,background .2s;}
+    .new-drop[hidden]{display:none;}
+    .new-drop.show{opacity:1;transform:translateY(0);}
+    .new-drop.pinned{position:fixed;opacity:1;transform:none;animation:ndPin .5s cubic-bezier(.2,.8,.2,1);}
+    @keyframes ndPin{from{opacity:0;transform:translateY(-14px)}to{opacity:1;transform:none}}
+    .new-drop:hover{border-color:var(--pink);background:rgba(255,0,128,.14);}
+    .nd-thumb{position:relative;width:72px;aspect-ratio:16/9;border-radius:7px;overflow:hidden;flex-shrink:0;background:linear-gradient(135deg,#2a0a1e,#0a1a22);}
+    .nd-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+    .nd-play{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.28);font-size:.9rem;color:#fff;transition:.2s;}
+    .new-drop:hover .nd-play{background:rgba(255,0,128,.35);}
+    .nd-text{display:flex;flex-direction:column;gap:1px;min-width:0;}
+    .nd-tag{font-family:var(--mono);font-size:.48rem;letter-spacing:.2em;color:var(--pink);text-transform:uppercase;}
+    .nd-title{font-family:var(--display);font-size:.8rem;letter-spacing:.5px;line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .nd-cta{font-family:var(--mono);font-size:.5rem;letter-spacing:.1em;color:rgba(240,237,230,.45);text-transform:uppercase;}
+    @media(max-width:480px){.nd-cta{display:none;}.nd-thumb{width:60px;}}
+
+    .vid-modal{position:fixed;inset:0;z-index:8800;display:none;align-items:center;justify-content:center;padding:max(14px,env(safe-area-inset-top)) 12px max(14px,env(safe-area-inset-bottom));}
+    .vid-modal.open{display:flex;}
+    .vid-backdrop{position:absolute;inset:0;background:rgba(4,2,10,.94);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);opacity:0;transition:opacity .35s ease;}
+    .vid-modal.show .vid-backdrop{opacity:1;}
+    .vid-stage{position:relative;z-index:1;display:flex;flex-direction:column;gap:10px;width:min(96vw,calc((100vh - 130px) * 16 / 9));width:min(96vw,calc((100dvh - 130px) * 16 / 9));}
+    .vid-top,.vid-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;opacity:0;transition:opacity .3s ease .25s;}
+    .vid-bottom{justify-content:center;}
+    .vid-modal.show .vid-top,.vid-modal.show .vid-bottom{opacity:1;}
+    .vid-heading{display:flex;flex-direction:column;min-width:0;}
+    .vid-tag{font-family:var(--mono);font-size:.52rem;letter-spacing:.22em;color:var(--pink);text-transform:uppercase;}
+    .vid-title{font-family:var(--display);font-size:.95rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+    .vid-close{background:none;border:1px solid #444;color:#aaa;border-radius:8px;padding:6px 12px;cursor:pointer;font-family:var(--mono);font-size:.62rem;letter-spacing:.1em;flex-shrink:0;transition:.2s;}
+    .vid-close:hover{border-color:var(--pink);color:var(--pink);}
+    .vid-frame{position:relative;width:100%;aspect-ratio:16/9;border-radius:10px;overflow:hidden;background:#000;box-shadow:0 0 50px rgba(255,0,128,.28);transform-origin:top left;will-change:transform;}
+    .vid-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0;}
   </style>
 </head>
 <body>
@@ -226,6 +261,16 @@
   </div>
 </nav>
 
+<!-- NEW DROP CARD — top-right under the burger; scrolls away with the hero, pins at the last section -->
+<button class="new-drop" id="newDrop" type="button" hidden aria-label="Watch the new radioPumpo video">
+  <span class="nd-thumb"><img id="ndThumb" alt="" loading="lazy"><span class="nd-play">▶</span></span>
+  <span class="nd-text">
+    <span class="nd-tag">● New drop</span>
+    <span class="nd-title" id="ndTitle"></span>
+    <span class="nd-cta">Watch the video</span>
+  </span>
+</button>
+
 <!-- PANEL 1: RADIO -->
 <section class="panel panel-radio" id="panel-radio">
   <div class="panel-overlay"></div><div class="panel-fade"></div>
@@ -235,7 +280,7 @@
     <h1 class="panel-headline" style="color:var(--pink)">A joke that<br>got out of hand.</h1>
     <p class="panel-sub">No investors. No ads. No agenda.<br><strong>Just people on the same frequency.</strong><br><em style="color:rgba(240,237,230,.35);font-size:.88em">Tune in. Talk to Pumpo. The rest reveals itself.</em></p>
     <div class="panel-cta">
-      <button class="btn-primary pink" onclick="tuneIn()">▶ TUNE IN</button>
+      <button class="btn-primary pink" onclick="tuneIn()" data-tune data-off="▶ TUNE IN" data-on="■ TUNED IN">▶ TUNE IN</button>
       <button class="btn-ghost" style="border-color:rgba(64,224,208,.28);color:var(--cyan);" onclick="meetAI()">✦ PumpoAI</button>
     </div>
   </div>
@@ -330,7 +375,7 @@
       <span id="pumpo-song-marquee">NOW PLAYING: Initializing...</span>
     </div>
     <div class="pumpo-controls-row">
-      <button class="pumpo-bar-btn tune-btn" onclick="tuneIn()">▶ TUNE IN</button>
+      <button class="pumpo-bar-btn tune-btn" onclick="tuneIn()" data-tune data-off="▶ TUNE IN" data-on="■ LIVE">▶ TUNE IN</button>
       <button class="pumpo-bar-btn" id="pumpoPrevBtn">&#9664;&#9664;</button>
       <audio id="pumpo-audio-el" controls></audio>
       <button class="pumpo-bar-btn" id="pumpoNextBtn">&#9654;&#9654;</button>
@@ -387,6 +432,24 @@
     </div>
   </div>
   <div class="pumpo-toast" id="pumpoToast"></div>
+</div>
+
+<!-- NEW DROP VIDEO LIGHTBOX -->
+<div class="vid-modal" id="vidModal" aria-hidden="true" role="dialog" aria-label="New radioPumpo video">
+  <div class="vid-backdrop" id="vidBackdrop"></div>
+  <div class="vid-stage">
+    <div class="vid-top">
+      <div class="vid-heading">
+        <span class="vid-tag">● New drop</span>
+        <span class="vid-title" id="vidTitle"></span>
+      </div>
+      <button class="vid-close" id="vidClose" type="button">CLOSE ✕</button>
+    </div>
+    <div class="vid-frame" id="vidFrame"></div>
+    <div class="vid-bottom">
+      <a class="btn-primary pink" id="vidYT" target="_blank" rel="noopener">▶ Watch on YouTube</a>
+    </div>
+  </div>
 </div>
 
 <!-- Three.js from CDN -->
@@ -938,6 +1001,156 @@ function meetAI(){
   load();updateH();
 })();
 </script>
+
+<!-- ═══════════════════════════════════════════════
+     NEW DROP — video card + expanding lightbox
+     + TUNE button label sync with radio-player.js
+     ═══════════════════════════════════════════════ -->
+<script>
+(function(){
+  // ═══ EDIT THESE TWO LINES ═══
+  const NEW_DROP = {
+    video: 'https://youtu.be/EbSgX23MM-s',   // full YouTube link, or the 11-character video ID
+    title: 'New radioPumpo video'            // TODO: replace with the song name
+  };
+  // ════════════════════════════
+
+  // ── Keep every TUNE IN button's label in step with radio mode ──
+  (function syncTuneButtons(){
+    const btns=[...document.querySelectorAll('[data-tune]')];
+    if(!btns.length) return;
+    function sync(){
+      const src=document.getElementById('pumpo-radio-toggle');
+      if(!src) return;
+      const t=src.textContent.trim();
+      btns.forEach(b=>{
+        if(/TUNE IN$/i.test(t)) b.textContent=b.dataset.off;
+        else if(/TUNED/i.test(t)) b.textContent=b.dataset.on;
+        else b.textContent=t;
+      });
+    }
+    let tries=0;
+    const wait=setInterval(()=>{
+      const src=document.getElementById('pumpo-radio-toggle');
+      if(src){
+        clearInterval(wait);
+        new MutationObserver(sync).observe(src,{childList:true,characterData:true,subtree:true});
+        sync();
+      } else if(++tries>40){ clearInterval(wait); }
+    },250);
+  })();
+
+  // ── New drop card + lightbox ──
+  function ytId(v){
+    if(!v) return null;
+    const m=String(v).match(/(?:youtu\.be\/|v=|embed\/|shorts\/|live\/)([A-Za-z0-9_-]{11})/);
+    if(m) return m[1];
+    const s=String(v).trim();
+    return /^[A-Za-z0-9_-]{11}$/.test(s)?s:null;
+  }
+
+  const id=ytId(NEW_DROP.video);
+  const card=document.getElementById('newDrop');
+  const modal=document.getElementById('vidModal');
+  const frame=document.getElementById('vidFrame');
+  if(!id||!card||!modal||!frame) return;   // card stays hidden until a real link is set
+
+  document.getElementById('ndTitle').textContent=NEW_DROP.title;
+  document.getElementById('vidTitle').textContent=NEW_DROP.title;
+  document.getElementById('vidYT').href='https://www.youtube.com/watch?v='+id;
+  const thumb=document.getElementById('ndThumb');
+  thumb.src='https://i.ytimg.com/vi/'+id+'/hqdefault.jpg';
+  thumb.onerror=function(){ thumb.style.display='none'; };
+  card.hidden=false;
+  setTimeout(()=>card.classList.add('show'),700);   // gentle entrance on load
+
+  // Pin to the top-right once the reader reaches the last section; release it when they leave
+  let pinTick=false;
+  function checkPin(){
+    pinTick=false;
+    const atEnd=window.innerHeight+window.scrollY>=document.documentElement.scrollHeight-140;
+    card.classList.toggle('pinned',atEnd);
+  }
+  window.addEventListener('scroll',()=>{ if(!pinTick){ pinTick=true; requestAnimationFrame(checkPin); } },{passive:true});
+  window.addEventListener('resize',checkPin);
+  checkPin();
+
+  let isOpen=false, closeTimer=null;
+  const thumbBox=()=>card.querySelector('.nd-thumb').getBoundingClientRect();
+
+  function radioIsOn(){
+    if(window.PumpoRadio&&typeof window.PumpoRadio.isOn==='function') return window.PumpoRadio.isOn();
+    const l=document.getElementById('pumpo-mode-label');
+    return !!(l&&/LIVE/i.test(l.textContent));
+  }
+
+  // FLIP: start the frame exactly over the card thumbnail, then let it grow into place
+  function flipFrom(rect){
+    const to=frame.getBoundingClientRect();
+    const s=rect.width/to.width;
+    frame.style.transition='none';
+    frame.style.transform='translate('+(rect.left-to.left)+'px,'+(rect.top-to.top)+'px) scale('+s+')';
+    frame.getBoundingClientRect(); // force reflow
+    frame.style.transition='transform .45s cubic-bezier(.2,.8,.2,1)';
+    frame.style.transform='none';
+  }
+
+  function open(){
+    if(isOpen) return;
+    isOpen=true;
+    clearTimeout(closeTimer);
+
+    // Silence everything so the music doesn't fight the video
+    document.getElementById('pumpo-audio-el')?.pause();
+    if(typeof window.closeSongDrawer==='function') window.closeSongDrawer();
+    if(window.PumpoRadio&&typeof window.PumpoRadio.toggle==='function'&&radioIsOn()) window.PumpoRadio.toggle();
+
+    const from=thumbBox();
+    modal.classList.add('open');
+    modal.setAttribute('aria-hidden','false');
+
+    const f=document.createElement('iframe');
+    f.src='https://www.youtube-nocookie.com/embed/'+id+'?autoplay=1&rel=0&modestbranding=1&playsinline=1';
+    f.allow='autoplay; encrypted-media; picture-in-picture; fullscreen';
+    f.allowFullscreen=true;
+    f.title=NEW_DROP.title;
+    frame.innerHTML='';
+    frame.appendChild(f);
+
+    flipFrom(from);
+    requestAnimationFrame(()=>modal.classList.add('show'));
+    document.body.style.overflow='hidden';
+    document.getElementById('vidClose').focus({preventScroll:true});
+  }
+
+  function close(){
+    if(!isOpen) return;
+    isOpen=false;
+    modal.classList.remove('show');
+
+    // Shrink back into the card
+    const rect=thumbBox();
+    const to=frame.getBoundingClientRect();
+    frame.style.transform='translate('+(rect.left-to.left)+'px,'+(rect.top-to.top)+'px) scale('+(rect.width/to.width)+')';
+
+    closeTimer=setTimeout(()=>{
+      modal.classList.remove('open');
+      modal.setAttribute('aria-hidden','true');
+      frame.innerHTML='';                 // removing the iframe stops the video
+      frame.style.transition='none';
+      frame.style.transform='none';
+      document.body.style.overflow='';
+      card.focus({preventScroll:true});
+    },420);
+  }
+
+  card.addEventListener('click',open);
+  document.getElementById('vidClose').addEventListener('click',close);
+  document.getElementById('vidBackdrop').addEventListener('click',close);
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'&&isOpen) close(); });
+})();
+</script>
+
 <script src="radio-player.js"></script>
 </body>
 </html>
