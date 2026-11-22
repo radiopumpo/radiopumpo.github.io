@@ -1,37 +1,55 @@
 /**
- * RADIO PUMPO — SHARED CLOCK PLAYER v1.1
+ * RADIO PUMPO — SHARED CLOCK PLAYER v1.2.1
  *
- * INTEGRATION: Add one line to index.html before </body>:
+ * INTEGRATION: one line in index.html before </body>:
  *   <script src="radio-player.js"></script>
  *
- * HOW IT WORKS:
+ * HOW IT WORKS
  * Every listener shares the same UTC clock. The manifest defines a 24-hour
- * sequence. On "Tune In", the player calculates exactly which track is playing
- * right now and at what position, then seeks to it. Everyone who tunes in at
- * the same moment hears the same thing.
+ * sequence; on "Tune In" the player works out which item is playing right now
+ * and at what position, then seeks to it.
  *
- * Daypart transitions (06:00, 12:00, 19:00 UTC) fire exactly once per boundary
- * using setTimeout — no polling. The outgoing show outro plays, then the
- * incoming show intro, then the new sequence begins seamlessly.
+ * v1.2 CHANGES
+ * - A file that fails to load (404, corrupt, unsupported) is skipped instead of
+ *   leaving dead air. It is left out of the sequence for 10 minutes, then given
+ *   another chance (so a brief connection drop or a file you upload later
+ *   heals itself). If too many files fail in a row the radio hands back to the
+ *   on-demand player rather than looping.
+ * - Show handover (06:00 / 12:00 / 19:00 UTC) rewritten as one small state
+ *   machine. v1.1 had a race where the generic "track ended" handler overwrote
+ *   the outro/intro a split second after it started, so they were cut off.
  *
- * OPTION 1 UPGRADE: Set STREAM_URL to your Icecast mount URL.
- * Radio mode will use the stream instead of the calculated local file.
- * Nothing else changes.
+ * OPTION 1 UPGRADE: set STREAM_URL to your Icecast mount URL.
  */
 
 (function () {
 
   // ── CONFIG ────────────────────────────────────────────────────────────────
   const MANIFEST_URL = '/radio-manifest.json';
-  const STREAM_URL   = null; // Set to Icecast URL when upgrading to Option 1
+  const STREAM_URL   = null;   // set to an Icecast URL when upgrading to Option 1
+  const MAX_FAILS    = 6;      // consecutive unplayable files before giving up
+  const OUTRO_FOR    = { afternoons: 'breakfast', latenight: 'afternoons', breakfast: 'latenight' };
 
   // ── STATE ─────────────────────────────────────────────────────────────────
-  let manifest        = null;
-  let radioAudio      = null;
-  let isRadioMode     = false;
-  let sequence        = null;
-  let syncTimer       = null;
-  let transitionTimer = null;
+  let manifest = null, radioAudio = null, isRadioMode = false, sequence = null;
+  let syncTimer = null, transitionTimer = null, playTimer = null;
+
+  let activeDaypart     = null;   // daypart the current sequence was built for
+  let pendingTransition = null;   // daypart waiting for the current item to finish
+  let transitionSteps   = [];     // remaining outro/intro items
+  let inTransition      = false;  // true while an outro/intro is playing
+
+  let currentItem = null, attempt = 0, failedAttempt = -1, failStreak = 0;
+  // Files that failed to load, with the time they may be tried again. Temporary on
+  // purpose: a dropped connection makes GOOD files fail too, and must not ban them for good.
+  const BAD_FILE_TTL_MS = 10 * 60 * 1000;
+  const badFiles = new Map();
+  function isBad(file) {
+    const until = badFiles.get(file);
+    if (until === undefined) return false;
+    if (Date.now() > until) { badFiles.delete(file); return false; }
+    return true;
+  }
 
   // ── MANIFEST ──────────────────────────────────────────────────────────────
   async function loadManifest() {
@@ -51,12 +69,8 @@
     return n.getUTCHours() * 3600 + n.getUTCMinutes() * 60 + n.getUTCSeconds();
   }
 
-  function getUTCHour() {
-    return new Date().getUTCHours();
-  }
-
   function getCurrentDaypart() {
-    const h = getUTCHour();
+    const h = new Date().getUTCHours();
     if (h >= 6  && h < 12) return 'breakfast';
     if (h >= 12 && h < 19) return 'afternoons';
     return 'latenight';
@@ -65,7 +79,7 @@
   function getDateSeed() {
     const d = new Date();
     return parseInt(
-      `${d.getUTCFullYear()}${String(d.getUTCMonth()+1).padStart(2,'0')}${String(d.getUTCDate()).padStart(2,'0')}`
+      `${d.getUTCFullYear()}${String(d.getUTCMonth() + 1).padStart(2, '0')}${String(d.getUTCDate()).padStart(2, '0')}`
     );
   }
 
@@ -85,25 +99,29 @@
   }
 
   // ── SEQUENCE BUILDER ──────────────────────────────────────────────────────
+  // Returns null if there is nothing playable. Files in badFiles are left out.
   function buildSequence() {
-    const dp       = getCurrentDaypart();
-    const sf       = manifest.scheduling.segment_frequency;
-    const sidf     = manifest.scheduling.station_id_frequency;
-    const seed     = getDateSeed();
-    const wrap     = manifest.segments.show_wrappers;
-    const segs     = manifest.segments[dp];
-    const sids     = manifest.segments.station_ids;
-    const pool     = manifest.tracks.filter(t => t.dayparts.includes(dp));
-    const shuffled = seededShuffle(pool, seed);
+    const dp   = getCurrentDaypart();
+    activeDaypart = dp;
+    const ok   = x => x && !isBad(x.file);
+    const sf   = manifest.scheduling.segment_frequency;
+    const sidf = manifest.scheduling.station_id_frequency;
+    const wrap = manifest.segments.show_wrappers;
+
+    const pool = manifest.tracks.filter(t => t.dayparts.includes(dp) && ok(t));
+    if (!pool.length) return null;
+    const segs = (manifest.segments[dp] || []).filter(ok);
+    const sids = (manifest.segments.station_ids || []).filter(ok);
+    const shuffled = seededShuffle(pool, getDateSeed());
 
     const seq = [];
-    let total = 0;
-    let ti = 0, segi = 0, sidi = 0, tc = 0;
+    let total = 0, ti = 0, segi = 0, sidi = 0, tc = 0;
 
-    // Open with show wrapper intro
     const intro = wrap[`${dp}_intro`];
-    seq.push({ type: 'segment', subtype: 'intro', ...intro, label: manifest.dayparts[dp].label });
-    total += intro.duration;
+    if (ok(intro)) {
+      seq.push({ type: 'segment', subtype: 'intro', ...intro, label: manifest.dayparts[dp].label });
+      total += intro.duration;
+    }
 
     while (total < 86400) {
       const track = shuffled[ti % shuffled.length];
@@ -111,21 +129,19 @@
       total += track.duration;
       ti++; tc++;
 
-      if (tc % sf === 0) {
+      if (segs.length && tc % sf === 0) {
         const seg = segs[segi % segs.length];
         seq.push({ type: 'segment', subtype: 'host', ...seg, label: manifest.station.host });
         total += seg.duration;
         segi++;
       }
-
-      if (tc % sidf === 0 && tc % sf !== 0) {
+      if (sids.length && tc % sidf === 0 && tc % sf !== 0) {
         const sid = sids[sidi % sids.length];
         seq.push({ type: 'segment', subtype: 'station_id', ...sid, label: 'Radio Pumpo' });
         total += sid.duration;
         sidi++;
       }
     }
-
     return seq;
   }
 
@@ -134,9 +150,7 @@
     const s = getUTCSecondOfDay();
     let elapsed = 0;
     for (let i = 0; i < seq.length; i++) {
-      if (elapsed + seq[i].duration > s) {
-        return { item: seq[i], pos: s - elapsed, idx: i };
-      }
+      if (elapsed + seq[i].duration > s) return { item: seq[i], pos: s - elapsed, idx: i };
       elapsed += seq[i].duration;
     }
     return { item: seq[0], pos: 0, idx: 0 };
@@ -153,156 +167,167 @@
       return;
     }
 
+    failStreak = 0;
     sequence = buildSequence();
+    if (!sequence) { giveUp('no playable tracks'); return; }
     playFromPosition();
     startSyncTimer();
     scheduleDaypartTransition();
   }
 
+  // Play whatever the shared clock says should be playing right now.
   function playFromPosition() {
+    if (!sequence || !isRadioMode) return;
     const { item, pos } = getCurrentPosition(sequence);
     const gap = pos === 0 ? (manifest.scheduling.segment_gap_ms || 600) : 0;
-
-    setTimeout(() => {
-      radioAudio.src = item.file;
-      radioAudio.currentTime = pos;
-      radioAudio.play().catch(() => {
-        setRadioBtn('TAP TO START');
-        document.addEventListener('click', function handler() {
-          radioAudio.play();
-          setRadioBtn('■ TUNED IN');
-          document.removeEventListener('click', handler);
-        });
-      });
-      updateRadioDisplay(item);
-    }, gap);
+    clearTimeout(playTimer);
+    playTimer = setTimeout(() => { if (isRadioMode) playItem(item, pos); }, gap);
   }
 
-  // ── SYNC TIMER — drift correction only, 15s interval ─────────────────────
+  // The ONLY place audio is started. Handles load failures.
+  function playItem(item, pos) {
+    const my = ++attempt;
+    currentItem = item;
+    radioAudio.src = item.file;
+    radioAudio.currentTime = pos || 0;
+    updateRadioDisplay(item);
+
+    const p = radioAudio.play();
+    if (p && p.catch) {
+      p.catch(err => {
+        if (my !== attempt || !isRadioMode) return;      // superseded or stopped
+        const name = err && err.name;
+        if (name === 'AbortError') return;               // src changed under us
+        if (name === 'NotAllowedError') { needsTap(); return; }   // autoplay blocked
+        failItem(item, my);                              // 404 / corrupt / unsupported
+      });
+    }
+  }
+
+  function needsTap() {
+    setRadioBtn('TAP TO START');
+    document.addEventListener('click', function handler() {
+      document.removeEventListener('click', handler);
+      if (isRadioMode) { radioAudio.play().catch(() => {}); setRadioBtn('■ TUNED IN'); }
+    });
+  }
+
+  // A file could not be played: remember it, skip it, carry on with the clock.
+  function failItem(item, my) {
+    if (failedAttempt === my) return;      // 'error' event and play() rejection both fire — act once
+    failedAttempt = my;
+    console.warn('[Radio Pumpo] could not play', item && item.file, '— skipping it');
+    if (item && item.file) badFiles.set(item.file, Date.now() + BAD_FILE_TTL_MS);
+
+    if (++failStreak >= MAX_FAILS) { giveUp('too many unplayable files in a row'); return; }
+    if (inTransition) { advanceTransition(); return; }      // a missing outro/intro is simply skipped
+
+    const s = buildSequence();
+    if (!s) { giveUp('no playable tracks left'); return; }
+    sequence = s;
+    playFromPosition();
+  }
+
+  // Radio can't carry on: hand back to the on-demand player instead of looping.
+  function giveUp(reason) {
+    console.warn('[Radio Pumpo] giving up:', reason);
+    stopRadio();
+    setRadioBtn('📻 TUNE IN');
+    const m = document.getElementById('pumpo-mode-label');
+    if (m) m.textContent = 'ON DEMAND';
+    if (typeof window.pumpoShowToast === 'function') window.pumpoShowToast('Radio hiccup — switched to on-demand');
+  }
+
+  // Single handler for "current item finished".
+  function onEnded() {
+    if (!isRadioMode) return;
+    if (inTransition)      { advanceTransition(); return; }
+    if (pendingTransition) { beginTransition(pendingTransition); return; }
+    playFromPosition();
+  }
+
+  // ── SYNC TIMER — drift correction only ────────────────────────────────────
   function startSyncTimer() {
     if (syncTimer) clearInterval(syncTimer);
-
     syncTimer = setInterval(() => {
       if (!isRadioMode || !sequence || STREAM_URL) return;
-
+      if (inTransition || pendingTransition) return;         // never fight a show handover
       const { item, pos } = getCurrentPosition(sequence);
       const currentSrc   = radioAudio.src || '';
       const expectedFile = item.file.split('/').pop();
       const drift        = Math.abs((radioAudio.currentTime || 0) - pos);
-
-      if (!currentSrc.endsWith(expectedFile)) {
-        playFromPosition();
-      } else if (drift > 8) {
-        radioAudio.currentTime = pos;
-      }
+      if (!currentSrc.endsWith(expectedFile)) playFromPosition();
+      else if (drift > 8) radioAudio.currentTime = pos;
     }, 15000);
   }
 
-  // ── DAYPART TRANSITION — fires exactly once per boundary ──────────────────
-  // Boundaries: 06:00, 12:00, 19:00 UTC
-  // Uses a single setTimeout calculated to the millisecond — no polling.
-  // Self-schedules after each transition so it fires exactly 3 times per day.
+  // ── SHOW HANDOVER (06:00 / 12:00 / 19:00 UTC) ─────────────────────────────
+  // One timer per boundary. The current item always finishes first, then:
+  // outgoing outro -> incoming intro -> rebuild sequence for the new show.
   function scheduleDaypartTransition() {
     if (transitionTimer) clearTimeout(transitionTimer);
 
-    const now              = new Date();
-    const boundaries       = [6, 12, 19];
-    const currentUTCHour   = now.getUTCHours();
-    const currentUTCMinute = now.getUTCMinutes();
-    const currentUTCSecond = now.getUTCSeconds();
-
-    const nextBoundaryHour = boundaries.find(h => h > currentUTCHour) ?? boundaries[0];
+    const now = new Date();
+    const boundaries = [6, 12, 19];
+    const h = now.getUTCHours(), m = now.getUTCMinutes(), s = now.getUTCSeconds();
+    const nextHour = boundaries.find(b => b > h) ?? boundaries[0];
 
     let msUntil;
-    if (nextBoundaryHour > currentUTCHour) {
-      msUntil = (
-        (nextBoundaryHour - currentUTCHour) * 3600
-        - currentUTCMinute * 60
-        - currentUTCSecond
-      ) * 1000;
+    if (nextHour > h) {
+      msUntil = ((nextHour - h) * 3600 - m * 60 - s) * 1000;
     } else {
-      // Next boundary is tomorrow at 06:00
-      const secondsUntilMidnight = (24 - currentUTCHour) * 3600
-        - currentUTCMinute * 60
-        - currentUTCSecond;
-      msUntil = (secondsUntilMidnight + nextBoundaryHour * 3600) * 1000;
+      msUntil = (((24 - h) * 3600 - m * 60 - s) + nextHour * 3600) * 1000;
     }
-
     console.log(`[Radio Pumpo] Next daypart transition in ${Math.round(msUntil / 1000)}s`);
 
     transitionTimer = setTimeout(() => {
       if (!isRadioMode) return;
-      triggerDaypartTransition(getCurrentDaypart());
-      scheduleDaypartTransition(); // schedule the next one
+      const nd = getCurrentDaypart();
+      if (nd !== activeDaypart) {
+        const idle = !radioAudio.src || radioAudio.paused || radioAudio.ended;
+        if (idle) beginTransition(nd);
+        else pendingTransition = nd;          // wait for the current item to end
+      }
+      scheduleDaypartTransition();
     }, msUntil);
   }
 
-  function triggerDaypartTransition(newDaypart) {
-    if (!manifest) return;
-
+  function beginTransition(newDaypart) {
+    pendingTransition = null;
+    inTransition = true;
     const wrap = manifest.segments.show_wrappers;
+    const outgoing = OUTRO_FOR[newDaypart];
+    const outro = wrap[`${outgoing}_outro`];
+    const intro = wrap[`${newDaypart}_intro`];
+    transitionSteps = [];
+    if (outro && !isBad(outro.file))
+      transitionSteps.push({ ...outro, type: 'segment', title: manifest.dayparts[outgoing].label, label: 'signing off' });
+    if (intro && !isBad(intro.file))
+      transitionSteps.push({ ...intro, type: 'segment', title: manifest.dayparts[newDaypart].label, label: 'starting now' });
+    advanceTransition();
+  }
 
-    const outroMap = {
-      'afternoons': 'breakfast',
-      'latenight':  'afternoons',
-      'breakfast':  'latenight'
-    };
-
-    const outgoingDaypart = outroMap[newDaypart];
-    const outroData       = wrap[`${outgoingDaypart}_outro`];
-    const introData       = wrap[`${newDaypart}_intro`];
-
-    function playTransition() {
-      radioAudio.removeEventListener('ended', playTransition);
-
-      // Play outro for outgoing show
-      radioAudio.src = outroData.file;
-      radioAudio.currentTime = 0;
-      radioAudio.play().catch(() => {});
-      updateRadioDisplay({
-        title: manifest.dayparts[outgoingDaypart]?.label || 'Radio Pumpo',
-        label: 'signing off'
-      });
-
-      // After outro — play intro for incoming show
-      radioAudio.addEventListener('ended', function playIntro() {
-        radioAudio.removeEventListener('ended', playIntro);
-
-        radioAudio.src = introData.file;
-        radioAudio.currentTime = 0;
-        radioAudio.play().catch(() => {});
-        updateRadioDisplay({
-          title: manifest.dayparts[newDaypart].label,
-          label: 'starting now'
-        });
-
-        // After intro — rebuild sequence for new daypart and continue
-        radioAudio.addEventListener('ended', function resumeStream() {
-          radioAudio.removeEventListener('ended', resumeStream);
-          sequence = buildSequence();
-          playFromPosition();
-        }, { once: true });
-
-      }, { once: true });
-    }
-
-    // Wait for current track to finish naturally before transitioning
-    if (!radioAudio.paused && radioAudio.src) {
-      radioAudio.addEventListener('ended', playTransition, { once: true });
-    } else {
-      playTransition();
-    }
+  function advanceTransition() {
+    const step = transitionSteps.shift();
+    if (step) { playItem(step, 0); return; }
+    // outro + intro done (or skipped): rejoin the clock with the new show's sequence
+    inTransition = false;
+    const s = buildSequence();
+    if (!s) { giveUp('no playable tracks for the new show'); return; }
+    sequence = s;
+    playFromPosition();
   }
 
   // ── STOP ──────────────────────────────────────────────────────────────────
   function stopRadio() {
-    if (radioAudio) {
-      radioAudio.pause();
-      radioAudio.src = '';
-    }
+    isRadioMode = false;          // first: ignores any error/ended events triggered below
+    currentItem = null;
+    attempt++;
+    pendingTransition = null; transitionSteps = []; inTransition = false;
+    clearTimeout(playTimer);
     if (syncTimer)       { clearInterval(syncTimer);      syncTimer = null; }
     if (transitionTimer) { clearTimeout(transitionTimer); transitionTimer = null; }
-    isRadioMode = false;
+    if (radioAudio) { radioAudio.pause(); radioAudio.src = ''; }
     restoreOnDemandControls();
   }
 
@@ -375,10 +400,7 @@
       isRadioMode = true;
 
       const existingAudio = document.getElementById('pumpo-audio-el');
-      if (existingAudio) {
-        existingAudio.pause();
-        existingAudio.style.display = 'none';
-      }
+      if (existingAudio) { existingAudio.pause(); existingAudio.style.display = 'none'; }
 
       const prev = document.getElementById('pumpoPrevBtn');
       const next = document.getElementById('pumpoNextBtn');
@@ -398,14 +420,15 @@
     radioAudio = new Audio();
     radioAudio.preload = 'auto';
 
-    // When a track ends naturally, re-sync to current position for next item
-    radioAudio.addEventListener('ended', () => {
-      if (isRadioMode && sequence) playFromPosition();
+    radioAudio.addEventListener('ended',   onEnded);
+    radioAudio.addEventListener('playing', () => { failStreak = 0; });
+    radioAudio.addEventListener('error',   () => {
+      if (!isRadioMode || !currentItem) return;     // ignore the error browsers raise when src is cleared
+      failItem(currentItem, attempt);
     });
 
     injectRadioUI();
 
-    // Pre-load manifest silently on page load
     loadManifest().then(() => {
       console.log('[Radio Pumpo] Manifest loaded. Ready to tune in.');
     });
@@ -417,6 +440,6 @@
     init();
   }
 
-  window.PumpoRadio = { toggle: toggleRadio };
+  window.PumpoRadio = { toggle: toggleRadio, isOn: () => isRadioMode };
 
 })();
