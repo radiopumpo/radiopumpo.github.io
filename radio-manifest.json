@@ -88,7 +88,8 @@
     { "id": "t69", "file": "https://radiopumpo.github.io/phonkverse/assets/songs/phonkdon/05-proper-good-night.mp3",   "title": "Proper good night",   "duration": 210, "dayparts": ["latenight"] },
     { "id": "t70", "file": "https://radiopumpo.github.io/phonkverse/assets/songs/phonkhan/01-ek-hi-dhadkan.mp3",   "title": "Ek hi dhadkan — ایک ہی دھڑکن",   "duration": 250, "dayparts": ["breakfast","afternoons","latenight"] },
     { "id": "t71", "file": "https://radiopumpo.github.io/phonkverse/assets/songs/phonkhan/02-apna-india.mp3",   "title": "Apna India — अपना इंडिया",   "duration": 210, "dayparts": ["latenight"] },
-    { "id": "t72", "file": "https://radiopumpo.github.io/phonkverse/assets/songs/phonkhan/03-apna-pakistan.mp3",   "title": "Apna Pakistan — اپنا پاکستان",   "duration": 210, "dayparts": ["latenight"] }
+    { "id": "t72", "file": "https://radiopumpo.github.io/phonkverse/assets/songs/phonkhan/03-apna-pakistan.mp3",   "title": "Apna Pakistan — اپنا پاکستان",   "duration": 210, "dayparts": ["latenight"] },
+    { "id": "t73", "file": "https://radiopumpo.github.io/songs/everybodylovesajoke.mp3",   "title": "Everybody loves a joke",   "duration": 181, "dayparts": ["breakfast","afternoons","latenight"] }
   ],
     
   "segments": {
