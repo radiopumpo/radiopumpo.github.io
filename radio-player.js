@@ -1,5 +1,5 @@
 /**
- * RADIO PUMPO — SHARED CLOCK PLAYER v1.2.1
+ * RADIO PUMPO — SHARED CLOCK PLAYER v1.3
  *
  * INTEGRATION: one line in index.html before </body>:
  *   <script src="radio-player.js"></script>
@@ -18,6 +18,10 @@
  * - Show handover (06:00 / 12:00 / 19:00 UTC) rewritten as one small state
  *   machine. v1.1 had a race where the generic "track ended" handler overwrote
  *   the outro/intro a split second after it started, so they were cut off.
+ *
+ * v1.3: volume control (slider + mute) in the bar. One volume is shared by radio mode and
+ *       the on-demand player and remembered between visits. iOS Safari does not let web
+ *       pages set the volume (the hardware buttons do), so there you get a mute button only.
  *
  * OPTION 1 UPGRADE: set STREAM_URL to your Icecast mount URL.
  */
@@ -348,13 +352,119 @@
     if (btn) btn.textContent = text;
   }
 
+  // ── VOLUME ────────────────────────────────────────────────────────────────
+  const VOL_KEY = 'pumpo_volume', MUTE_KEY = 'pumpo_muted';
+  let volume = 0.8, lastVolume = 0.8, muted = false, canSetVolume = true;
+
+  // iOS Safari ignores audio.volume (always reads back 1), so test it instead of guessing.
+  function detectVolumeSupport() {
+    try { const a = new Audio(); a.volume = 0.5; return a.volume === 0.5; } catch (e) { return false; }
+  }
+
+  function loadVolume() {
+    try {
+      const v = parseFloat(localStorage.getItem(VOL_KEY));
+      if (!isNaN(v)) volume = Math.min(1, Math.max(0, v));
+      muted = localStorage.getItem(MUTE_KEY) === '1';
+    } catch (e) {}
+    if (volume > 0) lastVolume = volume;
+  }
+
+  function saveVolume() {
+    try {
+      localStorage.setItem(VOL_KEY, String(lastVolume));
+      localStorage.setItem(MUTE_KEY, muted ? '1' : '0');
+    } catch (e) {}
+  }
+
+  // Push the shared volume to the radio audio AND the on-demand player.
+  function applyVolume() {
+    [radioAudio, document.getElementById('pumpo-audio-el')].filter(Boolean).forEach(a => {
+      if (canSetVolume && a.volume !== volume) a.volume = volume;
+      if (a.muted !== muted) a.muted = muted;
+    });
+    renderVolumeUI();
+    saveVolume();
+  }
+
+  function renderVolumeUI() {
+    const btn = document.getElementById('rp-vol-btn');
+    const sl  = document.getElementById('rp-vol');
+    const eff = muted ? 0 : volume;
+    if (btn) {
+      btn.textContent = eff === 0 ? '🔇' : eff < 0.34 ? '🔈' : eff < 0.67 ? '🔉' : '🔊';
+      btn.title = muted ? 'Unmute' : 'Mute';
+      btn.setAttribute('aria-pressed', String(muted));
+    }
+    if (sl && Number(sl.value) !== Math.round(eff * 100)) sl.value = String(Math.round(eff * 100));
+  }
+
+  function toggleMute() {
+    muted = !muted;
+    if (!muted && canSetVolume && volume === 0) volume = lastVolume || 0.5;
+    applyVolume();
+  }
+
+  function onVolumeInput(e) {
+    const v = Number(e.target.value) / 100;
+    volume = v;
+    muted = v === 0;
+    if (v > 0) lastVolume = v;
+    applyVolume();
+  }
+
+  // The on-demand player has its own native volume control on desktop: mirror it.
+  function onNativeVolumeChange(e) {
+    const a = e.target;
+    if (Math.abs((a.volume ?? volume) - volume) < 0.001 && a.muted === muted) return;
+    if (canSetVolume) { volume = a.volume; if (volume > 0) lastVolume = volume; }
+    muted = a.muted;
+    applyVolume();
+  }
+
+  function bindVolumeSync() {
+    const od = document.getElementById('pumpo-audio-el');
+    if (od) od.addEventListener('volumechange', onNativeVolumeChange);
+  }
+
+  function buildVolumeUI() {
+    if (!document.getElementById('rp-vol-style')) {
+      const st = document.createElement('style');
+      st.id = 'rp-vol-style';
+      st.textContent = '#rp-vol{width:84px;accent-color:#ff0080;cursor:pointer;vertical-align:middle}' +
+                       '@media(max-width:400px){#rp-vol{width:64px}}';
+      document.head.appendChild(st);
+    }
+    const wrap = document.createElement('div');
+    wrap.style.cssText = 'display:flex;align-items:center;gap:6px;';
+
+    const btn = document.createElement('button');
+    btn.id = 'rp-vol-btn';
+    btn.type = 'button';
+    btn.className = 'pumpo-bar-btn';
+    btn.style.cssText = 'font-size:.8rem;padding:4px 8px;';
+    btn.onclick = toggleMute;
+    wrap.appendChild(btn);
+
+    if (canSetVolume) {                       // no slider on iOS: the OS owns the volume there
+      const sl = document.createElement('input');
+      sl.type = 'range'; sl.id = 'rp-vol';
+      sl.min = '0'; sl.max = '100'; sl.step = '1';
+      sl.value = String(Math.round((muted ? 0 : volume) * 100));
+      sl.setAttribute('aria-label', 'Volume');
+      sl.addEventListener('input', onVolumeInput);
+      wrap.appendChild(sl);
+    }
+    return wrap;
+  }
+
   // ── UI INJECTION ──────────────────────────────────────────────────────────
   function injectRadioUI() {
     const bar = document.getElementById('pumpoBar');
     if (!bar) return;
 
     const row = document.createElement('div');
-    row.style.cssText = 'display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:2px;';
+    row.style.cssText = 'display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:4px 10px;margin-bottom:2px;';
 
     const tuneBtn = document.createElement('button');
     tuneBtn.id = 'pumpo-radio-toggle';
@@ -370,6 +480,7 @@
 
     row.appendChild(tuneBtn);
     row.appendChild(modeLabel);
+    row.appendChild(buildVolumeUI());
     bar.insertBefore(row, bar.firstChild);
   }
 
@@ -427,7 +538,11 @@
       failItem(currentItem, attempt);
     });
 
+    canSetVolume = detectVolumeSupport();
+    loadVolume();
     injectRadioUI();
+    bindVolumeSync();
+    applyVolume();
 
     loadManifest().then(() => {
       console.log('[Radio Pumpo] Manifest loaded. Ready to tune in.');
