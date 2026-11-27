@@ -1,0 +1,1130 @@
+{
+ "version": 1,
+ "generated": "2026-11-25",
+ "albums": [
+  {
+   "key": "ogs",
+   "name": "Radio Pumpo OGs",
+   "accent": "#ff0080",
+   "group": "Radio Pumpo"
+  },
+  {
+   "key": "classics",
+   "name": "Classics",
+   "accent": "#40e0d0",
+   "group": "Radio Pumpo"
+  },
+  {
+   "key": "newgen",
+   "name": "NewGen",
+   "accent": "#ffaa00",
+   "group": "Radio Pumpo"
+  },
+  {
+   "key": "others",
+   "name": "Others",
+   "accent": "#9b59ff",
+   "group": "Radio Pumpo"
+  },
+  {
+   "key": "phonkita",
+   "name": "PHONKITA",
+   "group": "PHONKVERSE",
+   "accent": "#52e69a",
+   "art": "/phonkverse/assets/images/phonkita-album-board.png",
+   "page": "/phonkverse/phonkita.html"
+  },
+  {
+   "key": "phonkazo",
+   "name": "PHONKAZO",
+   "group": "PHONKVERSE",
+   "accent": "#ffc43b",
+   "art": "/phonkverse/assets/images/phonkazo-album-board.png",
+   "page": "/phonkverse/phonkazo.html"
+  },
+  {
+   "key": "phonkami",
+   "name": "PHONKAMI",
+   "group": "PHONKVERSE",
+   "accent": "#ff4d6d",
+   "art": "/phonkverse/assets/images/phonkami-album-board.jpg",
+   "page": "/phonkverse/phonkami.html"
+  },
+  {
+   "key": "phonkssons",
+   "name": "PHONKSSONS",
+   "group": "PHONKVERSE",
+   "accent": "#ffcf3a",
+   "art": "/phonkverse/assets/images/phonkssons-album-board.jpg",
+   "page": "/phonkverse/phonkssons.html"
+  },
+  {
+   "key": "phonkov",
+   "name": "PHONKOV",
+   "group": "PHONKVERSE",
+   "accent": "#e63946",
+   "art": "/phonkverse/assets/images/phonkov-album-board.jpg",
+   "page": "/phonkverse/phonkov.html"
+  },
+  {
+   "key": "phonke",
+   "name": "PHONKÉ",
+   "group": "PHONKVERSE",
+   "accent": "#4d8dff",
+   "art": "/phonkverse/assets/images/phonke-album-board.jpg",
+   "page": "/phonkverse/phonke.html"
+  },
+  {
+   "key": "phonkdon",
+   "name": "PHONKDON",
+   "group": "PHONKVERSE",
+   "accent": "#b44dff",
+   "art": "/phonkverse/assets/images/phonkdon-album-board.jpg",
+   "page": "/phonkverse/phonkdon.html"
+  },
+  {
+   "key": "phonkhan",
+   "name": "PHONKHAN",
+   "group": "PHONKVERSE",
+   "accent": "#ff8f1f",
+   "art": "/phonkverse/assets/images/phonkhan-album-board.jpg",
+   "page": "/phonkverse/phonkhan.html"
+  }
+ ],
+ "tracks": [
+  {
+   "id": "pumpo:forzapumpo",
+   "title": "Forza Pumpo",
+   "album": "ogs",
+   "src": "/songs/forzapumpo.mp3",
+   "genres": [
+    "anthem",
+    "pop"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/song.html?track=forzapumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:dnbpumpo",
+   "title": "DNB Pumpo",
+   "album": "ogs",
+   "src": "/songs/dnbpumpo.mp3",
+   "genres": [
+    "drum & bass"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=dnbpumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:housepumpo",
+   "title": "House Pumpo",
+   "album": "ogs",
+   "src": "/songs/housepumpo.mp3",
+   "genres": [
+    "house"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=housepumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:hiphoppumpo",
+   "title": "Hip Hop Pumpo",
+   "album": "ogs",
+   "src": "/songs/hiphoppumpo.mp3",
+   "genres": [
+    "hip hop"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=hiphoppumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:seashantypumpo",
+   "title": "Sea Shanty Pumpo",
+   "album": "ogs",
+   "src": "/songs/seashantypumpo.mp3",
+   "genres": [
+    "sea shanty",
+    "folk"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=seashantypumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:unodinoipumpo",
+   "title": "Uno Di Noi Pumpo",
+   "album": "ogs",
+   "src": "/songs/unodinoipumpo.mp3",
+   "genres": [
+    "pop"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/song.html?track=unodinoipumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:bobpumpo",
+   "title": "Bob Pumpo",
+   "album": "ogs",
+   "src": "/songs/bobpumpo.mp3",
+   "genres": [
+    "reggae"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=bobpumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:ACDCpumpo",
+   "title": "AC/DC Pumpo",
+   "album": "ogs",
+   "src": "/songs/ACDCpumpo.mp3",
+   "genres": [
+    "rock"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=ACDCpumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:rockpowerpumpo",
+   "title": "Rock Power Pumpo",
+   "album": "ogs",
+   "src": "/songs/rockpowerpumpo.mp3",
+   "genres": [
+    "rock"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=rockpowerpumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:gospelpumpo",
+   "title": "Gospel Pumpo",
+   "album": "ogs",
+   "src": "/songs/gospelpumpo.mp3",
+   "genres": [
+    "gospel"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=gospelpumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpothicthang",
+   "title": "Pumpo Thic Thang",
+   "album": "ogs",
+   "src": "/songs/pumpothicthang.mp3",
+   "genres": [
+    "hip hop",
+    "trap"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpothicthang",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpodragons",
+   "title": "Pumpo Dragons",
+   "album": "ogs",
+   "src": "/songs/pumpodragons.mp3",
+   "genres": [
+    "pop rock"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpodragons",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumporus",
+   "title": "пумпо",
+   "album": "classics",
+   "src": "/songs/pumporus.mp3",
+   "genres": [
+    "pop"
+   ],
+   "langs": [
+    "Russian"
+   ],
+   "share": "/song.html?track=pumporus",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpofantastique",
+   "title": "Pumpo est Fantastique",
+   "album": "classics",
+   "src": "/songs/pumpofantastique.mp3",
+   "genres": [
+    "pop"
+   ],
+   "langs": [
+    "French"
+   ],
+   "share": "/song.html?track=pumpofantastique",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumposwinghouse",
+   "title": "Find the Pumpo",
+   "album": "classics",
+   "src": "/songs/pumposwinghouse.mp3",
+   "genres": [
+    "electro swing",
+    "house"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumposwinghouse",
+   "draft": true
+  },
+  {
+   "id": "pumpo:veraodopumpo",
+   "title": "Verao do Pumpo",
+   "album": "classics",
+   "src": "/songs/veraodopumpo.mp3",
+   "genres": [
+    "pop"
+   ],
+   "langs": [
+    "Portuguese"
+   ],
+   "share": "/song.html?track=veraodopumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpodjcash",
+   "title": "Pumpo feat DJ Cash",
+   "album": "classics",
+   "src": "/songs/pumpodjcash.mp3",
+   "genres": [
+    "hip hop"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpodjcash",
+   "draft": true
+  },
+  {
+   "id": "pumpo:punkpumpo",
+   "title": "Punk Pumpo",
+   "album": "classics",
+   "src": "/songs/punkpumpo.mp3",
+   "genres": [
+    "punk"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=punkpumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpoelectrolatino",
+   "title": "Tirate un Pumpo",
+   "album": "classics",
+   "src": "/songs/pumpoelectrolatino.mp3",
+   "genres": [
+    "electro latino"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/song.html?track=pumpoelectrolatino",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpodonomar",
+   "title": "Pumpo & Don Omar",
+   "album": "classics",
+   "src": "/songs/pumpodonomar.mp3",
+   "genres": [
+    "reggaeton"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/song.html?track=pumpodonomar",
+   "draft": true
+  },
+  {
+   "id": "pumpo:mon-ami-pumpo",
+   "title": "Pumpo Mon Ami",
+   "album": "classics",
+   "src": "/songs/mon-ami-pumpo.mp3",
+   "genres": [
+    "chanson",
+    "pop"
+   ],
+   "langs": [
+    "French"
+   ],
+   "share": "/song.html?track=mon-ami-pumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:copacabana",
+   "title": "Pumpo em Copacabana",
+   "album": "classics",
+   "src": "/songs/copacabana.mp3",
+   "genres": [
+    "bossa nova",
+    "samba"
+   ],
+   "langs": [
+    "Portuguese"
+   ],
+   "share": "/song.html?track=copacabana",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpolofinippon",
+   "title": "LoFi Nippon Pumpo",
+   "album": "classics",
+   "src": "/songs/pumpolofinippon.mp3",
+   "genres": [
+    "lofi"
+   ],
+   "langs": [
+    "Japanese"
+   ],
+   "share": "/song.html?track=pumpolofinippon",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpitup",
+   "title": "Pumpo Pump it up",
+   "album": "classics",
+   "src": "/songs/pumpitup.mp3",
+   "genres": [
+    "dance"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpitup",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpoquersentir",
+   "title": "Pumpo Quer Sentir",
+   "album": "newgen",
+   "src": "/songs/pumpoquersentir.mp3",
+   "genres": [
+    "pop"
+   ],
+   "langs": [
+    "Portuguese"
+   ],
+   "share": "/song.html?track=pumpoquersentir",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpotheninja",
+   "title": "Pumpo The Ninja",
+   "album": "newgen",
+   "src": "/songs/pumpotheninja.mp3",
+   "genres": [
+    "hip hop"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpotheninja",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpophonkbr",
+   "title": "A ora do Pumpo",
+   "album": "newgen",
+   "src": "/songs/pumpophonkbr.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Portuguese"
+   ],
+   "share": "/song.html?track=pumpophonkbr",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpophonkbr2",
+   "title": "A ora do Pumpo Dois",
+   "album": "newgen",
+   "src": "/songs/pumpophonkbr2.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Portuguese"
+   ],
+   "share": "/song.html?track=pumpophonkbr2",
+   "draft": true
+  },
+  {
+   "id": "pumpo:ay-que-te-pego",
+   "title": "Ay que te pego /La mujer del Pumpo/",
+   "album": "newgen",
+   "src": "/songs/ay-que-te-pego.mp3",
+   "genres": [
+    "reggaeton"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/song.html?track=ay-que-te-pego",
+   "draft": true
+  },
+  {
+   "id": "pumpo:microfono-ahumado",
+   "title": "Microfono ahumado",
+   "album": "newgen",
+   "src": "/songs/microfono-ahumado.mp3",
+   "genres": [
+    "hip hop"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/song.html?track=microfono-ahumado",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumponostalgiaphonk",
+   "title": "Pumpo Nostalgia Phonk",
+   "album": "newgen",
+   "src": "/songs/pumponostalgiaphonk.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumponostalgiaphonk",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpoclub1",
+   "title": "Pumpo Club 1",
+   "album": "newgen",
+   "src": "/songs/pumpoclub1.mp3",
+   "genres": [
+    "club",
+    "house"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpoclub1",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpoclub2",
+   "title": "Pumpo Club 2",
+   "album": "newgen",
+   "src": "/songs/pumpoclub2.mp3",
+   "genres": [
+    "club",
+    "house"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpoclub2",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpoonroof",
+   "title": "Pumpo On The Roof",
+   "album": "newgen",
+   "src": "/songs/pumpoonroof.mp3",
+   "genres": [
+    "pop"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpoonroof",
+   "draft": true
+  },
+  {
+   "id": "pumpo:pumpoatpacha",
+   "title": "Pumpo @ Pacha",
+   "album": "newgen",
+   "src": "/songs/pumpoatpacha.mp3",
+   "genres": [
+    "house",
+    "club"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=pumpoatpacha",
+   "draft": true
+  },
+  {
+   "id": "pumpo:clodvonpumpo",
+   "title": "Clod Von Pumpo",
+   "album": "newgen",
+   "src": "/songs/clodvonpumpo.mp3",
+   "genres": [
+    "electronic"
+   ],
+   "langs": [],
+   "share": "/song.html?track=clodvonpumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:dansercommepumpo",
+   "title": "Danser comme Pumpo",
+   "album": "newgen",
+   "src": "/songs/dansercommepumpo.mp3",
+   "genres": [
+    "dance",
+    "pop"
+   ],
+   "langs": [
+    "French"
+   ],
+   "share": "/song.html?track=dansercommepumpo",
+   "draft": true
+  },
+  {
+   "id": "pumpo:everybodylovesajoke",
+   "title": "Everybody loves a joke",
+   "album": "others",
+   "src": "/songs/everybodylovesajoke.mp3",
+   "genres": [
+    "pop"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=everybodylovesajoke",
+   "draft": true
+  },
+  {
+   "id": "pumpo:everydaymasterpiecephonk",
+   "title": "Everyday - Masterpiece Phonk Remix",
+   "album": "others",
+   "src": "/songs/everydaymasterpiecephonk.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/song.html?track=everydaymasterpiecephonk",
+   "draft": true
+  },
+  {
+   "id": "pumpo:monadpumpo",
+   "title": "Monad Pumpo",
+   "album": "others",
+   "src": "/songs/monadpumpo.mp3",
+   "genres": [
+    "electronic"
+   ],
+   "langs": [],
+   "share": "/song.html?track=monadpumpo",
+   "draft": true
+  },
+  {
+   "id": "phonkita:01",
+   "title": "Ultimo Treno",
+   "album": "phonkita",
+   "src": "/phonkverse/assets/songs/phonkita/01-ultimo-treno.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkita&t=01"
+  },
+  {
+   "id": "phonkita:02",
+   "title": "Affitto Killer",
+   "album": "phonkita",
+   "src": "/phonkverse/assets/songs/phonkita/02-affitto-killer.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkita&t=02"
+  },
+  {
+   "id": "phonkita:03",
+   "title": "Nord / Sud",
+   "album": "phonkita",
+   "src": "/phonkverse/assets/songs/phonkita/03-nord-sud.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkita&t=03"
+  },
+  {
+   "id": "phonkita:04",
+   "title": "Bella Figura",
+   "album": "phonkita",
+   "src": "/phonkverse/assets/songs/phonkita/04-bella-figura.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkita&t=04"
+  },
+  {
+   "id": "phonkita:05",
+   "title": "Piazza Senza Padroni",
+   "album": "phonkita",
+   "src": "/phonkverse/assets/songs/phonkita/05-piazza-senza-padroni.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkita&t=05"
+  },
+  {
+   "id": "phonkita:06",
+   "title": "Sotto la Pelle",
+   "album": "phonkita",
+   "src": "/phonkverse/assets/songs/phonkita/06-sotto-la-pelle.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkita&t=06"
+  },
+  {
+   "id": "phonkita:07",
+   "title": "Dall’Italia alla Spagna",
+   "album": "phonkita",
+   "src": "/phonkverse/assets/songs/phonkita/07-dallitalia-alla-spagna.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Italian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkita&t=07"
+  },
+  {
+   "id": "phonkazo:01",
+   "title": "Phonkazo Chollazo",
+   "album": "phonkazo",
+   "src": "/phonkverse/assets/songs/phonkazo/01-phonkazo-chollazo.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkazo&t=01"
+  },
+  {
+   "id": "phonkazo:02",
+   "title": "Manual del Pelotazo",
+   "album": "phonkazo",
+   "src": "/phonkverse/assets/songs/phonkazo/02-manual-del-pelotazo.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkazo&t=02"
+  },
+  {
+   "id": "phonkazo:03",
+   "title": "Ni de Tu Bando",
+   "album": "phonkazo",
+   "src": "/phonkverse/assets/songs/phonkazo/03-ni-de-tu-bando.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkazo&t=03"
+  },
+  {
+   "id": "phonkazo:04",
+   "title": "Currículum de Fantasma",
+   "album": "phonkazo",
+   "src": "/phonkverse/assets/songs/phonkazo/04-curriculum-de-fantasma.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkazo&t=04"
+  },
+  {
+   "id": "phonkazo:05",
+   "title": "La Penúltima Terraza",
+   "album": "phonkazo",
+   "src": "/phonkverse/assets/songs/phonkazo/05-la-penultima-terraza.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkazo&t=05"
+  },
+  {
+   "id": "phonkazo:06",
+   "title": "Nadie Nos Regaló Nada",
+   "album": "phonkazo",
+   "src": "/phonkverse/assets/songs/phonkazo/06-nadie-nos-regalo-nada.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkazo&t=06"
+  },
+  {
+   "id": "phonkazo:07",
+   "title": "De España al Mundo",
+   "album": "phonkazo",
+   "src": "/phonkverse/assets/songs/phonkazo/07-de-espana-al-mundo.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Spanish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkazo&t=07"
+  },
+  {
+   "id": "phonkami:01",
+   "title": "Kage (影)",
+   "album": "phonkami",
+   "src": "/phonkverse/assets/songs/phonkami/01-kage.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Japanese"
+   ],
+   "share": "/phonkverse/song.html?a=phonkami&t=01"
+  },
+  {
+   "id": "phonkami:02",
+   "title": "Akai Tsuki (赤い月)",
+   "album": "phonkami",
+   "src": "/phonkverse/assets/songs/phonkami/02-akai-tsuki.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Japanese"
+   ],
+   "share": "/phonkverse/song.html?a=phonkami&t=02"
+  },
+  {
+   "id": "phonkami:03",
+   "title": "Shūden (終電)",
+   "album": "phonkami",
+   "src": "/phonkverse/assets/songs/phonkami/03-shuden.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Japanese"
+   ],
+   "share": "/phonkverse/song.html?a=phonkami&t=03"
+  },
+  {
+   "id": "phonkssons:01",
+   "title": "Sånt är livet!",
+   "album": "phonkssons",
+   "src": "/phonkverse/assets/songs/phonkssons/01-sant-ar-livet.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Swedish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkssons&t=01"
+  },
+  {
+   "id": "phonkssons:02",
+   "title": "Lagom? Aldrig!",
+   "album": "phonkssons",
+   "src": "/phonkverse/assets/songs/phonkssons/02-lagom-aldrig.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Swedish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkssons&t=02"
+  },
+  {
+   "id": "phonkssons:03",
+   "title": "Samma frekvens",
+   "album": "phonkssons",
+   "src": "/phonkverse/assets/songs/phonkssons/03-samma-frekvens.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Swedish"
+   ],
+   "share": "/phonkverse/song.html?a=phonkssons&t=03"
+  },
+  {
+   "id": "phonkov:01",
+   "title": "Такая жизнь",
+   "album": "phonkov",
+   "src": "/phonkverse/assets/songs/phonkov/01-takaya-zhizn.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Russian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkov&t=01"
+  },
+  {
+   "id": "phonkov:02",
+   "title": "Не по приказу",
+   "album": "phonkov",
+   "src": "/phonkverse/assets/songs/phonkov/02-ne-po-prikazu.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Russian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkov&t=02"
+  },
+  {
+   "id": "phonkov:03",
+   "title": "Разные корни",
+   "album": "phonkov",
+   "src": "/phonkverse/assets/songs/phonkov/03-raznye-korni.mp3",
+   "genres": [
+    "phonk"
+   ],
+   "langs": [
+    "Russian"
+   ],
+   "share": "/phonkverse/song.html?a=phonkov&t=03"
+  },
+  {
+   "id": "phonke:01",
+   "title": "Pas votre carte postale",
+   "album": "phonke",
+   "src": "/phonkverse/assets/songs/phonke/01-pas-votre-carte-postale.mp3",
+   "genres": [
+    "phonk",
+    "french rap",
+    "drill",
+    "grime"
+   ],
+   "langs": [
+    "French"
+   ],
+   "share": "/phonkverse/song.html?a=phonke&t=01"
+  },
+  {
+   "id": "phonke:02",
+   "title": "On fait du bruit",
+   "album": "phonke",
+   "src": "/phonkverse/assets/songs/phonke/02-on-fait-du-bruit.mp3",
+   "genres": [
+    "phonk",
+    "french rap",
+    "drill",
+    "grime"
+   ],
+   "langs": [
+    "French"
+   ],
+   "share": "/phonkverse/song.html?a=phonke&t=02"
+  },
+  {
+   "id": "phonke:03",
+   "title": "À nos accents",
+   "album": "phonke",
+   "src": "/phonkverse/assets/songs/phonke/03-a-nos-accents.mp3",
+   "genres": [
+    "phonk",
+    "french rap",
+    "drill",
+    "grime"
+   ],
+   "langs": [
+    "French"
+   ],
+   "share": "/phonkverse/song.html?a=phonke&t=03"
+  },
+  {
+   "id": "phonkdon:01",
+   "title": "Made in England",
+   "album": "phonkdon",
+   "src": "/phonkverse/assets/songs/phonkdon/01-made-in-england.mp3",
+   "genres": [
+    "phonk",
+    "uk drill",
+    "grime",
+    "dnb",
+    "dubstep",
+    "garage"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/phonkverse/song.html?a=phonkdon&t=01"
+  },
+  {
+   "id": "phonkdon:02",
+   "title": "No invite needed",
+   "album": "phonkdon",
+   "src": "/phonkverse/assets/songs/phonkdon/02-no-invite-needed.mp3",
+   "genres": [
+    "phonk",
+    "grime"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/phonkverse/song.html?a=phonkdon&t=02"
+  },
+  {
+   "id": "phonkdon:03",
+   "title": "All night, no borders",
+   "album": "phonkdon",
+   "src": "/phonkverse/assets/songs/phonkdon/03-all-night-no-borders.mp3",
+   "genres": [
+    "phonk",
+    "jungle",
+    "dnb"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/phonkverse/song.html?a=phonkdon&t=03"
+  },
+  {
+   "id": "phonkdon:04",
+   "title": "Under pressure",
+   "album": "phonkdon",
+   "src": "/phonkverse/assets/songs/phonkdon/04-under-pressure.mp3",
+   "genres": [
+    "phonk",
+    "dubstep"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/phonkverse/song.html?a=phonkdon&t=04"
+  },
+  {
+   "id": "phonkdon:05",
+   "title": "Proper good night",
+   "album": "phonkdon",
+   "src": "/phonkverse/assets/songs/phonkdon/05-proper-good-night.mp3",
+   "genres": [
+    "phonk",
+    "garage"
+   ],
+   "langs": [
+    "English"
+   ],
+   "share": "/phonkverse/song.html?a=phonkdon&t=05"
+  },
+  {
+   "id": "phonkhan:01",
+   "title": "Ek hi dhadkan — ایک ہی دھڑکن",
+   "album": "phonkhan",
+   "src": "/phonkverse/assets/songs/phonkhan/01-ek-hi-dhadkan.mp3",
+   "genres": [
+    "phonk",
+    "south asian phonk",
+    "funk"
+   ],
+   "langs": [
+    "Hindi",
+    "Urdu"
+   ],
+   "share": "/phonkverse/song.html?a=phonkhan&t=01"
+  },
+  {
+   "id": "phonkhan:02",
+   "title": "Apna India — अपना इंडिया",
+   "album": "phonkhan",
+   "src": "/phonkverse/assets/songs/phonkhan/02-apna-india.mp3",
+   "genres": [
+    "phonk",
+    "south asian phonk",
+    "funk"
+   ],
+   "langs": [
+    "Hindi"
+   ],
+   "share": "/phonkverse/song.html?a=phonkhan&t=02"
+  },
+  {
+   "id": "phonkhan:03",
+   "title": "Apna Pakistan — اپنا پاکستان",
+   "album": "phonkhan",
+   "src": "/phonkverse/assets/songs/phonkhan/03-apna-pakistan.mp3",
+   "genres": [
+    "phonk",
+    "south asian phonk",
+    "funk"
+   ],
+   "langs": [
+    "Urdu"
+   ],
+   "share": "/phonkverse/song.html?a=phonkhan&t=03"
+  }
+ ]
+}
